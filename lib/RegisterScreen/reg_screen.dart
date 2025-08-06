@@ -24,7 +24,8 @@ class RegistrationScreen extends StatelessWidget {
             height: 24,
             color: Colors.black,
           ),
-          onPressed: () => Get.back(),
+          onPressed: () => Get.offAll(() => LoginScreen()),
+
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,

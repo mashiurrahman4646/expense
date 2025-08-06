@@ -85,7 +85,9 @@ class LoginScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.toNamed(AppRoutes.forgetPassword);
+                  },
                   child: Text(
                     'Forgot Password?',
                     style: AppTextStyles.bodySmall.copyWith(

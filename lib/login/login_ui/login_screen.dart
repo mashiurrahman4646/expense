@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:your_expense/routes/app_routes.dart';
 import 'package:your_expense/text_styles.dart';
-
 import '../../colors/app_colors.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -53,8 +51,6 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Password Field
-              Text('Password', style: AppTextStyles.inputLabel),
-              const SizedBox(height: 8),
               Obx(() => TextField(
                 obscureText: !isPasswordVisible.value,
                 decoration: InputDecoration(
@@ -102,7 +98,9 @@ class LoginScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.offNamed(AppRoutes.mainHome); // Navigate to MainHomeScreen
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary500,
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -120,7 +118,7 @@ class LoginScreen extends StatelessWidget {
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: () {
-                    Get.toNamed(AppRoutes.faceLogin);
+                    Get.offNamed(AppRoutes.faceLogin);
                   },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),

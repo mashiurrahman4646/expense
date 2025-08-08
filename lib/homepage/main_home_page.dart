@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-
 import 'main_home_page_controller.dart';
+import '../routes/app_routes.dart';
 
 class MainHomeScreen extends StatelessWidget {
   @override
@@ -33,10 +31,11 @@ class MainHomeScreen extends StatelessWidget {
                         border: Border.all(color: Colors.grey.shade300, width: 1),
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(screenWidth * 0.06),
+                        borderRadius: BorderRadius.all(Radius.circular(60)),
                         child: Image.asset(
+                          // Using the custom profile picture asset
                           'assets/images/profile_pic.png',
-                          fit: BoxFit.cover,
+                          fit: BoxFit.cover, // Ensure the image fills the circular space
                         ),
                       ),
                     ),
@@ -78,18 +77,14 @@ class MainHomeScreen extends StatelessWidget {
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
-                              Image.asset(
-                                'assets/icons/notification_.png',
-                                width: screenWidth * 0.06,
-                                height: screenWidth * 0.06,
-                              ),
+                              const Icon(Icons.notifications_none, color: Colors.grey),
                               Positioned(
                                 right: 0,
                                 top: 0,
                                 child: Container(
                                   width: screenWidth * 0.02,
                                   height: screenWidth * 0.02,
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: Colors.red,
                                     shape: BoxShape.circle,
                                   ),
@@ -110,7 +105,7 @@ class MainHomeScreen extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenHeight * 0.01),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Color(0xFF2196F3)),
+                        border: Border.all(color: const Color(0xFF2196F3)),
                         borderRadius: BorderRadius.circular(screenWidth * 0.03),
                       ),
                       child: Row(
@@ -119,13 +114,13 @@ class MainHomeScreen extends StatelessWidget {
                             controller.getCurrentMonth(),
                             style: TextStyle(
                               fontSize: screenWidth * 0.035,
-                              color: Color(0xFF2196F3),
+                              color: const Color(0xFF2196F3),
                             ),
                           ),
                           SizedBox(width: screenWidth * 0.01),
                           Icon(
                             Icons.arrow_drop_down,
-                            color: Color(0xFF2196F3),
+                            color: const Color(0xFF2196F3),
                             size: screenWidth * 0.04,
                           ),
                         ],
@@ -134,11 +129,11 @@ class MainHomeScreen extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: screenHeight * 0.03),
-                // Available Balance Card - FIXED LAYOUT
+                // Available Balance Card
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                       colors: [Color(0xFF4A90E2), Color(0xFF357ABD)],
                     ),
                     borderRadius: BorderRadius.circular(screenWidth * 0.04),
@@ -147,7 +142,6 @@ class MainHomeScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Available Balance Header
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -164,7 +158,6 @@ class MainHomeScreen extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: screenHeight * 0.02),
-                      // Balance Amount - Centered
                       Center(
                         child: Obx(() => Text(
                           '\$${controller.availableBalance.value}',
@@ -176,25 +169,24 @@ class MainHomeScreen extends StatelessWidget {
                         )),
                       ),
                       SizedBox(height: screenHeight * 0.03),
-                      // Stats Row - FIXED ICONS
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(child: Obx(() => _buildStatCard('Income', '\$${controller.income.value}', 'assets/icons/up.png', '+15%', Colors.green, screenWidth))),
+                          Expanded(child: Obx(() => _buildStatCard('Income', '\$${controller.income.value}', Icons.arrow_upward, Colors.green, screenWidth))),
                           SizedBox(width: screenWidth * 0.04),
-                          Expanded(child: Obx(() => _buildStatCard('Expense', '\$${controller.expense.value}', 'assets/icons/down.png', '+15%', Colors.orange, screenWidth))),
+                          Expanded(child: Obx(() => _buildStatCard('Expense', '\$${controller.expense.value}', Icons.arrow_downward, Colors.orange, screenWidth))),
                           SizedBox(width: screenWidth * 0.04),
-                          Expanded(child: Obx(() => _buildStatCard('Savings', '\$${controller.savings.value}', 'assets/icons/add.png', '+15%', Colors.white, screenWidth))),
+                          Expanded(child: Obx(() => _buildStatCard('Savings', '\$${controller.savings.value}', Icons.add, Colors.white, screenWidth))),
                         ],
                       ),
                     ],
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.03),
-                // Monthly Budget Section
+                // Monthly Budget Section - Updated with proper navigation
                 Container(
                   decoration: BoxDecoration(
-                    color: Color(0xFFF8F9FA),
+                    color: const Color(0xFFF8F9FA),
                     borderRadius: BorderRadius.circular(screenWidth * 0.04),
                   ),
                   padding: EdgeInsets.all(screenWidth * 0.05),
@@ -206,8 +198,8 @@ class MainHomeScreen extends StatelessWidget {
                         children: [
                           Text('Monthly Budget', style: TextStyle(fontSize: screenWidth * 0.045, fontWeight: FontWeight.w600)),
                           GestureDetector(
-                            onTap: () => controller.navigateToEditBudget(),
-                            child: Text('Edit', style: TextStyle(color: Color(0xFF2196F3), fontSize: screenWidth * 0.035)),
+                            onTap: () => controller.navigateToMonthlyBudget(),
+                            child: Text('Edit', style: TextStyle(color: const Color(0xFF2196F3), fontSize: screenWidth * 0.035)),
                           ),
                         ],
                       ),
@@ -219,7 +211,7 @@ class MainHomeScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: screenWidth * 0.06,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF2196F3),
+                              color: const Color(0xFF2196F3),
                             ),
                           )),
                           SizedBox(width: screenWidth * 0.02),
@@ -236,7 +228,7 @@ class MainHomeScreen extends StatelessWidget {
                         width: double.infinity,
                         height: screenHeight * 0.01,
                         decoration: BoxDecoration(
-                          color: Color(0xFFC0C0C0),
+                          color: const Color(0xFFC0C0C0),
                           borderRadius: BorderRadius.circular(screenWidth * 0.02),
                         ),
                         child: Stack(
@@ -245,7 +237,7 @@ class MainHomeScreen extends StatelessWidget {
                               width: screenWidth * 0.8 * (controller.spentPercentage.value / 100),
                               height: screenHeight * 0.01,
                               decoration: BoxDecoration(
-                                color: Color(0xFF2196F3),
+                                color: const Color(0xFF2196F3),
                                 borderRadius: BorderRadius.circular(screenWidth * 0.02),
                               ),
                             ),
@@ -257,11 +249,11 @@ class MainHomeScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Obx(() => Text(
-                            'Spent \$${controller.spentAmount.value}/${controller.spentPercentage.value}%',
+                            'Spent \$${controller.spentAmount.value}/${controller.spentPercentage.value.toStringAsFixed(0)}%',
                             style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w500, fontSize: screenWidth * 0.035),
                           )),
                           Obx(() => Text(
-                            'Left \$${controller.leftAmount.value}/${controller.leftPercentage.value}%',
+                            'Left \$${controller.leftAmount.value}/${controller.leftPercentage.value.toStringAsFixed(0)}%',
                             style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w500, fontSize: screenWidth * 0.035),
                           )),
                         ],
@@ -273,7 +265,7 @@ class MainHomeScreen extends StatelessWidget {
                 // Rate App Section
                 Container(
                   decoration: BoxDecoration(
-                    color: Color(0xFFF8F9FA),
+                    color: const Color(0xFFF8F9FA),
                     borderRadius: BorderRadius.circular(screenWidth * 0.04),
                   ),
                   padding: EdgeInsets.all(screenWidth * 0.06),
@@ -301,10 +293,11 @@ class MainHomeScreen extends StatelessWidget {
                             padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
                             child: GestureDetector(
                               onTap: () => controller.setStarRating(index + 1),
-                              child: Icon(
-                                Icons.star,
-                                size: screenWidth * 0.07,
-                                color: index < controller.starRating.value ? Color(0xFF2196F3) : Colors.grey.shade400,
+                              child: Image.asset(
+                                'assets/icons/star.png', // Using the custom star image
+                                width: screenWidth * 0.07,
+                                height: screenWidth * 0.07,
+                                color: index < controller.starRating.value ? const Color(0xFF2196F3) : Colors.grey.shade400,
                               ),
                             ),
                           );
@@ -317,7 +310,7 @@ class MainHomeScreen extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () => controller.shareExperience(),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF2196F3),
+                            backgroundColor: const Color(0xFF2196F3),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(screenWidth * 0.03)),
                           ),
                           child: Text(
@@ -337,32 +330,26 @@ class MainHomeScreen extends StatelessWidget {
                     Text('Recent Transaction', style: TextStyle(fontSize: screenWidth * 0.045, fontWeight: FontWeight.w600)),
                     GestureDetector(
                       onTap: () => controller.viewAllTransactions(),
-                      child: Text('View all', style: TextStyle(color: Color(0xFF2196F3), fontSize: screenWidth * 0.035)),
+                      child: Text('View all', style: TextStyle(color: const Color(0xFF2196F3), fontSize: screenWidth * 0.035)),
                     ),
                   ],
                 ),
                 SizedBox(height: screenHeight * 0.02),
-                Container(
-                  decoration: BoxDecoration(color: Color(0xFFF8F9FA), borderRadius: BorderRadius.circular(screenWidth * 0.03)),
-                  child: Obx(() => Column(
-                    children: controller.recentTransactions.asMap().entries.map((entry) {
-                      int index = entry.key;
-                      var transaction = entry.value;
-                      return Column(
-                        children: [
-                          if (index > 0) Divider(height: 1, color: Colors.grey.shade300),
-                          _buildTransactionItem(
-                            transaction['title'],
-                            transaction['time'],
-                            transaction['amount'],
-                            transaction['isIncome'],
-                            screenWidth,
-                          ),
-                        ],
-                      );
-                    }).toList(),
-                  )),
-                ),
+                Obx(() => Column(
+                  children: controller.recentTransactions.asMap().entries.map((entry) {
+                    var transaction = entry.value;
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: screenHeight * 0.015),
+                      child: _buildTransactionItem(
+                        transaction['title'] as String,
+                        transaction['time'] as String,
+                        transaction['amount'] as String,
+                        transaction['isIncome'] as bool,
+                        screenWidth,
+                      ),
+                    );
+                  }).toList(),
+                )),
                 SizedBox(height: screenHeight * 0.03),
               ],
             ),
@@ -376,21 +363,28 @@ class MainHomeScreen extends StatelessWidget {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 10,
-            offset: Offset(0, -2),
+            offset: const Offset(0, -2),
           ),
         ]),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildNavItem(0, 'assets/icons/home.png', 'Home', screenWidth),
+            _buildNavItem(0, 'assets/icons/home (2).png', 'Home', screenWidth),
             _buildNavItem(1, 'assets/icons/analysis.png', 'Analytics', screenWidth),
             GestureDetector(
               onTap: () => controller.navigateToAddTransaction(),
               child: Container(
                 width: screenWidth * 0.14,
                 height: screenWidth * 0.14,
-                decoration: BoxDecoration(color: Color(0xFF2196F3), shape: BoxShape.circle),
-                child: Icon(Icons.add, color: Colors.white, size: screenWidth * 0.06),
+                decoration: const BoxDecoration(color: Color(0xFF2196F3), shape: BoxShape.circle),
+                child: Center(
+                  child: Image.asset(
+                    'assets/icons/plus.png',
+                    width: screenWidth * 0.06,
+                    height: screenWidth * 0.06,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
             _buildNavItem(2, 'assets/icons/compare.png', 'Comparison', screenWidth),
@@ -401,13 +395,13 @@ class MainHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String title, String amount, String iconPath, String percentage, Color color, double screenWidth) {
+  Widget _buildStatCard(String title, String amount, IconData icon, Color color, double screenWidth) {
     return Container(
       height: screenWidth * 0.23,
       decoration: BoxDecoration(
-        color: Color(0xFF2A6EBB).withOpacity(0.5),
+        color: const Color(0xFF2A6EBB).withOpacity(0.5),
         borderRadius: BorderRadius.circular(screenWidth * 0.02),
-        border: Border.all(color: Color(0xFF919191).withOpacity(0.3), width: 0.2),
+        border: Border.all(color: const Color(0xFF919191).withOpacity(0.3), width: 0.2),
       ),
       padding: EdgeInsets.symmetric(vertical: screenWidth * 0.02, horizontal: screenWidth * 0.03),
       child: Column(
@@ -434,15 +428,14 @@ class MainHomeScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                iconPath,
-                width: screenWidth * 0.05,
-                height: screenWidth * 0.05,
+              Icon(
+                icon,
+                size: screenWidth * 0.05,
                 color: color,
               ),
               SizedBox(width: screenWidth * 0.01),
               Text(
-                percentage,
+                '+15%',
                 style: TextStyle(
                   color: color,
                   fontSize: screenWidth * 0.035,
@@ -457,44 +450,52 @@ class MainHomeScreen extends StatelessWidget {
   }
 
   Widget _buildTransactionItem(String title, String time, String amount, bool isIncome, double screenWidth) {
-    return Container(
-      padding: EdgeInsets.all(screenWidth * 0.04),
-      child: Row(
-        children: [
-          Container(
-            width: screenWidth * 0.1,
-            height: screenWidth * 0.1,
-            decoration: BoxDecoration(
-              color: (isIncome ? Color(0xFF88C999) : Color(0xFFFFC12B)).withOpacity(0.2),
-              borderRadius: BorderRadius.circular(screenWidth * 0.02),
-            ),
-            child: Center(
-              child: Icon(
-                isIncome ? Icons.arrow_upward : Icons.arrow_downward,
-                size: screenWidth * 0.05,
-                color: isIncome ? Color(0xFF88C999) : Color(0xFFFFC12B),
+    return Card(
+      color: Colors.white, // Ensure the card background is white
+      elevation: 0.5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(screenWidth * 0.03),
+      ),
+      margin: EdgeInsets.zero,
+      child: Container(
+        padding: EdgeInsets.all(screenWidth * 0.04),
+        child: Row(
+          children: [
+            Container(
+              width: screenWidth * 0.1,
+              height: screenWidth * 0.1,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100, // Use a subtle grey for the icon's background
+                borderRadius: BorderRadius.circular(screenWidth * 0.02),
+              ),
+              child: Center(
+                child: Icon(
+                  isIncome ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
+                  size: screenWidth * 0.05,
+                  color: isIncome ? const Color(0xFF4CAF50) : const Color(0xFFF57C00),
+                ),
               ),
             ),
-          ),
-          SizedBox(width: screenWidth * 0.03),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: TextStyle(fontSize: screenWidth * 0.04, fontWeight: FontWeight.w600)),
-                Text(time, style: TextStyle(color: Colors.grey.shade600, fontSize: screenWidth * 0.035)),
-              ],
+            SizedBox(width: screenWidth * 0.03),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(fontSize: screenWidth * 0.04, fontWeight: FontWeight.w600)),
+                  Text(time, style: TextStyle(color: Colors.grey.shade600, fontSize: screenWidth * 0.035)),
+                ],
+              ),
             ),
-          ),
-          Text(
-            '${isIncome ? '+' : '-'}$amount',
-            style: TextStyle(
-              color: isIncome ? Color(0xFF88C999) : Color(0xFFFFC12B),
-              fontWeight: FontWeight.w600,
-              fontSize: screenWidth * 0.035,
+            Text(
+              '${isIncome ? '+' : '-'}\$$amount',
+              style: TextStyle(
+                color: isIncome ? const Color(0xFF4CAF50) : const Color(0xFFF57C00),
+                fontWeight: FontWeight.w600,
+                fontSize: screenWidth * 0.035,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -511,19 +512,21 @@ class MainHomeScreen extends StatelessWidget {
             iconPath,
             width: screenWidth * 0.06,
             height: screenWidth * 0.06,
-            color: isActive ? Color(0xFF2196F3) : Colors.grey.shade600,
+            // The color property is used to blend with the image. We'll use a color filter
+            // to maintain the active/inactive state of the icon.
+            color: isActive ? const Color(0xFF2196F3) : Colors.grey.shade600,
           ),
           SizedBox(height: screenWidth * 0.015),
           Text(
             label,
             style: TextStyle(
               fontSize: screenWidth * 0.03,
-              color: isActive ? Color(0xFF2196F3) : Colors.grey.shade600,
+              color: isActive ? const Color(0xFF2196F3) : Colors.grey.shade600,
             ),
           ),
           if (isActive) ...[
             SizedBox(height: screenWidth * 0.005),
-            Container(width: screenWidth * 0.05, height: 2, color: Color(0xFF2196F3)),
+            Container(width: screenWidth * 0.05, height: 2, color: const Color(0xFF2196F3)),
           ]
         ],
       ),

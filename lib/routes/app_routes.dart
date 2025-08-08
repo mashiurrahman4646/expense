@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:your_expense/colors/app_colors.dart';
+import 'package:flutter/material.dart';
+
+// Import all the screens you need to route to
 import '../Analytics/main_analytics_screen.dart';
 import '../Comparison/main_Comparison_screen.dart';
 import '../Facelogin/face_login.dart';
@@ -12,13 +13,17 @@ import '../faceidverification/faceverificatio_for_reg/SignupfaceVerificationScre
 import '../faceidverification/faceverificatio_for_reg/face_confirmation_screen.dart';
 import '../forget_password/forget_password_code/forget_password_screen.dart';
 import '../forget_password/forget_password_email/forget_password_otp_screen.dart';
+import '../forget_password/set_new_password/set_new_password_screen.dart';
 import '../forget_password/set_new_password/set_new_password_screen_controller.dart';
+import '../homepage/edit/edit_ui.dart';
 import '../homepage/main_home_page.dart';
 import '../homepage/notification/notification_ui.dart';
+import '../homepage/share_exp/share_exp_screen.dart';
+import '../homepage/view all/view_ui.dart';
 import '../login/login_ui/login_screen.dart';
 import '../onbaording/onboarding_ui/onboarding_screen.dart';
 import '../tram_and_condition/trams_and_condition_screen.dart';
- // Add this import
+// Import the new screen
 
 class AppRoutes {
   // Route constants
@@ -26,10 +31,11 @@ class AppRoutes {
   static const String comparison = '/comparison';
   static const String settings = '/settings';
   static const String addTransaction = '/addTransaction';
-  static const String notification = '/notification'; // Already exists
+  static const String notification = '/notification';
   static const String editBudget = '/editBudget';
+  static const String monthlyBudget = '/monthlyBudget';
   static const String shareExperience = '/shareExperience';
-  static const String allTransactions = '/allTransactions';
+  static const String allTransactions = '/allTransactions'; // New route for all transactions
   static const initial = '/onboarding';
   static const login = '/login';
   static const faceLogin = '/faceLogin';
@@ -60,7 +66,9 @@ class AppRoutes {
     GetPage(name: comparison, page: () => ComparisonScreen()),
     GetPage(name: settings, page: () => SettingsScreen()),
     GetPage(name: addTransaction, page: () => AddTransactionScreen()),
-
-    // Add other routes as needed
+    GetPage(name: notification, page: () => NotificationScreen()),
+    GetPage(name: monthlyBudget, page: () => MonthlyBudgetScreen()),
+    GetPage(name: shareExperience, page: () => const RateAndImproveScreen()),
+    GetPage(name: allTransactions, page: () => const AllTransactionsScreen()), // Register the new route
   ];
 }

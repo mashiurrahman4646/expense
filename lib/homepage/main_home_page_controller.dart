@@ -1,7 +1,8 @@
 import 'package:get/get.dart';
+import '../routes/app_routes.dart';
 
 class HomeController extends GetxController {
-  var selectedNavIndex = 0.obs; // Default to Home
+  var selectedNavIndex = 0.obs;
   var starRating = 0.obs;
 
   var availableBalance = 15000.obs;
@@ -24,67 +25,52 @@ class HomeController extends GetxController {
 
   String getCurrentMonth() {
     final now = DateTime.now();
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
-      'September', 'October', 'November', 'December'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'];
     return months[now.month - 1];
   }
 
+  // Navigation methods
   void navigateToNotification() {
-    Get.toNamed('/notification');
+    Get.toNamed(AppRoutes.notification);
   }
 
-  void navigateToEditBudget() {
-    Get.toNamed('/editBudget');
+  void navigateToMonthlyBudget() {
+    Get.toNamed(AppRoutes.monthlyBudget);
   }
 
   void navigateToAddTransaction() {
-    Get.toNamed('/addTransaction');
+    Get.toNamed(AppRoutes.addTransaction);
   }
 
+  // This is the updated method that navigates to the new screen.
   void shareExperience() {
-    Get.toNamed('/shareExperience');
+    Get.toNamed(AppRoutes.shareExperience);
   }
 
   void viewAllTransactions() {
-    Get.toNamed('/allTransactions');
+    Get.toNamed(AppRoutes.allTransactions);
   }
 
   void setStarRating(int rating) {
-    starRating.value = rating == starRating.value ? 0 : rating; // Toggle to 0 if same star, otherwise set new rating
+    starRating.value = rating == starRating.value ? 0 : rating;
   }
 
-  // FIXED: Proper navigation index handling
   void changeNavIndex(int index) {
     selectedNavIndex.value = index;
-
     switch (index) {
-      case 0:
-      // Stay on home, just update index
+      case 0: // Home
         break;
-      case 1:
-        Get.toNamed('/analytics')?.then((_) {
-          // Reset to home index when returning from analytics
-          selectedNavIndex.value = 0;
-        });
+      case 1: // Analytics
+        Get.toNamed(AppRoutes.analytics)?.then((_) => selectedNavIndex.value = 0);
         break;
-      case 2:
-        Get.toNamed('/comparison')?.then((_) {
-          // Reset to home index when returning from comparison
-          selectedNavIndex.value = 0;
-        });
+      case 2: // Comparison
+        Get.toNamed(AppRoutes.comparison)?.then((_) => selectedNavIndex.value = 0);
         break;
-      case 3:
-        Get.toNamed('/settings')?.then((_) {
-          // Reset to home index when returning from settings
-          selectedNavIndex.value = 0;
-        });
+      case 3: // Settings
+        Get.toNamed(AppRoutes.settings)?.then((_) => selectedNavIndex.value = 0);
         break;
     }
-  }
-
-  // FIXED: Method to set nav index from external pages
-  void setNavIndex(int index) {
-    selectedNavIndex.value = index;
   }
 
   void addTransaction(String title, String amount, bool isIncome) {
@@ -102,24 +88,6 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    selectedNavIndex.value = 0; // Default to Home on init
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-    // Ensure we're on the home tab when this controller is ready
-    selectedNavIndex.value = 0;
-  }
-
-  // FIXED: Add method to handle back navigation
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  // Method to be called when returning to home from other pages
-  void returnToHome() {
     selectedNavIndex.value = 0;
   }
 }

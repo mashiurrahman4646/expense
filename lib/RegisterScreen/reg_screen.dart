@@ -25,7 +25,6 @@ class RegistrationScreen extends StatelessWidget {
             color: Colors.black,
           ),
           onPressed: () => Get.offAll(() => LoginScreen()),
-
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -96,8 +95,12 @@ class RegistrationScreen extends StatelessWidget {
                     return;
                   }
 
-                  print("Continue button pressed and terms accepted");
-                  Get.toNamed('/faceVerification');
+                  // Validate form fields
+                  if (controller.validateForm()) {
+                    print("Continue button pressed and terms accepted");
+                    // Navigate to email verification instead of face verification
+                    Get.toNamed('/emailVerification');
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary500,
@@ -167,6 +170,7 @@ class RegistrationScreen extends StatelessWidget {
           height: 32,
           child: Stack(
             children: [
+              // Background line
               Positioned(
                 top: 15,
                 left: 0,
@@ -176,52 +180,74 @@ class RegistrationScreen extends StatelessWidget {
                   color: Colors.grey[300],
                 ),
               ),
+              // Progress line (only first step active)
               Positioned(
                 top: 15,
                 left: 0,
                 child: Container(
-                  width: screenWidth * 0.5,
+                  width: screenWidth * 0.25,
                   height: 2,
                   color: AppColors.primary500,
                 ),
               ),
+              // Step 1 Circle (Registration - Active)
               Positioned(
-                left: (screenWidth * 0.2) - 12,
+                left: (screenWidth * 0.15) - 12,
                 top: 4,
                 child: _buildStepCircle(1, true),
               ),
+              // Step 2 Circle (Email Verification - Inactive)
               Positioned(
-                left: (screenWidth * 0.7) - 12,
+                left: (screenWidth * 0.5) - 12,
                 top: 4,
                 child: _buildStepCircle(2, false),
+              ),
+              // Step 3 Circle (Face Verification - Inactive)
+              Positioned(
+                left: (screenWidth * 0.85) - 12,
+                top: 4,
+                child: _buildStepCircle(3, false),
               ),
             ],
           ),
         ),
         const SizedBox(height: 8),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              width: screenWidth * 0.4,
+              width: screenWidth * 0.25,
               child: const Text(
                 'Registration',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 10,
                   color: AppColors.primary500,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ),
-            const Expanded(child: SizedBox()),
             Container(
-              width: screenWidth * 0.3,
-              child: Text(
-                'FaceID',
+              width: screenWidth * 0.25,
+              child: const Text(
+                'Verification',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 10,
                   color: Colors.grey,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+            Container(
+              width: screenWidth * 0.25,
+              child: const Text(
+                'Face ID',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),

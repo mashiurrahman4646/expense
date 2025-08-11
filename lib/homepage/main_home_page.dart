@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'main_home_page_controller.dart';
+
 import '../routes/app_routes.dart';
+import 'main_home_page_controller.dart';
 
 class MainHomeScreen extends StatelessWidget {
   @override
@@ -33,9 +34,8 @@ class MainHomeScreen extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.all(Radius.circular(60)),
                         child: Image.asset(
-                          // Using the custom profile picture asset
                           'assets/images/profile_pic.png',
-                          fit: BoxFit.cover, // Ensure the image fills the circular space
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
@@ -183,7 +183,7 @@ class MainHomeScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.03),
-                // Monthly Budget Section - Updated with proper navigation
+                // Monthly Budget Section
                 Container(
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8F9FA),
@@ -294,7 +294,7 @@ class MainHomeScreen extends StatelessWidget {
                             child: GestureDetector(
                               onTap: () => controller.setStarRating(index + 1),
                               child: Image.asset(
-                                'assets/icons/star.png', // Using the custom star image
+                                'assets/icons/star.png',
                                 width: screenWidth * 0.07,
                                 height: screenWidth * 0.07,
                                 color: index < controller.starRating.value ? const Color(0xFF2196F3) : Colors.grey.shade400,
@@ -451,7 +451,7 @@ class MainHomeScreen extends StatelessWidget {
 
   Widget _buildTransactionItem(String title, String time, String amount, bool isIncome, double screenWidth) {
     return Card(
-      color: Colors.white, // Ensure the card background is white
+      color: Colors.white,
       elevation: 0.5,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(screenWidth * 0.03),
@@ -465,7 +465,7 @@ class MainHomeScreen extends StatelessWidget {
               width: screenWidth * 0.1,
               height: screenWidth * 0.1,
               decoration: BoxDecoration(
-                color: Colors.grey.shade100, // Use a subtle grey for the icon's background
+                color: Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(screenWidth * 0.02),
               ),
               child: Center(
@@ -512,8 +512,6 @@ class MainHomeScreen extends StatelessWidget {
             iconPath,
             width: screenWidth * 0.06,
             height: screenWidth * 0.06,
-            // The color property is used to blend with the image. We'll use a color filter
-            // to maintain the active/inactive state of the icon.
             color: isActive ? const Color(0xFF2196F3) : Colors.grey.shade600,
           ),
           SizedBox(height: screenWidth * 0.015),

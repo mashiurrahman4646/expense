@@ -1,11 +1,15 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
-// Import all the screens you need to route to
+// Import all screens
+import '../Analytics/expenses_screen.dart';
+import '../Analytics/income_screen.dart';
 import '../Analytics/main_analytics_screen.dart';
+import '../Analytics/uplod_drive.dart';
 import '../Comparison/main_Comparison_screen.dart';
 import '../Facelogin/face_login.dart';
 import '../RegisterScreen/reg_screen.dart';
+import '../RegisterScreen/verification.dart';
 import '../Settings/main_setting_screen.dart';
 import '../add_exp/main_add_exp_screen.dart';
 import '../faceidverification/face_verification_screen.dart';
@@ -23,7 +27,7 @@ import '../homepage/view all/view_ui.dart';
 import '../login/login_ui/login_screen.dart';
 import '../onbaording/onboarding_ui/onboarding_screen.dart';
 import '../tram_and_condition/trams_and_condition_screen.dart';
-// Import the new screen
+ // Add this import
 
 class AppRoutes {
   // Route constants
@@ -35,19 +39,24 @@ class AppRoutes {
   static const String editBudget = '/editBudget';
   static const String monthlyBudget = '/monthlyBudget';
   static const String shareExperience = '/shareExperience';
-  static const String allTransactions = '/allTransactions'; // New route for all transactions
-  static const initial = '/onboarding';
-  static const login = '/login';
-  static const faceLogin = '/faceLogin';
-  static const signupVerification = '/signupVerification';
-  static const faceVerification = '/faceVerification';
-  static const register = '/register';
-  static const termsConditions = '/termsConditions';
-  static const faceConfirmation = '/faceConfirmation';
-  static const forgetPassword = '/forgetPassword';
-  static const otpVerification = '/otpVerification';
-  static const setNewPassword = '/setNewPassword';
-  static const mainHome = '/mainHome';
+  static const String allTransactions = '/allTransactions';
+  static const String expensesScreen = '/expensesScreen';
+  static const String incomeScreen = '/incomeScreen';
+  static const String uploadToDrive = '/uploadToDrive';
+  static const String initial = '/onboarding';
+  static const String login = '/login';
+  static const String faceLogin = '/faceLogin';
+  static const String signupVerification = '/signupVerification';
+  static const String faceVerification = '/faceVerification';
+  static const String register = '/register';
+  static const String termsConditions = '/termsConditions';
+  static const String faceConfirmation = '/faceConfirmation';
+  static const String forgetPassword = '/forgetPassword';
+  static const String otpVerification = '/otpVerification';
+  static const String setNewPassword = '/setNewPassword';
+  static const String mainHome = '/mainHome';
+  static const String verification = '/verification';
+  static const String emailVerification = '/emailVerification'; // Add this route
 
   static final routes = [
     GetPage(name: initial, page: () => OnboardingScreen()),
@@ -69,6 +78,10 @@ class AppRoutes {
     GetPage(name: notification, page: () => NotificationScreen()),
     GetPage(name: monthlyBudget, page: () => MonthlyBudgetScreen()),
     GetPage(name: shareExperience, page: () => const RateAndImproveScreen()),
-    GetPage(name: allTransactions, page: () => const AllTransactionsScreen()), // Register the new route
+    GetPage(name: allTransactions, page: () => const AllTransactionsScreen()),
+    GetPage(name: expensesScreen, page: () => ExpenseListScreen()),
+    GetPage(name: incomeScreen, page: () => IncomeListScreen()),
+    GetPage(name: uploadToDrive, page: () => UploadToDriveScreen()),
+    GetPage(name: emailVerification, page: () => EmailVerificationScreen()), // Add this route
   ];
 }

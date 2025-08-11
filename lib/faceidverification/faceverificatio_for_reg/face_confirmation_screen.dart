@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../routes/app_routes.dart'; // Make sure to import your routes
 
 class FaceConfirmationScreen extends StatelessWidget {
   @override
@@ -52,7 +53,10 @@ class FaceConfirmationScreen extends StatelessWidget {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () => Get.back(), // You can navigate elsewhere
+                onPressed: () {
+                  // Navigate to home page and remove all previous routes
+                  Get.offAllNamed(AppRoutes.mainHome);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3787F2), // Or match Figma blue
                   foregroundColor: Colors.white,

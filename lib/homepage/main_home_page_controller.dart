@@ -43,7 +43,6 @@ class HomeController extends GetxController {
     Get.toNamed(AppRoutes.addTransaction);
   }
 
-  // This is the updated method that navigates to the new screen.
   void shareExperience() {
     Get.toNamed(AppRoutes.shareExperience);
   }
@@ -57,18 +56,22 @@ class HomeController extends GetxController {
   }
 
   void changeNavIndex(int index) {
+    if (selectedNavIndex.value == index) return;
+
     selectedNavIndex.value = index;
+
     switch (index) {
       case 0: // Home
+        Get.offAllNamed(AppRoutes.mainHome);
         break;
       case 1: // Analytics
-        Get.toNamed(AppRoutes.analytics)?.then((_) => selectedNavIndex.value = 0);
+        Get.offAllNamed(AppRoutes.analytics);
         break;
       case 2: // Comparison
-        Get.toNamed(AppRoutes.comparison)?.then((_) => selectedNavIndex.value = 0);
+        Get.offAllNamed(AppRoutes.comparison);
         break;
       case 3: // Settings
-        Get.toNamed(AppRoutes.settings)?.then((_) => selectedNavIndex.value = 0);
+        Get.offAllNamed(AppRoutes.settings);
         break;
     }
   }

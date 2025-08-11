@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../routes/app_routes.dart';
+
 class FaceLoginController extends GetxController {
   bool _isVerifying = false;
   bool _isVerificationComplete = false;
@@ -37,6 +39,9 @@ class FaceLoginController extends GetxController {
     // - Update user login state
 
     print('Face verification successful!');
+
+    // Navigate to main home screen
+    Get.offAllNamed(AppRoutes.mainHome);
 
     // Example: You can call your login API here
     // await _authService.loginWithFace();

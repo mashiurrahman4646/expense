@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'dart:async';
 import '../../colors/app_colors.dart';
 import 'face_login_controller.dart';
+import '../../routes/app_routes.dart';
 
 class FaceLoginScreen extends StatefulWidget {
   @override
@@ -77,11 +78,6 @@ class _FaceLoginScreenState extends State<FaceLoginScreen>
     Timer(const Duration(seconds: 5), () {
       if (mounted) {
         controller.completeVerification();
-        Timer(const Duration(seconds: 2), () {
-          if (mounted) {
-            Get.back();
-          }
-        });
       }
     });
   }
@@ -145,7 +141,7 @@ class _FaceLoginScreenState extends State<FaceLoginScreen>
               ),
 
             // Top Instructions
-            if (!controller.isVerifying && !controller.isVerificationComplete)
+            if (!controller.isVerifying)
               Positioned(
                 top: 100,
                 left: 20,
@@ -207,7 +203,7 @@ class _FaceLoginScreenState extends State<FaceLoginScreen>
                         ),
                       ),
                     const SizedBox(height: 20),
-                    if (!controller.isVerifying && !controller.isVerificationComplete)
+                    if (!controller.isVerifying)
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -257,63 +253,6 @@ class _FaceLoginScreenState extends State<FaceLoginScreen>
                 ),
               ),
             ),
-
-            // Verification Complete Overlay
-            if (controller.isVerificationComplete)
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withOpacity(0.8),
-                  child: Center(
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 40),
-                      padding: const EdgeInsets.all(30),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(40),
-                            ),
-                            child: const Icon(
-                              Icons.check,
-                              color: Colors.white,
-                              size: 50,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          const Text(
-                            'Verification Done!',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            'Face authentication successful',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF6B7280),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
           ],
         ),
       ),
@@ -321,7 +260,6 @@ class _FaceLoginScreenState extends State<FaceLoginScreen>
   }
 }
 
-// NEW APPROACH: Using a widget-based overlay instead of CustomPainter
 class FaceOverlayWidget extends StatelessWidget {
   final Size screenSize;
   final double progress;
@@ -366,7 +304,6 @@ class FaceOverlayWidget extends StatelessWidget {
   }
 }
 
-// Custom clipper to create a hole in the overlay
 class CircleHoleClipper extends CustomClipper<Path> {
   final Offset center;
   final double radius;
@@ -390,7 +327,6 @@ class CircleHoleClipper extends CustomClipper<Path> {
   }
 }
 
-// Separate painter for circle border and progress
 class CircleBorderPainter extends CustomPainter {
   final Offset center;
   final double radius;

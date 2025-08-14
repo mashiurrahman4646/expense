@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../routes/app_routes.dart'; // Import the updated AppRoutes class
+import '../routes/app_routes.dart';
 
 class AnalyticsController extends GetxController {
   var selectedChartType = 0.obs; // 0=Pie, 1=Bar, 2=Line
@@ -79,8 +79,15 @@ class AnalyticsController extends GetxController {
     Get.toNamed(AppRoutes.settings);
   }
 
-  void navigateToAddTransaction() {
-    Get.toNamed(AppRoutes.addTransaction);
+  // These methods were removed because the routes they call no longer exist.
+  // The correct way to add a transaction is via the single `addTransaction` route.
+
+  void navigateToAddProExpense() {
+
+  }
+
+  void navigateToAddProIncome() {
+
   }
 
   List<String> get chartTypes => ['Pie Chart', 'Bar Chart', 'Line chart'];

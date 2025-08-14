@@ -372,7 +372,8 @@ class MainHomeScreen extends StatelessWidget {
             _buildNavItem(0, 'assets/icons/home (2).png', 'Home', screenWidth),
             _buildNavItem(1, 'assets/icons/analysis.png', 'Analytics', screenWidth),
             GestureDetector(
-              onTap: () => controller.navigateToAddTransaction(),
+              // FIX: This line has been updated to use the new unified method.
+              onTap: () => controller.navigateToAddTransaction(isExpense: true),
               child: Container(
                 width: screenWidth * 0.14,
                 height: screenWidth * 0.14,

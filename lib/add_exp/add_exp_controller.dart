@@ -9,6 +9,9 @@ class AddTransactionController extends GetxController {
 
   void toggleTransactionType(bool isExpense) {
     isExpenseSelected.value = isExpense;
+    selectedCategory.value = '';
+    selectedPaymentMethod.value = '';
+    amountController.clear();
   }
 
   void selectCategory(String category) {
@@ -41,6 +44,18 @@ class AddTransactionController extends GetxController {
       colorText: Colors.green.shade800,
     );
     Get.back();
+  }
+
+  void navigateToComparisonPage() {
+    Get.toNamed('/comparison');
+    Get.snackbar(
+      'Video Feature',
+      'Opening video to unlock features...',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.blue.shade100,
+      colorText: Colors.blue.shade800,
+      duration: const Duration(seconds: 1),
+    );
   }
 
   @override

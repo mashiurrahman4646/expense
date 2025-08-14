@@ -54,7 +54,7 @@ class AnalyticsScreen extends StatelessWidget {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
-      automaticallyImplyLeading: false, // This line removes the back button.
+      automaticallyImplyLeading: false,
       title: Text(
         'Analytics',
         style: TextStyle(
@@ -412,7 +412,8 @@ class AnalyticsScreen extends StatelessWidget {
           _buildImageNavItem(homeCtrl, 0, 'assets/icons/home (2).png', 'Home', screenWidth),
           _buildImageNavItem(homeCtrl, 1, 'assets/icons/analysis.png', 'Analytics', screenWidth),
           GestureDetector(
-            onTap: controller.navigateToAddTransaction,
+            // FIX: This line has been updated to use the HomeController's new method.
+            onTap: () => homeCtrl.navigateToAddTransaction(isExpense: true),
             child: Container(
               width: screenWidth * 0.14,
               height: screenWidth * 0.14,

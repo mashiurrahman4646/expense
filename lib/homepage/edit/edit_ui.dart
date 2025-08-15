@@ -7,32 +7,33 @@ class MonthlyBudgetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           "Monthly Budget",
           style: TextStyle(
             fontFamily: 'Inter',
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
             fontSize: 18,
-            color: Color(0xFF404040),
+            color: Colors.black,
           ),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF404040)),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
           onPressed: () => Get.back(),
         ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+
             // Current Monthly Budget Section
-            const Text(
+             Text(
               'Current Monthly Budget',
               style: TextStyle(
                 fontFamily: 'Inter',
@@ -43,27 +44,22 @@ class MonthlyBudgetScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Container(
+
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
+                border: Border.all(color: const Color(0xFFF0F0F0)),
               ),
               child: const Text(
+
                 '\$25000',
                 style: TextStyle(
                   fontFamily: 'Inter',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 32,
-                  color: Color(0xFF404040),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 28,
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -74,24 +70,31 @@ class MonthlyBudgetScreen extends StatelessWidget {
               'Edit Your Budget',
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
                 fontSize: 16,
-                color: Color(0xFF404040),
+                color: Colors.black,
               ),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Enter amount',
-                hintStyle: const TextStyle(color: Color(0xFF9E9E9E)),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
+            const SizedBox(height: 12),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFE0E0E0)),
+              ),
+              child: TextField(
+                decoration: const InputDecoration(
+                  hintText: '\$ Enter amount',
+                  hintStyle: TextStyle(
+                    color: Color(0xFF9E9E9E),
+                    fontSize: 16,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 ),
-                contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -99,7 +102,7 @@ class MonthlyBudgetScreen extends StatelessWidget {
               children: [
                 const Icon(
                   Icons.info_outline,
-                  size: 20,
+                  size: 16,
                   color: Color(0xFF9E9E9E),
                 ),
                 const SizedBox(width: 8),
@@ -116,12 +119,12 @@ class MonthlyBudgetScreen extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             // Confirm Button
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 48,
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
@@ -141,16 +144,16 @@ class MonthlyBudgetScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 28),
 
             // Select Category Section
             const Text(
               'Select Category',
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
                 fontSize: 16,
-                color: Color(0xFF404040),
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 16),
@@ -158,126 +161,51 @@ class MonthlyBudgetScreen extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildCategoryItem(
-                      'Food', 'assets/icons/soft-drink-01.png'),
-                  const SizedBox(width: 12),
+                  _buildCategoryItem('Food', 'assets/icons/soft-drink-01.png'),
+                  const SizedBox(width: 16),
                   _buildCategoryItem('Transport', 'assets/icons/car.png'),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   _buildCategoryItem('Groceries', 'assets/icons/Groceries.png'),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   _buildCategoryItem('Eating Out', 'assets/icons/eating_out.png'),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   _buildCategoryItem('Home', 'assets/icons/home_icon.png'),
                 ],
               ),
             ),
             const SizedBox(height: 16),
             _buildAddCategoryButton(),
-            const SizedBox(height: 32),
+            const SizedBox(height: 28),
 
             // Budget Distribution Section
             const Text(
               'Budget Distribution',
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
                 fontSize: 16,
-                color: Color(0xFF404040),
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 16),
             Column(
               children: [
                 _buildBudgetListItem('Food', '\$120', '15%', 'assets/icons/soft-drink-01.png'),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 _buildBudgetListItem('Transport', '\$100', '7%', 'assets/icons/car.png'),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 _buildBudgetListItem('Groceries', '\$50', '5%', 'assets/icons/Groceries.png'),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 _buildBudgetListItem('Eating Out', '\$300', '25%', 'assets/icons/eating_out.png'),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 _buildBudgetListItem('Home', '\$200', '20%', 'assets/icons/home_icon.png'),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 _buildBudgetListItem('Gift', '\$100', '7%', 'assets/icons/gift.png'),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 _buildBudgetListItem('Shopping', '\$20', '2%', 'assets/icons/shoping.png'),
               ],
             ),
-            const SizedBox(height: 32),
-
-            // Price Comparison Section
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFFBEF),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.info_outline, color: Color(0xFF8D6E63)),
-                      const SizedBox(width: 8),
-                      // Use Expanded to prevent text overflow
-                      const Expanded(
-                        child: Text(
-                          'Save Money with Price Comparison',
-                          style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                              color: Color(0xFF404040)),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 28),
-                    child: Text(
-                      'Discover how to save and stay within your budget with our price comparison tool.',
-                      style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          color: Color(0xFF6A6A6A)),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2196F3),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Compare Prices Now',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -288,21 +216,27 @@ class MonthlyBudgetScreen extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 50,
-          height: 50,
+          width: 56,
+          height: 56,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                spreadRadius: 1,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
+            border: Border.all(color: const Color(0xFFF0F0F0)),
           ),
-          child: Image.asset(iconPath, width: 24, height: 24),
+          child: Center(
+            child: Image.asset(
+              iconPath,
+              width: 28,
+              height: 28,
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(
+                  Icons.category,
+                  size: 28,
+                  color: Colors.grey[400],
+                );
+              },
+            ),
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -321,24 +255,28 @@ class MonthlyBudgetScreen extends StatelessWidget {
   Widget _buildAddCategoryButton() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/icons/black_add.png', width: 24, height: 24),
+          Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 14,
+            ),
+          ),
           const SizedBox(width: 8),
           const Text(
             'Add Custom Category',
@@ -346,7 +284,7 @@ class MonthlyBudgetScreen extends StatelessWidget {
               fontFamily: 'Inter',
               fontWeight: FontWeight.w500,
               fontSize: 14,
-              color: Color(0xFF404040),
+              color: Colors.black,
             ),
           ),
         ],
@@ -361,36 +299,42 @@ class MonthlyBudgetScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        border: Border.all(color: const Color(0xFFF0F0F0)),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8F9FA),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Image.asset(
+                iconPath,
+                width: 20,
+                height: 20,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.category,
+                    size: 20,
+                    color: Colors.grey[400],
+                  );
+                },
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
           Expanded(
-            child: Row(
-              children: [
-                Image.asset(iconPath, width: 24, height: 24),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    category,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                      color: Color(0xFF404040),
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+            child: Text(
+              category,
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                color: Colors.black,
+              ),
             ),
           ),
           Column(
@@ -400,11 +344,12 @@ class MonthlyBudgetScreen extends StatelessWidget {
                 amount,
                 style: const TextStyle(
                   fontFamily: 'Inter',
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   fontSize: 16,
-                  color: Color(0xFF404040),
+                  color: Colors.black,
                 ),
               ),
+              const SizedBox(height: 2),
               Text(
                 percentage,
                 style: const TextStyle(

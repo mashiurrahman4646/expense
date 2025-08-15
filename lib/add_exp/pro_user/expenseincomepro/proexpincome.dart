@@ -164,7 +164,7 @@ class ProExpensesIncomeScreen extends StatelessWidget {
               ),
               child: const Text(
                 'Watch Ad to Unlock',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, color: Colors.white),
               ),
             ),
           ],
@@ -296,20 +296,83 @@ class ProExpensesIncomeScreen extends StatelessWidget {
         Obx(() => Wrap(
           spacing: 12,
           runSpacing: 15,
-          children: categories.map((category) {
-            String categoryName = category['name'];
-            bool isSelected = isExpense
-                ? controller.selectedExpenseCategory.value == categoryName
-                : controller.selectedIncomeCategory.value == categoryName;
+          children: [
+            // Display existing categories
+            ...categories.map((category) {
+              String categoryName = category['name'];
+              bool isSelected = isExpense
+                  ? controller.selectedExpenseCategory.value == categoryName
+                  : controller.selectedIncomeCategory.value == categoryName;
 
-            return GestureDetector(
-              onTap: () {
-                if (isExpense) {
-                  controller.selectExpenseCategory(categoryName);
-                } else {
-                  controller.selectIncomeCategory(categoryName);
-                }
-              },
+              return GestureDetector(
+                onTap: () {
+                  if (isExpense) {
+                    controller.selectExpenseCategory(categoryName);
+                  } else {
+                    controller.selectIncomeCategory(categoryName);
+                  }
+                },
+                child: Container(
+                  width: 68,
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.blue : Colors.grey[200],
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: isSelected ? [
+                            BoxShadow(
+                              color: Colors.blue.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ] : [],
+                        ),
+                        child: category['iconPath'] != null
+                            ? Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Image.asset(
+                            category['iconPath'],
+                            width: 26,
+                            height: 26,
+                            color: isSelected ? Colors.white : Colors.black54,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                category['icon'] ?? Icons.category,
+                                color: isSelected ? Colors.white : Colors.black54,
+                                size: 24,
+                              );
+                            },
+                          ),
+                        )
+                            : Icon(
+                          category['icon'] ?? Icons.category,
+                          color: isSelected ? Colors.white : Colors.black54,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        categoryName,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isSelected ? Colors.blue : Colors.black54,
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+            // Add Category Button
+            GestureDetector(
+              onTap: () => _navigateToAddCategory(controller, isExpense),
               child: Container(
                 width: 68,
                 child: Column(
@@ -318,67 +381,36 @@ class ProExpensesIncomeScreen extends StatelessWidget {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue : Colors.grey[200],
+                        color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(25),
-                        boxShadow: isSelected ? [
-                          BoxShadow(
-                            color: Colors.blue.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ] : [],
+                        border: Border.all(
+                          color: Colors.grey[400]!,
+                          width: 1.5,
+                          style: BorderStyle.solid,
+                        ),
                       ),
-                      child: Icon(
-                        category['icon'],
-                        color: isSelected ? Colors.white : Colors.black54,
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.grey,
                         size: 24,
                       ),
                     ),
                     const SizedBox(height: 5),
-                    Text(
-                      categoryName,
+                    const Text(
+                      'Add',
                       style: TextStyle(
                         fontSize: 12,
-                        color: isSelected ? Colors.blue : Colors.black54,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.normal,
                       ),
                       textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
-            );
-          }).toList(),
+            ),
+          ],
         )),
-        const SizedBox(height: 20),
-        GestureDetector(
-          onTap: () => _showAddCategoryDialog(controller, isExpense),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: const Icon(Icons.add, color: Colors.grey, size: 18),
-              ),
-              const SizedBox(width: 10),
-              const Text(
-                'Add Custom Category',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -703,141 +735,31 @@ class ProExpensesIncomeScreen extends StatelessWidget {
     }
   }
 
-  void _showAddCategoryDialog(ProExpensesIncomeController controller, bool isExpense) {
-    final TextEditingController categoryController = TextEditingController();
-    IconData selectedIcon = Icons.category;
+  void _navigateToAddCategory(ProExpensesIncomeController controller, bool isExpense) async {
+    final result = await Get.toNamed('/addCategory', arguments: {'isExpense': isExpense});
 
-    final List<IconData> availableIcons = [
-      Icons.category,
-      Icons.shopping_bag,
-      Icons.local_dining,
-      Icons.local_gas_station,
-      Icons.medical_services,
-      Icons.school,
-      Icons.fitness_center,
-      Icons.movie,
-      Icons.pets,
-      Icons.home_repair_service,
-      Icons.phone,
-      Icons.electrical_services,
-      Icons.clean_hands,
-      Icons.card_giftcard,
-    ];
+    if (result != null && result is Map<String, dynamic>) {
+      // Create the category map with the icon path
+      final category = {
+        'name': result['name'],
+        'icon': Icons.category, // Default fallback icon
+        'iconPath': result['iconPath'],
+      };
 
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Text(
-          'Add Custom ${isExpense ? 'Expense' : 'Income'} Category',
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
-        ),
-        content: StatefulBuilder(
-          builder: (context, setState) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: categoryController,
-                  decoration: InputDecoration(
-                    hintText: 'Category name',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.blue),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Select Icon:',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  height: 120,
-                  child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                    ),
-                    itemCount: availableIcons.length,
-                    itemBuilder: (context, index) {
-                      final icon = availableIcons[index];
-                      final isSelected = selectedIcon == icon;
+      // Add to the appropriate category list
+      if (isExpense) {
+        controller.expenseCategories.add(category);
+      } else {
+        controller.incomeCategories.add(category);
+      }
 
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedIcon = icon;
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: isSelected ? Colors.blue : Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            icon,
-                            color: isSelected ? Colors.white : Colors.black54,
-                            size: 20,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (categoryController.text.isNotEmpty) {
-                controller.addCustomCategory(
-                  categoryController.text,
-                  selectedIcon,
-                  isExpense,
-                );
-                Get.back();
-                Get.snackbar(
-                  'Success',
-                  'Category added successfully',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.green,
-                  colorText: Colors.white,
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: const Text(
-              'Add',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
+      Get.snackbar(
+        'Success',
+        'Category added successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    }
   }
 }

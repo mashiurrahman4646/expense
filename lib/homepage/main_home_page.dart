@@ -198,7 +198,7 @@ class MainHomeScreen extends StatelessWidget {
                         children: [
                           Text('Monthly Budget', style: TextStyle(fontSize: screenWidth * 0.045, fontWeight: FontWeight.w600)),
                           GestureDetector(
-                            onTap: () => controller.navigateToMonthlyBudget(),
+                            onTap: () => controller.navigateToMonthlyBudgetnonpro(),
                             child: Text('Edit', style: TextStyle(color: const Color(0xFF2196F3), fontSize: screenWidth * 0.035)),
                           ),
                         ],

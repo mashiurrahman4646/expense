@@ -50,4 +50,8 @@ class AppColors {
   static const Color text900 = Color(0xFF131311);
   static const Color text000 = Color(0xFF454B60);
 
+  // ===== Dark Theme Background =====
+  static const Color darkBackground = Color(0xFF121212);
+  static const Color darkAppBar = Color(0xFF1E1E1E);
+  static const Color darkText = Color(0xFFFFFFFF);
 }

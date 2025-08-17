@@ -35,14 +35,14 @@ class HomeController extends GetxController {
     Get.toNamed(AppRoutes.notification);
   }
 
-  void navigateToMonthlyBudget() {
-    Get.toNamed(AppRoutes.monthlyBudget);
+  void navigateToMonthlyBudgetnonpro() {
+    Get.toNamed(AppRoutes.monthlyBudgetNonPro);
   }
 
   // This is the new, unified method to navigate to the single transaction screen.
   // It passes a parameter to tell the screen whether to show Expense or Income.
   void navigateToAddTransaction({required bool isExpense}) {
-    Get.toNamed(AppRoutes.addTransaction, arguments: {'isExpense': isExpense});
+    Get.toNamed(AppRoutes.addTransaction!);
   }
 
   void navigateToAddProExpense() {

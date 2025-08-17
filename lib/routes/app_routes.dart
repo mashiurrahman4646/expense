@@ -11,11 +11,28 @@ import '../Comparison/ComparisonGraphScreen/graph_ui.dart';
 import '../Comparison/Comparison_screen.dart';
 import '../Comparison/NonProSavingsPage/nonproservicepageui.dart';
 import '../Comparison/prosavingpage/proserviceui.dart';
-// New import
 import '../Facelogin/face_login.dart';
 import '../RegisterScreen/reg_screen.dart';
 import '../RegisterScreen/verification.dart';
+// Updated import
+import '../Settings/appearance/appearance.dart';
+ // 🔥 New import for Language Settings
+import '../Settings/applock/AppUnlockScreen.dart';
+import '../Settings/applock/confirampin.dart';
+import '../Settings/applock/setup_pin.dart';
+import '../Settings/applock/setupfaceid.dart';
+import '../Settings/applock/yourfaceissave.dart';
+import '../Settings/currencyexchange.dart';
+import '../Settings/language/languageui.dart';
 import '../Settings/main_setting_screen.dart';
+import '../Settings/notification/notificationscreen.dart';
+import '../Settings/premium/paymentsuccessscreen.dart';
+import '../Settings/premium/paymenttypetui.dart';
+import '../Settings/premium/paymentui.dart';
+import '../Settings/userprofile/PersonalInformationScreen.dart';
+import '../Settings/userprofile/EditNameScreen.dart';
+import '../Settings/userprofile/changeemail.dart';
+
 import '../add_exp/category/add_category_ui.dart';
 import '../add_exp/normaluser/normal_income_and_exp_screen.dart';
 import '../add_exp/pro_user/expenseincomepro/proexpincome.dart';
@@ -27,6 +44,7 @@ import '../forget_password/forget_password_code/forget_password_screen.dart';
 import '../forget_password/forget_password_email/forget_password_otp_screen.dart';
 import '../forget_password/set_new_password/set_new_password_screen.dart';
 import '../forget_password/set_new_password/set_new_password_screen_controller.dart';
+import '../homepage/edit/MonthlyBudgetNonPro/MonthlyBudgetNonPro.dart';
 import '../homepage/edit/edit_ui.dart';
 import '../homepage/main_home_page.dart';
 import '../homepage/notification/notification_ui.dart';
@@ -58,18 +76,32 @@ class AppRoutes {
   static const String mainHome = '/mainHome';
   static const String analytics = '/analytics';
   static const String settings = '/settings';
+  static const String personalInformation = '/personalInformation';
+  static const String editName = '/editName';
+  static const String changeEmail = '/changeEmail';
+  static const String emailChangeVerification = '/emailChangeVerification';
+  static const String premiumPlans = '/premiumPlans';
+  static const String notificationSettings = '/notificationSettings';
+  static const String appUnlock = '/appUnlock';
+  static const String setPin = '/setPin';
+  static const String confirmPin = '/confirmPin';
+  static const String setupFaceID = '/setupFaceID';
+  static const String faceAuthentication = '/faceAuthentication';
+  static const String appearance = '/appearance';
+  static const String languageSettings = '/languageSettings'; // 🔥 New route constant
 
   // Transaction Related Routes
   static const String addTransaction = '/addTransaction';
   static const String proExpensesIncome = '/proExpensesIncome';
   static const String addCategory = '/addCategory';
   static const String advertisement = '/advertisement';
-  static const String totalSavingAdvertisement = '/totalSavingAdvertisement'; // New route
+  static const String totalSavingAdvertisement = '/totalSavingAdvertisement';
 
   // Homepage Routes
   static const String notification = '/notification';
   static const String editBudget = '/editBudget';
   static const String monthlyBudget = '/monthlyBudget';
+  static const String monthlyBudgetNonPro = '/monthlyBudgetNonPro';
   static const String shareExperience = '/shareExperience';
   static const String allTransactions = '/allTransactions';
 
@@ -84,6 +116,9 @@ class AppRoutes {
   static const String amazonPurchaseDetails = '/amazonPurchaseDetails';
   static const String nonProSavings = '/nonProSavings';
   static const String proSavings = '/proSavings';
+  static const String paymentScreen = '/paymentScreen';
+  static const String paymentSuccess = '/paymentSuccess';
+  static const String currencyChange = '/currencyChange';
 
   static final routes = [
     // Authentication Routes
@@ -104,9 +139,21 @@ class AppRoutes {
     GetPage(name: mainHome, page: () => MainHomeScreen()),
     GetPage(name: analytics, page: () => AnalyticsScreen()),
     GetPage(name: settings, page: () => SettingsScreen()),
+    GetPage(name: personalInformation, page: () => PersonalInformationScreen()),
+    GetPage(name: editName, page: () => EditNameScreen()),
+    GetPage(name: changeEmail, page: () => ChangeEmailScreen()),
+    GetPage(name: emailChangeVerification, page: () => EmailVerificationScreen()),
+    GetPage(name: premiumPlans, page: () => PremiumPlansScreen()),
+    GetPage(name: notificationSettings, page: () => NotificationSettingsScreen()),
+    GetPage(name: appUnlock, page: () => AppUnlockScreen()),
+    GetPage(name: setPin, page: () => SetPinScreen()),
+    GetPage(name: confirmPin, page: () => ConfirmPinScreen()),
+    GetPage(name: setupFaceID, page: () => SetupFaceIDScreen()),
+    GetPage(name: faceAuthentication, page: () => FaceAuthenticationScreen()),
+    GetPage(name: appearance, page: () => const AppearanceScreen()),
+    GetPage(name: languageSettings, page: () => const LanguageSettingsScreen()), // 🔥 New route
 
     // Transaction Routes
-    GetPage(name: addTransaction, page: () => AddTransactionScreen()),
     GetPage(
       name: proExpensesIncome,
       page: () => const ProExpensesIncomeScreen(),
@@ -130,7 +177,6 @@ class AppRoutes {
         return AdvertisementPage(isFromExpense: isFromExpense);
       },
     ),
-    // New Total Saving Advertisement route
     GetPage(
       name: totalSavingAdvertisement,
       page: () => const TotalSavingAdvertisement(),
@@ -139,6 +185,7 @@ class AppRoutes {
     // Homepage Routes
     GetPage(name: notification, page: () => NotificationScreen()),
     GetPage(name: monthlyBudget, page: () => MonthlyBudgetScreen()),
+    GetPage(name: monthlyBudgetNonPro, page: () => const MonthlyBudgetNonPro()),
     GetPage(name: shareExperience, page: () => const RateAndImproveScreen()),
     GetPage(name: allTransactions, page: () => const AllTransactionsScreen()),
 
@@ -162,5 +209,9 @@ class AppRoutes {
     ),
     GetPage(name: nonProSavings, page: () => NonProSavingsPage()),
     GetPage(name: proSavings, page: () => ProSavingsPage()),
+    GetPage(name: paymentScreen, page: () => PaymentScreen()),
+    GetPage(name: paymentSuccess, page: () => PaymentSuccessScreen()),
+    GetPage(name: currencyChange, page: () => CurrencyExchangeScreen()),
+    GetPage(name: addTransaction, page: () => AddTransactionScreen()),
   ];
 }

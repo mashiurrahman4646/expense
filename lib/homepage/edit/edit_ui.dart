@@ -23,7 +23,7 @@ class MonthlyBudgetScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () => Get.back(),
+          onPressed: () => Get.offAllNamed('/mainHome'), // Updated back button navigation
         ),
       ),
       body: SingleChildScrollView(
@@ -31,9 +31,8 @@ class MonthlyBudgetScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
             // Current Monthly Budget Section
-             Text(
+            Text(
               'Current Monthly Budget',
               style: TextStyle(
                 fontFamily: 'Inter',
@@ -44,7 +43,6 @@ class MonthlyBudgetScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Container(
-
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -53,7 +51,6 @@ class MonthlyBudgetScreen extends StatelessWidget {
                 border: Border.all(color: const Color(0xFFF0F0F0)),
               ),
               child: const Text(
-
                 '\$25000',
                 style: TextStyle(
                   fontFamily: 'Inter',

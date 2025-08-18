@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../Settings/appearance/ThemeController.dart';
+import '../Settings/appearance/ThemeController.dart' show ThemeController;
 import '../Settings/language/language_controller.dart';
 import '../routes/app_routes.dart';
+import '../translation_rag.dart';
+
 
 class AppColors {
   static const Color primary = Color(0xFF4CAF50);
@@ -19,12 +18,17 @@ class AppConfig {
     final themeController = Get.find<ThemeController>();
     final langController = Get.find<LanguageController>();
 
+    // Force rebuild when language changes
+    final currentLocale = langController.locale.value;
+    final currentThemeMode = themeController.themeMode;
+
     return GetMaterialApp(
       title: 'Your Expense',
       debugShowCheckedModeBanner: false,
 
       // Multi-language support
-      locale: langController.locale.value,
+      translations: AppTranslations(),
+      locale: currentLocale,
       fallbackLocale: const Locale('en', 'US'),
 
       // Theme configuration
@@ -54,8 +58,8 @@ class AppConfig {
           brightness: Brightness.dark,
         ),
       ),
+      themeMode: currentThemeMode,
 
-      themeMode: themeController.themeMode,
       initialRoute: AppRoutes.initial,
       getPages: AppRoutes.routes,
       navigatorObservers: [GetObserver()],

@@ -1,28 +1,32 @@
-// lib/RegisterScreen/reg_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:your_expense/RegisterScreen/reg_controller.dart';
+import '../Settings/appearance/ThemeController.dart';
+import '../Settings/language/language_controller.dart';
 import '../colors/app_colors.dart';
 import '../login/login_ui/login_screen.dart';
 import '../text_styles.dart';
 import '../tram_and_condition/trams_and_condition_screen.dart';
+ // Import your language controller
 
 class RegistrationScreen extends StatelessWidget {
   final RegistrationController controller = Get.put(RegistrationController());
+  final ThemeController themeController = Get.find<ThemeController>();
+  final LanguageController languageController = Get.find<LanguageController>();
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkMode.value ? Color(0xFF121212) : Colors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: Image.asset(
             'assets/icons/arrow-left.png',
             width: 24,
             height: 24,
-            color: Colors.black,
+            color: themeController.isDarkMode.value ? Colors.white : Colors.black,
           ),
           onPressed: () => Get.offAll(() => LoginScreen()),
         ),
@@ -30,8 +34,10 @@ class RegistrationScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Registration',
-          style: AppTextStyles.heading2.copyWith(color: const Color(0xFF000000)),
+          'registration'.tr,
+          style: AppTextStyles.heading2.copyWith(
+            color: themeController.isDarkMode.value ? Colors.white : const Color(0xFF000000),
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -42,27 +48,27 @@ class RegistrationScreen extends StatelessWidget {
             _buildProgressIndicator(context),
             const SizedBox(height: 32),
             _buildTextField(
-              label: 'Full Name',
-              hintText: 'Enter your full name',
+              label: 'full_name'.tr,
+              hintText: 'enter_full_name'.tr,
               controller: controller.fullNameController,
             ),
             const SizedBox(height: 16),
             _buildTextField(
-              label: 'Email Address',
-              hintText: 'example@gmail.com',
+              label: 'email'.tr,
+              hintText: 'enter_email'.tr,
               controller: controller.emailController,
             ),
             const SizedBox(height: 16),
             _buildTextField(
-              label: 'Password',
-              hintText: 'Create a password',
+              label: 'password'.tr,
+              hintText: 'create_password'.tr,
               isPassword: true,
               controller: controller.passwordController,
             ),
             const SizedBox(height: 16),
             _buildTextField(
-              label: 'Confirm Password',
-              hintText: 'Re-enter your password',
+              label: 'confirm_password'.tr,
+              hintText: 'reenter_password'.tr,
               isPassword: true,
               controller: controller.confirmPasswordController,
             ),
@@ -73,8 +79,10 @@ class RegistrationScreen extends StatelessWidget {
               onChanged: controller.toggleTermsAccepted,
               activeColor: AppColors.primary500,
               title: Text(
-                'I accept the Terms and Conditions',
-                style: AppTextStyles.bodySmall.copyWith(color: AppColors.text700),
+                'terms'.tr,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: themeController.isDarkMode.value ? Color(0xFF919191) : AppColors.text700,
+                ),
               ),
             )),
             const SizedBox(height: 16),
@@ -85,20 +93,17 @@ class RegistrationScreen extends StatelessWidget {
                 onPressed: () {
                   if (!controller.isTermsAccepted.value) {
                     Get.snackbar(
-                      'Terms Required',
-                      'You need to accept the terms and conditions to create an account.',
+                      'terms_required'.tr,
+                      'accept_terms_message'.tr,
                       snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Colors.red[100],
-                      colorText: Colors.red[900],
+                      backgroundColor: themeController.isDarkMode.value ? Colors.grey[800] : Colors.red[100],
+                      colorText: themeController.isDarkMode.value ? Colors.white : Colors.red[900],
                       margin: const EdgeInsets.all(12),
                     );
                     return;
                   }
 
-                  // Validate form fields
                   if (controller.validateForm()) {
-                    print("Continue button pressed and terms accepted");
-                    // Navigate to email verification instead of face verification
                     Get.toNamed('/emailVerification');
                   }
                 },
@@ -112,7 +117,7 @@ class RegistrationScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
                 child: Text(
-                  'Continue',
+                  'continue'.tr,
                   style: AppTextStyles.buttonLarge,
                 ),
               ),
@@ -121,12 +126,20 @@ class RegistrationScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Already have an account?"),
+                Text(
+                  "already_account".tr,
+                  style: TextStyle(
+                    color: themeController.isDarkMode.value ? Color(0xFF919191) : Colors.black,
+                  ),
+                ),
                 TextButton(
                   onPressed: () => Get.to(() => LoginScreen()),
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                  child: Text(
+                    "login".tr,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary500,
+                    ),
                   ),
                 ),
               ],
@@ -138,11 +151,13 @@ class RegistrationScreen extends StatelessWidget {
               },
               child: Text.rich(
                 TextSpan(
-                  text: 'By creating an account or signing you agree to our ',
-                  style: AppTextStyles.bodySmall,
+                  text: 'terms_agreement'.tr,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: themeController.isDarkMode.value ? Color(0xFF919191) : AppColors.text700,
+                  ),
                   children: [
                     TextSpan(
-                      text: 'Terms and Conditions',
+                      text: 'terms_conditions'.tr,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
@@ -158,11 +173,12 @@ class RegistrationScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildProgressIndicator(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final themeController = Get.find<ThemeController>();
 
     return Column(
       children: [
@@ -170,17 +186,15 @@ class RegistrationScreen extends StatelessWidget {
           height: 32,
           child: Stack(
             children: [
-              // Background line
               Positioned(
                 top: 15,
                 left: 0,
                 right: 0,
                 child: Container(
                   height: 2,
-                  color: Colors.grey[300],
+                  color: themeController.isDarkMode.value ? Colors.grey[800] : Colors.grey[300],
                 ),
               ),
-              // Progress line (only first step active)
               Positioned(
                 top: 15,
                 left: 0,
@@ -190,19 +204,16 @@ class RegistrationScreen extends StatelessWidget {
                   color: AppColors.primary500,
                 ),
               ),
-              // Step 1 Circle (Registration - Active)
               Positioned(
                 left: (screenWidth * 0.15) - 12,
                 top: 4,
                 child: _buildStepCircle(1, true),
               ),
-              // Step 2 Circle (Email Verification - Inactive)
               Positioned(
                 left: (screenWidth * 0.5) - 12,
                 top: 4,
                 child: _buildStepCircle(2, false),
               ),
-              // Step 3 Circle (Face Verification - Inactive)
               Positioned(
                 left: (screenWidth * 0.85) - 12,
                 top: 4,
@@ -217,8 +228,8 @@ class RegistrationScreen extends StatelessWidget {
           children: [
             Container(
               width: screenWidth * 0.25,
-              child: const Text(
-                'Registration',
+              child: Text(
+                'registration_step'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 10,
@@ -229,24 +240,24 @@ class RegistrationScreen extends StatelessWidget {
             ),
             Container(
               width: screenWidth * 0.25,
-              child: const Text(
-                'Verification',
+              child: Text(
+                'verification'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 10,
-                  color: Colors.grey,
+                  color: themeController.isDarkMode.value ? Color(0xFF919191) : Colors.grey,
                   fontWeight: FontWeight.w400,
                 ),
               ),
             ),
             Container(
               width: screenWidth * 0.25,
-              child: const Text(
-                'Face ID',
+              child: Text(
+                'face_id'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 10,
-                  color: Colors.grey,
+                  color: themeController.isDarkMode.value ? Color(0xFF919191) : Colors.grey,
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -263,6 +274,8 @@ class RegistrationScreen extends StatelessWidget {
     bool isPassword = false,
     required TextEditingController controller,
   }) {
+    final themeController = Get.find<ThemeController>();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -272,7 +285,7 @@ class RegistrationScreen extends StatelessWidget {
             fontFamily: 'Inter',
             fontWeight: FontWeight.w600,
             fontSize: 14.0,
-            color: AppColors.text700,
+            color: themeController.isDarkMode.value ? Color(0xFF919191) : AppColors.text700,
             height: 1.0,
             letterSpacing: 0.0,
           ),
@@ -281,19 +294,21 @@ class RegistrationScreen extends StatelessWidget {
         TextField(
           controller: controller,
           obscureText: isPassword,
-          style: AppTextStyles.inputText,
+          style: AppTextStyles.inputText.copyWith(
+            color: themeController.isDarkMode.value ? Colors.white : Colors.black,
+          ),
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(
               fontFamily: 'Inter',
               fontWeight: FontWeight.w500,
               fontSize: 14.0,
-              color: AppColors.text000,
+              color: themeController.isDarkMode.value ? Color(0xFF919191) : AppColors.text000,
               height: 1.0,
               letterSpacing: 0.0,
             ),
             filled: true,
-            fillColor: Colors.grey[100],
+            fillColor: themeController.isDarkMode.value ? Color(0xFF1F1F1F) : Colors.grey[100],
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
@@ -306,11 +321,14 @@ class RegistrationScreen extends StatelessWidget {
   }
 
   Widget _buildStepCircle(int stepNumber, bool isActive) {
+    final themeController = Get.find<ThemeController>();
+
     return Container(
       width: 24,
       height: 24,
       decoration: BoxDecoration(
-        color: isActive ? AppColors.primary500 : Colors.grey[400],
+        color: isActive ? AppColors.primary500 :
+        (themeController.isDarkMode.value ? Color(0xFF333333) : Colors.grey[400]),
         shape: BoxShape.circle,
       ),
       child: Center(

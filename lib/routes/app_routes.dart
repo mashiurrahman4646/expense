@@ -16,7 +16,7 @@ import '../RegisterScreen/reg_screen.dart';
 import '../RegisterScreen/verification.dart';
 // Updated import
 import '../Settings/appearance/appearance.dart';
- // 🔥 New import for Language Settings
+// 🔥 New import for Language Settings
 import '../Settings/applock/AppUnlockScreen.dart';
 import '../Settings/applock/confirampin.dart';
 import '../Settings/applock/setup_pin.dart';
@@ -126,7 +126,7 @@ class AppRoutes {
     GetPage(name: login, page: () => LoginScreen()),
     GetPage(name: faceLogin, page: () => FaceLoginScreen()),
     GetPage(name: register, page: () => RegistrationScreen()),
-    GetPage(name: verification, page: () => EmailVerificationScreen()),
+    GetPage(name: emailVerification, page: () => EmailVerificationScreen()),
     GetPage(name: signupVerification, page: () => SignupVerificationScreen()),
     GetPage(name: faceVerification, page: () => FaceVerificationScreen()),
     GetPage(name: faceConfirmation, page: () => FaceConfirmationScreen()),

@@ -19,96 +19,59 @@ class RegistrationController extends GetxController {
   bool validateForm() {
     // Validate full name
     if (fullNameController.text.trim().isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Please enter your full name',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
-        margin: const EdgeInsets.all(12),
-      );
+      showErrorSnackbar('Validation Error', 'Please enter your full name');
       return false;
     }
 
     // Validate email
     if (emailController.text.trim().isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Please enter your email address',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
-        margin: const EdgeInsets.all(12),
-      );
+      showErrorSnackbar('Validation Error', 'Please enter your email address');
       return false;
     }
 
     // Validate email format
     if (!GetUtils.isEmail(emailController.text.trim())) {
-      Get.snackbar(
-        'Validation Error',
-        'Please enter a valid email address',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
-        margin: const EdgeInsets.all(12),
-      );
+      showErrorSnackbar('Validation Error', 'Please enter a valid email address');
       return false;
     }
 
     // Validate password
     if (passwordController.text.isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Please create a password',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
-        margin: const EdgeInsets.all(12),
-      );
+      showErrorSnackbar('Validation Error', 'Please create a password');
       return false;
     }
 
     // Validate password length
     if (passwordController.text.length < 6) {
-      Get.snackbar(
-        'Validation Error',
-        'Password must be at least 6 characters long',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
-        margin: const EdgeInsets.all(12),
-      );
+      showErrorSnackbar('Validation Error', 'Password must be at least 6 characters long');
       return false;
     }
 
     // Validate confirm password
     if (confirmPasswordController.text.isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Please confirm your password',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
-        margin: const EdgeInsets.all(12),
-      );
+      showErrorSnackbar('Validation Error', 'Please confirm your password');
       return false;
     }
 
     // Validate password match
     if (passwordController.text != confirmPasswordController.text) {
-      Get.snackbar(
-        'Validation Error',
-        'Passwords do not match',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
-        margin: const EdgeInsets.all(12),
-      );
+      showErrorSnackbar('Validation Error', 'Passwords do not match');
       return false;
     }
 
     return true;
+  }
+
+  void showErrorSnackbar(String title, String message) {
+    final isDarkMode = Get.isDarkMode;
+    Get.snackbar(
+      title,
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: isDarkMode ? Colors.red[800] : Colors.red[100],
+      colorText: isDarkMode ? Colors.white : Colors.red[900],
+      margin: const EdgeInsets.all(12),
+    );
   }
 
   @override

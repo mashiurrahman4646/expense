@@ -1,12 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/material.dart';
 
 class LanguageController extends GetxController {
   static const String _langKey = "selected_language";
-
-  var selectedLanguage = 'English'.obs;
   final locale = const Locale('en', 'US').obs;
+  final selectedLanguage = 'English'.obs;
 
   final List<String> languages = [
     'English',
@@ -24,22 +23,20 @@ class LanguageController extends GetxController {
     loadLanguage();
   }
 
-  /// Load language from SharedPreferences
   Future<void> loadLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     selectedLanguage.value = prefs.getString(_langKey) ?? 'English';
     updateLocale();
   }
 
-  /// Change language and save to SharedPreferences
   Future<void> changeLanguage(String language) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_langKey, language);
     selectedLanguage.value = language;
     updateLocale();
+    Get.forceAppUpdate(); // Force UI to rebuild
   }
 
-  /// Update GetX locale
   void updateLocale() {
     switch (selectedLanguage.value) {
       case 'Español':

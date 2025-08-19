@@ -17,16 +17,48 @@ class HomeController extends GetxController {
   var leftPercentage = 15.obs;
 
   var recentTransactions = <Map<String, dynamic>>[
-    {'title': 'Salary Deposit', 'time': 'Today, 04:12 AM', 'amount': '3,500.00', 'isIncome': true},
-    {'title': 'Food', 'time': 'Today, 04:12 AM', 'amount': '150.00', 'isIncome': false},
-    {'title': 'Shopping', 'time': 'Today, 04:12 AM', 'amount': '200.00', 'isIncome': false},
-    {'title': 'Transport', 'time': 'Today, 04:12 AM', 'amount': '50.00', 'isIncome': false},
+    {
+      'title': 'salary deposit'.tr,
+      'time': 'today time'.trParams({'hour': '04', 'minute': '12'}),
+      'amount': '3,500.00',
+      'isIncome': true
+    },
+    {
+      'title': 'food'.tr,
+      'time': 'today time'.trParams({'hour': '04', 'minute': '12'}),
+      'amount': '150.00',
+      'isIncome': false
+    },
+    {
+      'title': 'shopping'.tr,
+      'time': 'today time'.trParams({'hour': '04', 'minute': '12'}),
+      'amount': '200.00',
+      'isIncome': false
+    },
+    {
+      'title': 'transport'.tr,
+      'time': 'today time'.trParams({'hour': '04', 'minute': '12'}),
+      'amount': '50.00',
+      'isIncome': false
+    },
   ].obs;
 
   String getCurrentMonth() {
     final now = DateTime.now();
-    const months = ['January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'];
+    final months = [
+      'january'.tr,
+      'february'.tr,
+      'march'.tr,
+      'april'.tr,
+      'may'.tr,
+      'june'.tr,
+      'july'.tr,
+      'august'.tr,
+      'september'.tr,
+      'october'.tr,
+      'november'.tr,
+      'december'.tr,
+    ];
     return months[now.month - 1];
   }
 
@@ -39,18 +71,16 @@ class HomeController extends GetxController {
     Get.toNamed(AppRoutes.monthlyBudgetNonPro);
   }
 
-  // This is the new, unified method to navigate to the single transaction screen.
-  // It passes a parameter to tell the screen whether to show Expense or Income.
   void navigateToAddTransaction({required bool isExpense}) {
     Get.toNamed(AppRoutes.addTransaction!);
   }
 
   void navigateToAddProExpense() {
-
+    // Implementation
   }
 
   void navigateToAddProIncome() {
-
+    // Implementation
   }
 
   void shareExperience() {
@@ -87,12 +117,22 @@ class HomeController extends GetxController {
   }
 
   void addTransaction(String title, String amount, bool isIncome) {
+    final now = DateTime.now();
+    final hour = now.hour.toString().padLeft(2, '0');
+    final minute = now.minute.toString().padLeft(2, '0');
+    final period = now.hour >= 12 ? 'pm'.tr : 'am'.tr;
+
     recentTransactions.insert(0, {
       'title': title,
-      'time': 'Today, ${DateTime.now().hour}:${DateTime.now().minute} ${DateTime.now().hour >= 12 ? 'PM' : 'AM'}',
+      'time': 'today_time'.trParams({
+        'hour': hour,
+        'minute': minute,
+        'period': period
+      }),
       'amount': amount,
       'isIncome': isIncome,
     });
+
     if (recentTransactions.length > 4) {
       recentTransactions.removeLast();
     }

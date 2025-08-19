@@ -54,4 +54,31 @@ class AppColors {
   static const Color darkBackground = Color(0xFF121212);
   static const Color darkAppBar = Color(0xFF1E1E1E);
   static const Color darkText = Color(0xFFFFFFFF);
+  // In your AppColors class
+
+  static const Color darkCardBackground = Color(0xFF1E1E1E);
+  // Lighter primary color for dark mode
+// Light Theme Colors
+  static const Color lightPrimary500 = Color(0xFF6200EE);
+  static const Color lightBackground = Colors.white;
+  static const Color lightCardBackground = Colors.white;
+  static const Color lightText800 = Color(0xFF1A1A1A);
+  static const Color lightText700 = Color(0xFF333333);
+  static const Color lightText600 = Color(0xFF666666);
+  static const Color lightText500 = Color(0xFF999999);
+  static const Color lightText300 = Color(0xFFCCCCCC);
+  static const Color lightText200 = Color(0xFFE5E5E5);
+  static const Color lightSnackbarBackground = Color(0xFF333333);
+
+  // Dark Theme Colors
+  static const Color darkPrimary500 = Color(0xFFBB86FC);
+
+
+  static const Color darkText800 = Color(0xFFE1E1E1);
+  static const Color darkText700 = Color(0xFFCCCCCC);
+  static const Color darkText600 = Color(0xFFAAAAAA);
+  static const Color darkText500 = Color(0xFF888888);
+  static const Color darkText300 = Color(0xFF555555);
+  static const Color darkText200 = Color(0xFF333333);
+  static const Color darkSnackbarBackground = Color(0xFFE1E1E1);
 }

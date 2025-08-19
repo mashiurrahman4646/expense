@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../Settings/appearance/ThemeController.dart';
 import '../routes/app_routes.dart';
 import 'main_home_page_controller.dart';
+// Import the ThemeController
 
 class MainHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController controller = Get.put(HomeController());
+    final ThemeController themeController = Get.find<ThemeController>(); // Get the ThemeController
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
+    // Define colors based on theme
+    final backgroundColor = themeController.isDarkModeActive ? Color(0xFF121212) : Colors.white;
+    final cardColor = themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Color(0xFFF8F9FA);
+    final textColor = themeController.isDarkModeActive ? Colors.white : Colors.black;
+    final secondaryTextColor = themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
+    final iconColor = themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
+    final primaryColor = Color(0xFF2196F3); // Keep primary color consistent
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -29,7 +40,7 @@ class MainHomeScreen extends StatelessWidget {
                       height: screenWidth * 0.12,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.grey.shade300, width: 1),
+                        border: Border.all(color: secondaryTextColor, width: 1),
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.all(Radius.circular(60)),
@@ -45,19 +56,19 @@ class MainHomeScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Hi Daniel',
+                            'hi_user'.tr,
                             style: TextStyle(
                               fontSize: screenWidth * 0.045,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black,
+                              color: textColor,
                             ),
                           ),
                           SizedBox(height: screenHeight * 0.005),
                           Text(
-                            'Romagna, Modena, Italy',
+                            'location'.tr,
                             style: TextStyle(
                               fontSize: screenWidth * 0.035,
-                              color: Colors.grey.shade600,
+                              color: secondaryTextColor,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -70,14 +81,14 @@ class MainHomeScreen extends StatelessWidget {
                         width: screenWidth * 0.11,
                         height: screenWidth * 0.11,
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
+                          color: themeController.isDarkModeActive ? Color(0xFF2D2D2D) : Colors.grey.shade100,
                           borderRadius: BorderRadius.circular(screenWidth * 0.03),
                         ),
                         child: Center(
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
-                              const Icon(Icons.notifications_none, color: Colors.grey),
+                              Icon(Icons.notifications_none, color: iconColor),
                               Positioned(
                                 right: 0,
                                 top: 0,
@@ -105,7 +116,7 @@ class MainHomeScreen extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenHeight * 0.01),
                       decoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xFF2196F3)),
+                        border: Border.all(color: primaryColor),
                         borderRadius: BorderRadius.circular(screenWidth * 0.03),
                       ),
                       child: Row(
@@ -114,13 +125,13 @@ class MainHomeScreen extends StatelessWidget {
                             controller.getCurrentMonth(),
                             style: TextStyle(
                               fontSize: screenWidth * 0.035,
-                              color: const Color(0xFF2196F3),
+                              color: primaryColor,
                             ),
                           ),
                           SizedBox(width: screenWidth * 0.01),
                           Icon(
                             Icons.arrow_drop_down,
-                            color: const Color(0xFF2196F3),
+                            color: primaryColor,
                             size: screenWidth * 0.04,
                           ),
                         ],
@@ -146,7 +157,7 @@ class MainHomeScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Available Balance',
+                            'available_balance'.tr,
                             style: TextStyle(
                               fontSize: screenWidth * 0.04,
                               fontWeight: FontWeight.w500,
@@ -172,11 +183,11 @@ class MainHomeScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(child: Obx(() => _buildStatCard('Income', '\$${controller.income.value}', Icons.arrow_upward, Colors.green, screenWidth))),
+                          Expanded(child: Obx(() => _buildStatCard('income'.tr, '\$${controller.income.value}', Icons.arrow_upward, Colors.green, screenWidth))),
                           SizedBox(width: screenWidth * 0.04),
-                          Expanded(child: Obx(() => _buildStatCard('Expense', '\$${controller.expense.value}', Icons.arrow_downward, Colors.orange, screenWidth))),
+                          Expanded(child: Obx(() => _buildStatCard('expense'.tr, '\$${controller.expense.value}', Icons.arrow_downward, Colors.orange, screenWidth))),
                           SizedBox(width: screenWidth * 0.04),
-                          Expanded(child: Obx(() => _buildStatCard('Savings', '\$${controller.savings.value}', Icons.add, Colors.white, screenWidth))),
+                          Expanded(child: Obx(() => _buildStatCard('savings'.tr, '\$${controller.savings.value}', Icons.add, Colors.white, screenWidth))),
                         ],
                       ),
                     ],
@@ -186,7 +197,7 @@ class MainHomeScreen extends StatelessWidget {
                 // Monthly Budget Section
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FA),
+                    color: cardColor,
                     borderRadius: BorderRadius.circular(screenWidth * 0.04),
                   ),
                   padding: EdgeInsets.all(screenWidth * 0.05),
@@ -196,10 +207,10 @@ class MainHomeScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Monthly Budget', style: TextStyle(fontSize: screenWidth * 0.045, fontWeight: FontWeight.w600)),
+                          Text('monthly_budget'.tr, style: TextStyle(fontSize: screenWidth * 0.045, fontWeight: FontWeight.w600, color: textColor)),
                           GestureDetector(
                             onTap: () => controller.navigateToMonthlyBudgetnonpro(),
-                            child: Text('Edit', style: TextStyle(color: const Color(0xFF2196F3), fontSize: screenWidth * 0.035)),
+                            child: Text('edit'.tr, style: TextStyle(color: primaryColor, fontSize: screenWidth * 0.035)),
                           ),
                         ],
                       ),
@@ -211,24 +222,24 @@ class MainHomeScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: screenWidth * 0.06,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFF2196F3),
+                              color: primaryColor,
                             ),
                           )),
                           SizedBox(width: screenWidth * 0.02),
-                          Icon(Icons.arrow_forward_ios, size: screenWidth * 0.04, color: Colors.grey.shade600),
+                          Icon(Icons.arrow_forward_ios, size: screenWidth * 0.04, color: iconColor),
                         ],
                       ),
                       SizedBox(height: screenHeight * 0.01),
                       Text(
-                        'Keep it up you can save \$500 this month',
-                        style: TextStyle(color: Colors.grey.shade600, fontSize: screenWidth * 0.035),
+                        'keep_it_up'.tr,
+                        style: TextStyle(color: secondaryTextColor, fontSize: screenWidth * 0.035),
                       ),
                       SizedBox(height: screenHeight * 0.02),
                       Obx(() => Container(
                         width: double.infinity,
                         height: screenHeight * 0.01,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFC0C0C0),
+                          color: themeController.isDarkModeActive ? Color(0xFF3A3A3A) : Color(0xFFC0C0C0),
                           borderRadius: BorderRadius.circular(screenWidth * 0.02),
                         ),
                         child: Stack(
@@ -237,7 +248,7 @@ class MainHomeScreen extends StatelessWidget {
                               width: screenWidth * 0.8 * (controller.spentPercentage.value / 100),
                               height: screenHeight * 0.01,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF2196F3),
+                                color: primaryColor,
                                 borderRadius: BorderRadius.circular(screenWidth * 0.02),
                               ),
                             ),
@@ -249,12 +260,12 @@ class MainHomeScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Obx(() => Text(
-                            'Spent \$${controller.spentAmount.value}/${controller.spentPercentage.value.toStringAsFixed(0)}%',
-                            style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w500, fontSize: screenWidth * 0.035),
+                            '${'spent'.tr} \$${controller.spentAmount.value}/${controller.spentPercentage.value.toStringAsFixed(0)}%',
+                            style: TextStyle(color: secondaryTextColor, fontWeight: FontWeight.w500, fontSize: screenWidth * 0.035),
                           )),
                           Obx(() => Text(
-                            'Left \$${controller.leftAmount.value}/${controller.leftPercentage.value.toStringAsFixed(0)}%',
-                            style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w500, fontSize: screenWidth * 0.035),
+                            '${'left'.tr} \$${controller.leftAmount.value}/${controller.leftPercentage.value.toStringAsFixed(0)}%',
+                            style: TextStyle(color: secondaryTextColor, fontWeight: FontWeight.w500, fontSize: screenWidth * 0.035),
                           )),
                         ],
                       ),
@@ -265,25 +276,25 @@ class MainHomeScreen extends StatelessWidget {
                 // Rate App Section
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FA),
+                    color: cardColor,
                     borderRadius: BorderRadius.circular(screenWidth * 0.04),
                   ),
                   padding: EdgeInsets.all(screenWidth * 0.06),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Rate App', style: TextStyle(fontSize: screenWidth * 0.045, fontWeight: FontWeight.w600)),
+                      Text('rate_app'.tr, style: TextStyle(fontSize: screenWidth * 0.045, fontWeight: FontWeight.w600, color: textColor)),
                       SizedBox(height: screenHeight * 0.03),
                       Text(
-                        'Let\'s grow together!',
+                        'lets_grow'.tr,
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: screenWidth * 0.05, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: screenWidth * 0.05, fontWeight: FontWeight.w600, color: textColor),
                       ),
                       SizedBox(height: screenHeight * 0.01),
                       Text(
-                        'Your feedback helps us improve',
+                        'feedback_help'.tr,
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey.shade600, fontSize: screenWidth * 0.035),
+                        style: TextStyle(color: secondaryTextColor, fontSize: screenWidth * 0.035),
                       ),
                       SizedBox(height: screenHeight * 0.03),
                       Obx(() => Row(
@@ -297,7 +308,7 @@ class MainHomeScreen extends StatelessWidget {
                                 'assets/icons/star.png',
                                 width: screenWidth * 0.07,
                                 height: screenWidth * 0.07,
-                                color: index < controller.starRating.value ? const Color(0xFF2196F3) : Colors.grey.shade400,
+                                color: index < controller.starRating.value ? primaryColor : iconColor,
                               ),
                             ),
                           );
@@ -310,11 +321,11 @@ class MainHomeScreen extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () => controller.shareExperience(),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2196F3),
+                            backgroundColor: primaryColor,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(screenWidth * 0.03)),
                           ),
                           child: Text(
-                            'Share Your Experience',
+                            'share_experience'.tr,
                             style: TextStyle(fontSize: screenWidth * 0.04, color: Colors.white),
                           ),
                         ),
@@ -327,10 +338,10 @@ class MainHomeScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Recent Transaction', style: TextStyle(fontSize: screenWidth * 0.045, fontWeight: FontWeight.w600)),
+                    Text('recent_transaction'.tr, style: TextStyle(fontSize: screenWidth * 0.045, fontWeight: FontWeight.w600, color: textColor)),
                     GestureDetector(
                       onTap: () => controller.viewAllTransactions(),
-                      child: Text('View all', style: TextStyle(color: const Color(0xFF2196F3), fontSize: screenWidth * 0.035)),
+                      child: Text('view_all'.tr, style: TextStyle(color: primaryColor, fontSize: screenWidth * 0.035)),
                     ),
                   ],
                 ),
@@ -346,6 +357,7 @@ class MainHomeScreen extends StatelessWidget {
                         transaction['amount'] as String,
                         transaction['isIncome'] as bool,
                         screenWidth,
+                        themeController.isDarkModeActive,
                       ),
                     );
                   }).toList(),
@@ -358,26 +370,28 @@ class MainHomeScreen extends StatelessWidget {
       ),
       bottomNavigationBar: Obx(() => Container(
         height: screenHeight * 0.1,
-        decoration: BoxDecoration(color: Colors.white, boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ]),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildNavItem(0, 'assets/icons/home (2).png', 'Home', screenWidth),
-            _buildNavItem(1, 'assets/icons/analysis.png', 'Analytics', screenWidth),
+            _buildNavItem(0, 'assets/icons/home (2).png', 'home'.tr, screenWidth, themeController.isDarkModeActive),
+            _buildNavItem(1, 'assets/icons/analysis.png', 'analytics'.tr, screenWidth, themeController.isDarkModeActive),
             GestureDetector(
-              // FIX: This line has been updated to use the new unified method.
               onTap: () => controller.navigateToAddTransaction(isExpense: true),
               child: Container(
                 width: screenWidth * 0.14,
                 height: screenWidth * 0.14,
-                decoration: const BoxDecoration(color: Color(0xFF2196F3), shape: BoxShape.circle),
+                decoration: BoxDecoration(color: primaryColor, shape: BoxShape.circle),
                 child: Center(
                   child: Image.asset(
                     'assets/icons/plus.png',
@@ -388,8 +402,8 @@ class MainHomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            _buildNavItem(2, 'assets/icons/compare.png', 'Comparison', screenWidth),
-            _buildNavItem(3, 'assets/icons/setting.png', 'Settings', screenWidth),
+            _buildNavItem(2, 'assets/icons/compare.png', 'comparison'.tr, screenWidth, themeController.isDarkModeActive),
+            _buildNavItem(3, 'assets/icons/setting.png', 'settings'.tr, screenWidth, themeController.isDarkModeActive),
           ],
         ),
       )),
@@ -402,7 +416,7 @@ class MainHomeScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF2A6EBB).withOpacity(0.5),
         borderRadius: BorderRadius.circular(screenWidth * 0.02),
-        border: Border.all(color: const Color(0xFF919191).withOpacity(0.3), width: 0.2),
+        border: Border.all(color: Colors.white.withOpacity(0.3), width: 0.2),
       ),
       padding: EdgeInsets.symmetric(vertical: screenWidth * 0.02, horizontal: screenWidth * 0.03),
       child: Column(
@@ -450,9 +464,9 @@ class MainHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTransactionItem(String title, String time, String amount, bool isIncome, double screenWidth) {
+  Widget _buildTransactionItem(String title, String time, String amount, bool isIncome, double screenWidth, bool isDarkMode) {
     return Card(
-      color: Colors.white,
+      color: isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
       elevation: 0.5,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(screenWidth * 0.03),
@@ -466,7 +480,7 @@ class MainHomeScreen extends StatelessWidget {
               width: screenWidth * 0.1,
               height: screenWidth * 0.1,
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: isDarkMode ? Color(0xFF2D2D2D) : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(screenWidth * 0.02),
               ),
               child: Center(
@@ -482,8 +496,15 @@ class MainHomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(fontSize: screenWidth * 0.04, fontWeight: FontWeight.w600)),
-                  Text(time, style: TextStyle(color: Colors.grey.shade600, fontSize: screenWidth * 0.035)),
+                  Text(title, style: TextStyle(
+                    fontSize: screenWidth * 0.04,
+                    fontWeight: FontWeight.w600,
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  )),
+                  Text(time, style: TextStyle(
+                      color: isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600,
+                      fontSize: screenWidth * 0.035
+                  )),
                 ],
               ),
             ),
@@ -501,9 +522,12 @@ class MainHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(int index, String iconPath, String label, double screenWidth) {
+  Widget _buildNavItem(int index, String iconPath, String label, double screenWidth, bool isDarkMode) {
     final controller = Get.find<HomeController>();
     bool isActive = controller.selectedNavIndex.value == index;
+    final activeColor = isDarkMode ? Colors.white : Color(0xFF2196F3);
+    final inactiveColor = isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600;
+
     return GestureDetector(
       onTap: () => controller.changeNavIndex(index),
       child: Column(
@@ -513,19 +537,19 @@ class MainHomeScreen extends StatelessWidget {
             iconPath,
             width: screenWidth * 0.06,
             height: screenWidth * 0.06,
-            color: isActive ? const Color(0xFF2196F3) : Colors.grey.shade600,
+            color: isActive ? activeColor : inactiveColor,
           ),
           SizedBox(height: screenWidth * 0.015),
           Text(
             label,
             style: TextStyle(
               fontSize: screenWidth * 0.03,
-              color: isActive ? const Color(0xFF2196F3) : Colors.grey.shade600,
+              color: isActive ? activeColor : inactiveColor,
             ),
           ),
           if (isActive) ...[
             SizedBox(height: screenWidth * 0.005),
-            Container(width: screenWidth * 0.05, height: 2, color: const Color(0xFF2196F3)),
+            Container(width: screenWidth * 0.05, height: 2, color: activeColor),
           ]
         ],
       ),

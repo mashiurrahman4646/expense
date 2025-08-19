@@ -1,23 +1,27 @@
 // lib/faceidverification/face_verification_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../Settings/appearance/ThemeController.dart';
 import '../colors/app_colors.dart';
 import '../text_styles.dart';
 
+
 class FaceVerificationScreen extends StatelessWidget {
+  final ThemeController themeController = Get.find<ThemeController>();
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkModeActive ? AppColors.darkBackground : Colors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: Image.asset(
             'assets/icons/arrow-left.png',
             width: 24,
             height: 24,
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
           ),
           onPressed: () => Get.back(),
         ),
@@ -25,8 +29,10 @@ class FaceVerificationScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Set Your Face ID',
-          style: AppTextStyles.heading2.copyWith(color: const Color(0xFF000000)),
+          'set_your_face_id'.tr,
+          style: AppTextStyles.heading2.copyWith(
+            color: themeController.isDarkModeActive ? Colors.white : const Color(0xFF000000),
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -38,11 +44,11 @@ class FaceVerificationScreen extends StatelessWidget {
             _buildProgressIndicator(context),
             SizedBox(height: 32),
             Text(
-              'Secure your account with Face ID authentication. Quickly log in without typing your password every time.',
+              'face_id_description'.tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.black87,
+                color: themeController.isDarkModeActive ? Colors.white70 : Colors.black87,
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w400,
               ),
@@ -51,13 +57,13 @@ class FaceVerificationScreen extends StatelessWidget {
             // Clickable Face ID Image
             GestureDetector(
               onTap: () {
-                // Navigate to main home after face verification setup
                 _handleFaceVerification();
               },
               child: Image.asset(
                 'assets/images/face-id.png',
                 width: 150,
                 height: 150,
+                color: themeController.isDarkModeActive ? AppColors.primary300 : null,
               ),
             ),
             SizedBox(height: 32),
@@ -78,7 +84,7 @@ class FaceVerificationScreen extends StatelessWidget {
                   elevation: 0,
                 ),
                 child: Text(
-                  'Setup Face ID',
+                  'setup_face_id'.tr,
                   style: AppTextStyles.buttonLarge,
                 ),
               ),
@@ -90,11 +96,10 @@ class FaceVerificationScreen extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  // Skip face verification and go to main home
                   Get.offAllNamed('/mainHome');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor: themeController.isDarkModeActive ? AppColors.darkCardBackground : Colors.white,
                   foregroundColor: Colors.red,
                   side: BorderSide(color: Colors.red, width: 2),
                   shape: RoundedRectangleBorder(
@@ -103,7 +108,7 @@ class FaceVerificationScreen extends StatelessWidget {
                   elevation: 0,
                 ),
                 child: Text(
-                  'Skip for now',
+                  'skip_for_now'.tr,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.red,
@@ -116,11 +121,12 @@ class FaceVerificationScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildProgressIndicator(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final themeController = Get.find<ThemeController>();
 
     return Column(
       children: [
@@ -135,7 +141,7 @@ class FaceVerificationScreen extends StatelessWidget {
                 right: 0,
                 child: Container(
                   height: 2,
-                  color: Colors.grey[300],
+                  color: themeController.isDarkModeActive ? Colors.grey[800] : Colors.grey[300],
                 ),
               ),
               // Progress line (completed steps)
@@ -143,24 +149,22 @@ class FaceVerificationScreen extends StatelessWidget {
                 top: 15,
                 left: 0,
                 child: Container(
-                  width: screenWidth * 0.75, // Show progress to step 3
+                  width: screenWidth * 0.75,
                   height: 2,
                   color: AppColors.primary500,
                 ),
               ),
-              // Step 1 Circle (Registration - Completed)
+              // Step circles
               Positioned(
                 left: (screenWidth * 0.15) - 12,
                 top: 4,
                 child: _buildStepCircle(1, true),
               ),
-              // Step 2 Circle (Email Verification - Completed)
               Positioned(
                 left: (screenWidth * 0.5) - 12,
                 top: 4,
                 child: _buildStepCircle(2, true),
               ),
-              // Step 3 Circle (Face Verification - Active)
               Positioned(
                 left: (screenWidth * 0.85) - 12,
                 top: 4,
@@ -175,24 +179,12 @@ class FaceVerificationScreen extends StatelessWidget {
           children: [
             Container(
               width: screenWidth * 0.25,
-              child: const Text(
-                'Registration',
+              child: Text(
+                'registration'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 10,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-            Container(
-              width: screenWidth * 0.25,
-              child: const Text(
-                'Verification',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey,
+                  color: themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey,
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -200,7 +192,19 @@ class FaceVerificationScreen extends StatelessWidget {
             Container(
               width: screenWidth * 0.25,
               child: Text(
-                'Face ID',
+                'verification'.tr,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+            Container(
+              width: screenWidth * 0.25,
+              child: Text(
+                'face_id'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 10,
@@ -216,11 +220,14 @@ class FaceVerificationScreen extends StatelessWidget {
   }
 
   Widget _buildStepCircle(int stepNumber, bool isActive) {
+    final themeController = Get.find<ThemeController>();
+
     return Container(
       width: 24,
       height: 24,
       decoration: BoxDecoration(
-        color: isActive ? AppColors.primary500 : Colors.grey[400],
+        color: isActive ? AppColors.primary500 :
+        (themeController.isDarkModeActive ? Colors.grey[700] : Colors.grey[400]),
         shape: BoxShape.circle,
         border: Border.all(
             color: AppColors.primary500,
@@ -241,7 +248,6 @@ class FaceVerificationScreen extends StatelessWidget {
   }
 
   void _handleFaceVerification() {
-    // Show loading dialog
     Get.dialog(
       Center(
         child: CircularProgressIndicator(
@@ -251,21 +257,21 @@ class FaceVerificationScreen extends StatelessWidget {
       barrierDismissible: false,
     );
 
-    // Simulate face verification setup
     Future.delayed(Duration(seconds: 2), () {
-      Get.back(); // Close loading dialog
-
-      // Show success message
+      Get.back();
       Get.snackbar(
-        'Success',
-        'Face ID has been set up successfully!',
+        'success'.tr,
+        'face_id_setup_success'.tr,
         snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.green[100],
-        colorText: Colors.green[900],
+        backgroundColor: Get.find<ThemeController>().isDarkModeActive
+            ? Colors.green[900]
+            : Colors.green[100],
+        colorText: Get.find<ThemeController>().isDarkModeActive
+            ? Colors.white
+            : Colors.green[900],
         margin: const EdgeInsets.all(12),
       );
 
-      // Navigate to main home screen
       Future.delayed(Duration(seconds: 1), () {
         Get.offAllNamed('/signupVerification');
       });

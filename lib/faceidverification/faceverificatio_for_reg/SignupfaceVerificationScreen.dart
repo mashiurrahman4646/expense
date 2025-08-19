@@ -61,8 +61,8 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
     } catch (e) {
       print('Error initializing camera: $e');
       Get.snackbar(
-        'Camera Error',
-        'Unable to access camera. Please check permissions.',
+        'camera_error'.tr,
+        'camera_permission_error'.tr,
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -79,7 +79,7 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
         controller.completeVerification();
         Timer(const Duration(seconds: 2), () {
           if (mounted) {
-            Get.toNamed('/faceConfirmation'); // Navigate to FaceConfirmationScreen
+            Get.toNamed('/faceConfirmation');
           }
         });
       }
@@ -102,13 +102,9 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Get.back(),
-        ),
-        title: const Text(
-          'Face Verification',
-          style: TextStyle(
+        title: Text(
+          'face_verification'.tr,
+          style: const TextStyle(
             fontFamily: 'Inter',
             fontWeight: FontWeight.w600,
             fontSize: 18,
@@ -119,7 +115,7 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
       body: GetBuilder<SignupVerificationController>(
         builder: (controller) => Stack(
           children: [
-            // Camera Preview (Base Layer)
+            // Camera Preview
             if (_isCameraInitialized)
               Positioned.fill(
                 child: CameraPreview(_cameraController!),
@@ -156,10 +152,10 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
                     color: Colors.black.withOpacity(0.7),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
-                    'Position your face within the circle and tap the button below to start verification',
+                  child: Text(
+                    'face_position_instruction'.tr,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Inter',
                       color: Colors.white,
                       fontSize: 16,
@@ -188,17 +184,14 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
                   children: [
                     if (controller.isVerifying.value)
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         decoration: BoxDecoration(
                           color: AppColors.primary500.withOpacity(0.9),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Text(
-                          'Verifying... Keep your face in the circle',
-                          style: TextStyle(
+                        child: Text(
+                          'verifying_keep_face'.tr,
+                          style: const TextStyle(
                             fontFamily: 'Inter',
                             color: Colors.white,
                             fontSize: 16,
@@ -207,6 +200,7 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
                         ),
                       ),
                     const SizedBox(height: 20),
+
                     if (!controller.isVerifying.value && !controller.isVerificationComplete.value)
                       SizedBox(
                         width: double.infinity,
@@ -222,14 +216,14 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
                             ),
                             disabledBackgroundColor: Colors.grey,
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.face, size: 24),
-                              SizedBox(width: 8),
+                              const Icon(Icons.face, size: 24),
+                              const SizedBox(width: 8),
                               Text(
-                                'Authenticate Using Face ID',
-                                style: TextStyle(
+                                'authenticate_face_id'.tr,
+                                style: const TextStyle(
                                   fontFamily: 'Inter',
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,
@@ -240,12 +234,13 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
                         ),
                       ),
                     const SizedBox(height: 12),
+
                     if (!controller.isVerifying.value)
                       TextButton(
-                        onPressed: () => Get.back(),
-                        child: const Text(
-                          'Back to Sign Up',
-                          style: TextStyle(
+                        onPressed: () => Get.offNamedUntil('/register', (route) => false),
+                        child: Text(
+                          'back_to_signup'.tr,
+                          style: const TextStyle(
                             fontFamily: 'Inter',
                             fontWeight: FontWeight.w400,
                             fontSize: 16,
@@ -281,16 +276,12 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
                               color: Colors.green,
                               borderRadius: BorderRadius.circular(40),
                             ),
-                            child: const Icon(
-                              Icons.check,
-                              color: Colors.white,
-                              size: 50,
-                            ),
+                            child: const Icon(Icons.check, color: Colors.white, size: 50),
                           ),
                           const SizedBox(height: 20),
-                          const Text(
-                            'Verification Done!',
-                            style: TextStyle(
+                          Text(
+                            'verification_done'.tr,
+                            style: const TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
@@ -298,10 +289,10 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
                             ),
                           ),
                           const SizedBox(height: 10),
-                          const Text(
-                            'Face authentication successful',
+                          Text(
+                            'face_auth_success'.tr,
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
@@ -321,7 +312,6 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
   }
 }
 
-// NEW APPROACH: Using a widget-based overlay instead of CustomPainter
 class FaceOverlayWidget extends StatelessWidget {
   final Size screenSize;
   final double progress;
@@ -341,7 +331,6 @@ class FaceOverlayWidget extends StatelessWidget {
 
     return Stack(
       children: [
-        // Dark overlay with hole using ClipPath
         ClipPath(
           clipper: CircleHoleClipper(center: center, radius: radius),
           child: Container(
@@ -350,8 +339,6 @@ class FaceOverlayWidget extends StatelessWidget {
             color: Colors.black.withOpacity(0.6),
           ),
         ),
-
-        // Circle border and progress indicator
         CustomPaint(
           size: screenSize,
           painter: CircleBorderPainter(
@@ -366,7 +353,6 @@ class FaceOverlayWidget extends StatelessWidget {
   }
 }
 
-// Custom clipper to create a hole in the overlay
 class CircleHoleClipper extends CustomClipper<Path> {
   final Offset center;
   final double radius;
@@ -385,12 +371,9 @@ class CircleHoleClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    return true;
-  }
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }
 
-// Separate painter for circle border and progress
 class CircleBorderPainter extends CustomPainter {
   final Offset center;
   final double radius;
@@ -406,7 +389,6 @@ class CircleBorderPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Draw circle border
     final borderPaint = Paint()
       ..color = isVerifying ? AppColors.primary500 : Colors.white
       ..style = PaintingStyle.stroke
@@ -414,7 +396,6 @@ class CircleBorderPainter extends CustomPainter {
 
     canvas.drawCircle(center, radius, borderPaint);
 
-    // Draw progress arc during verification
     if (isVerifying && progress > 0) {
       final progressPaint = Paint()
         ..color = AppColors.primary500
@@ -425,48 +406,16 @@ class CircleBorderPainter extends CustomPainter {
       final sweepAngle = 2 * 3.14159 * progress;
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
-        -3.14159 / 2, // Start from top
+        -3.14159 / 2,
         sweepAngle,
         false,
         progressPaint,
       );
     }
-
-    // Draw corner guides when not verifying
-    if (!isVerifying) {
-      final guidePaint = Paint()
-        ..color = Colors.white
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2;
-
-      final guideLength = 20.0;
-      final positions = [
-        center + Offset(-radius * 0.7, -radius * 0.7), // Top-left
-        center + Offset(radius * 0.7, -radius * 0.7),  // Top-right
-        center + Offset(-radius * 0.7, radius * 0.7),  // Bottom-left
-        center + Offset(radius * 0.7, radius * 0.7),   // Bottom-right
-      ];
-
-      for (final pos in positions) {
-        // Horizontal lines
-        canvas.drawLine(
-          pos + const Offset(-10, 0),
-          pos + Offset(guideLength - 10, 0),
-          guidePaint,
-        );
-        // Vertical lines
-        canvas.drawLine(
-          pos + const Offset(0, -10),
-          pos + Offset(0, guideLength - 10),
-          guidePaint,
-        );
-      }
-    }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return oldDelegate is CircleBorderPainter &&
-        (oldDelegate.progress != progress || oldDelegate.isVerifying != isVerifying);
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) =>
+      oldDelegate is CircleBorderPainter &&
+          (oldDelegate.progress != progress || oldDelegate.isVerifying != isVerifying);
 }

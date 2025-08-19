@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:your_expense/colors/app_colors.dart';
 import 'package:your_expense/routes/app_routes.dart';
+import '../../Settings/appearance/ThemeController.dart';
+import '../../Settings/language/language_controller.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   @override
@@ -13,6 +14,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final List<TextEditingController> _controllers =
   List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
+  final ThemeController themeController = Get.find<ThemeController>();
+  final LanguageController languageController = Get.find<LanguageController>();
+  final Color primaryColor = Color(0xFF4A90E2); // Using #4A90E2 as primary color
 
   @override
   void dispose() {
@@ -28,19 +32,28 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   void _onSubmit() {
     String otpCode = _controllers.map((c) => c.text).join();
     if (otpCode.length == 6) {
-      print('Entered OTP: $otpCode');
-      // Simulate OTP validation (replace with actual validation logic)
-      Get.offNamed(AppRoutes.setNewPassword); // Navigate to Set New Password screen
+      Get.offNamed(AppRoutes.setNewPassword);
     } else {
-      Get.snackbar('Error', 'Please enter a valid 6-digit OTP',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error'.tr,
+        'Please enter a valid 6-digit OTP'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: themeController.isDarkModeActive
+            ? Colors.grey[800]
+            : Colors.white,
+        colorText: themeController.isDarkModeActive
+            ? Colors.white
+            : Colors.black,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = themeController.isDarkModeActive;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? Color(0xFF121212) : Colors.white,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -54,60 +67,52 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.primary500.withOpacity(0.1),
+                  color: primaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.lock_outline,
                   size: 40,
-                  color: AppColors.primary500,
+                  color: primaryColor,
                 ),
               ),
 
               const SizedBox(height: 24),
 
+              // Title
               Text(
-                'Verification code',
+                'verification_code'.tr,
                 style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w700,
                   fontSize: 24,
-                  color: AppColors.text800,
-                  height: 1.2,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                'We\'ve sent a verification code',
+                'sent_code'.tr,
                 style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w500,
                   fontSize: 16,
-                  color: AppColors.text500,
-                  height: 1.4,
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
                 ),
               ),
 
               const SizedBox(height: 40),
 
+              // OTP Input Fields
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Enter six digit code',
+                  'enter_six_digit'.tr,
                   style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w500,
                     fontSize: 16,
-                    color: AppColors.text700,
-                    height: 1.4,
+                    color: isDark ? Colors.grey[300] : Colors.grey[700],
                   ),
                 ),
               ),
-
               const SizedBox(height: 16),
-
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: List.generate(6, (index) {
                   return Container(
                     width: 48,
@@ -115,12 +120,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: _focusNodes[index].hasFocus
-                            ? AppColors.primary500
-                            : AppColors.text200,
+                            ? primaryColor
+                            : (isDark ? Colors.grey[600]! : Colors.grey[300]!),
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(12),
-                      color: Colors.white,
+                      color: isDark ? Color(0xFF1E1E1E) : Colors.white,
                     ),
                     child: TextField(
                       controller: _controllers[index],
@@ -129,14 +134,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       textAlign: TextAlign.center,
                       maxLength: 1,
                       style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w600,
                         fontSize: 20,
-                        color: AppColors.text800,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white : Colors.black,
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         counterText: '',
                         border: InputBorder.none,
+                        filled: true,
+                        fillColor: isDark ? Color(0xFF1E1E1E) : Colors.white,
                       ),
                       onChanged: (value) {
                         if (value.isNotEmpty) {
@@ -144,7 +150,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                             FocusScope.of(context)
                                 .requestFocus(_focusNodes[index + 1]);
                           } else {
-                            _focusNodes[index].unfocus(); // Unfocus last field
+                            _focusNodes[index].unfocus();
                           }
                         } else {
                           if (index > 0) {
@@ -164,72 +170,58 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               const SizedBox(height: 24),
 
               Text(
-                'Code expires in: 02:59',
+                'code_expires'.tr,
                 style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w500,
                   fontSize: 14,
-                  color: AppColors.text600,
-                  height: 1.4,
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
                 ),
               ),
 
               const SizedBox(height: 16),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Don\'t get any code? ',
+              // Resend Code
+              Center(
+                child: Text.rich(
+                  TextSpan(
+                    text: 'dont_get_code'.tr,
                     style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w500,
                       fontSize: 14,
-                      color: AppColors.text600,
-                      height: 1.4,
+                      color: isDark ? Colors.grey[400] : Colors.grey[600],
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      // Implement resend logic here
-                    },
-                    child: Text(
-                      'Resend',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: AppColors.primary500,
-                        height: 1.4,
-                        decoration: TextDecoration.underline,
+                    children: [
+                      TextSpan(
+                        text: 'resend'.tr,
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
 
               const SizedBox(height: 32),
 
-              // Submit
+              // Submit Button
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
                   onPressed: _onSubmit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary500,
+                    backgroundColor: primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: Text(
-                    'Submit',
+                    'submit'.tr,
                     style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
                       fontSize: 16,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      height: 1.2,
                     ),
                   ),
                 ),
@@ -237,27 +229,18 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
               const SizedBox(height: 16),
 
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: OutlinedButton(
+              // Back to Sign In Button
+              Center(
+                child: TextButton(
                   onPressed: () {
                     Get.offNamed(AppRoutes.register);
                   },
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColors.text300),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
                   child: Text(
-                    'Back to sign in',
+                    'back_to_sign_in'.tr,
                     style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
                       fontSize: 16,
-                      color: AppColors.text700,
-                      height: 1.2,
+                      fontWeight: FontWeight.bold,
+                      color: primaryColor,
                     ),
                   ),
                 ),

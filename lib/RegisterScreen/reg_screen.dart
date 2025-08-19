@@ -12,7 +12,7 @@ import '../tram_and_condition/trams_and_condition_screen.dart';
 class RegistrationScreen extends StatelessWidget {
   final RegistrationController controller = Get.put(RegistrationController());
   final ThemeController themeController = Get.find<ThemeController>();
-  final LanguageController languageController = Get.find<LanguageController>();
+
 
   @override
   Widget build(BuildContext context) {

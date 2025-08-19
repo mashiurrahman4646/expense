@@ -1,48 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../routes/app_routes.dart'; // Make sure to import your routes
+import '../../Settings/appearance/ThemeController.dart';
+import '../../routes/app_routes.dart';
+
 
 class FaceConfirmationScreen extends StatelessWidget {
+  final ThemeController themeController = Get.find<ThemeController>();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkMode.value
+          ? const Color(0xFF121212)
+          : Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Image (adjusted to match your Figma layout)
             Image.asset(
               'assets/images/Fingerprint-confarm.png',
               width: 220,
               height: 220,
+              fit: BoxFit.contain,
             ),
+
             const SizedBox(height: 40),
 
-            // Title Text
-            const Text(
-              'FaceID Added Successfully!',
+            // Title
+            Text(
+              'faceid_added'.tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
-                color: Color(0xFF535353),
+                color: themeController.isDarkMode.value
+                    ? Colors.white.withOpacity(0.9)
+                    : const Color(0xFF535353),
                 height: 1.2,
               ),
             ),
             const SizedBox(height: 8),
 
-            // Sub Text
-            const Text(
-              'Your account is protected with FaceID authentication.',
+            // Subtitle
+            Text(
+              'faceid_protected'.tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
-                color: Color(0xFF6A6A6A),
+                color: themeController.isDarkMode.value
+                    ? Colors.white.withOpacity(0.7)
+                    : const Color(0xFF6A6A6A),
                 height: 1.3,
               ),
             ),
@@ -54,19 +65,18 @@ class FaceConfirmationScreen extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  // Navigate to home page and remove all previous routes
                   Get.offAllNamed(AppRoutes.mainHome);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF3787F2), // Or match Figma blue
+                  backgroundColor: const Color(0xFF3787F2),
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // Rounded button
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Continue',
-                  style: TextStyle(
+                child: Text(
+                  'continue'.tr,
+                  style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -77,6 +87,6 @@ class FaceConfirmationScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }

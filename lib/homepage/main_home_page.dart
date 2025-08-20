@@ -382,28 +382,39 @@ class MainHomeScreen extends StatelessWidget {
           ],
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(0, 'assets/icons/home (2).png', 'home'.tr, screenWidth, themeController.isDarkModeActive),
-            _buildNavItem(1, 'assets/icons/analysis.png', 'analytics'.tr, screenWidth, themeController.isDarkModeActive),
-            GestureDetector(
-              onTap: () => controller.navigateToAddTransaction(isExpense: true),
-              child: Container(
-                width: screenWidth * 0.14,
-                height: screenWidth * 0.14,
-                decoration: BoxDecoration(color: primaryColor, shape: BoxShape.circle),
-                child: Center(
-                  child: Image.asset(
-                    'assets/icons/plus.png',
-                    width: screenWidth * 0.06,
-                    height: screenWidth * 0.06,
-                    color: Colors.white,
+            Expanded(
+              child: _buildNavItem(0, 'assets/icons/home (2).png', 'home'.tr, screenWidth, themeController.isDarkModeActive),
+            ),
+            Expanded(
+              child: _buildNavItem(1, 'assets/icons/analysis.png', 'analytics'.tr, screenWidth, themeController.isDarkModeActive),
+            ),
+            Container(
+              width: screenWidth * 0.18,
+              child: GestureDetector(
+                onTap: () => controller.navigateToAddTransaction(isExpense: true),
+                child: Container(
+                  width: screenWidth * 0.14,
+                  height: screenWidth * 0.14,
+                  decoration: BoxDecoration(color: primaryColor, shape: BoxShape.circle),
+                  child: Center(
+                    child: Image.asset(
+                      'assets/icons/plus.png',
+                      width: screenWidth * 0.06,
+                      height: screenWidth * 0.06,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
             ),
-            _buildNavItem(2, 'assets/icons/compare.png', 'comparison'.tr, screenWidth, themeController.isDarkModeActive),
-            _buildNavItem(3, 'assets/icons/setting.png', 'settings'.tr, screenWidth, themeController.isDarkModeActive),
+            Expanded(
+              child: _buildNavItem(2, 'assets/icons/compare.png', 'comparison'.tr, screenWidth, themeController.isDarkModeActive),
+            ),
+            Expanded(
+              child: _buildNavItem(3, 'assets/icons/setting.png', 'settings'.tr, screenWidth, themeController.isDarkModeActive),
+            ),
           ],
         ),
       )),

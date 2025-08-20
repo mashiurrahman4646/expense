@@ -2,30 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui';
 
+import '../../../Settings/appearance/ThemeController.dart';
 import '../../../make it pro/AdvertisementPage/MonthlyBudgetProadd.dart';
+
 
 class MonthlyBudgetNonPro extends StatelessWidget {
   const MonthlyBudgetNonPro({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    final ThemeController themeController = Get.find<ThemeController>();
+
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkMode.value
+          ? const Color(0xFF121212)
+          : Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "Monthly Budget",
+        title: Text(
+          "monthly_budget".tr,
           style: TextStyle(
             fontFamily: 'Inter',
             fontWeight: FontWeight.w600,
             fontSize: 18,
-            color: Colors.black,
+            color: themeController.isDarkMode.value
+                ? Colors.white
+                : Colors.black,
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: themeController.isDarkMode.value
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios,
+              color: themeController.isDarkMode.value
+                  ? Colors.white
+                  : Colors.black,
+              size: 20),
           onPressed: () => Get.back(),
         ),
       ),
@@ -43,16 +57,25 @@ class MonthlyBudgetNonPro extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: themeController.isDarkMode.value
+                          ? const Color(0xFF1E1E1E)
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFF0F0F0)),
+                      border: Border.all(
+                        color: themeController.isDarkMode.value
+                            ? Colors.grey.shade800
+                            : const Color(0xFFF0F0F0),
+                      ),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         '\$2,500',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
+                          color: themeController.isDarkMode.value
+                              ? Colors.white
+                              : Colors.black,
                         ),
                       ),
                     ),
@@ -62,12 +85,18 @@ class MonthlyBudgetNonPro extends StatelessWidget {
                   Expanded(
                     child: ListView(
                       children: [
-                        _buildBudgetItem('Food', '\$500', '20%', Icons.fastfood),
-                        _buildBudgetItem('Transport', '\$300', '12%', Icons.directions_car),
-                        _buildBudgetItem('Housing', '\$1,000', '40%', Icons.home),
-                        _buildBudgetItem('Entertainment', '\$200', '8%', Icons.movie),
-                        _buildBudgetItem('Utilities', '\$150', '6%', Icons.bolt),
-                        _buildBudgetItem('Savings', '\$350', '14%', Icons.savings),
+                        _buildBudgetItem(themeController, 'Food', '\$500',
+                            '20%', Icons.fastfood),
+                        _buildBudgetItem(themeController, 'Transport',
+                            '\$300', '12%', Icons.directions_car),
+                        _buildBudgetItem(themeController, 'Housing',
+                            '\$1,000', '40%', Icons.home),
+                        _buildBudgetItem(themeController, 'Entertainment',
+                            '\$200', '8%', Icons.movie),
+                        _buildBudgetItem(themeController, 'Utilities',
+                            '\$150', '6%', Icons.bolt),
+                        _buildBudgetItem(themeController, 'Savings',
+                            '\$350', '14%', Icons.savings),
                       ],
                     ),
                   ),
@@ -82,7 +111,9 @@ class MonthlyBudgetNonPro extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.8,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: themeController.isDarkMode.value
+                    ? const Color(0xFF1E1E1E)
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -95,31 +126,37 @@ class MonthlyBudgetNonPro extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.lock_outline,
                     size: 48,
-                    color: Color(0xFF2196F3),
+                    color: themeController.isDarkMode.value
+                        ? Colors.blue.shade200
+                        : const Color(0xFF2196F3),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Upgrade to Pro to Edit',
+                  Text(
+                    'upgrade_title'.tr,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
                       fontSize: 18,
-                      color: Colors.black,
+                      color: themeController.isDarkMode.value
+                          ? Colors.white
+                          : Colors.black,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Get full access to budget editing features',
+                  Text(
+                    'upgrade_subtitle'.tr,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
-                      color: Color(0xFF6A6A6A),
+                      color: themeController.isDarkMode.value
+                          ? Colors.grey.shade400
+                          : const Color(0xFF6A6A6A),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -128,7 +165,6 @@ class MonthlyBudgetNonPro extends StatelessWidget {
                     height: 48,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Navigate to MonthlyBudgetPro page
                         Get.to(() => const MonthlyBudgetPro());
                       },
                       style: ElevatedButton.styleFrom(
@@ -137,9 +173,9 @@ class MonthlyBudgetNonPro extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text(
-                        'Upgrade Now',
-                        style: TextStyle(
+                      child: Text(
+                        'upgrade_now'.tr,
+                        style: const TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
@@ -151,13 +187,15 @@ class MonthlyBudgetNonPro extends StatelessWidget {
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () => Get.back(),
-                    child: const Text(
-                      'Maybe Later',
+                    child: Text(
+                      'maybe_later'.tr,
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
-                        color: Color(0xFF6A6A6A),
+                        color: themeController.isDarkMode.value
+                            ? Colors.grey.shade400
+                            : const Color(0xFF6A6A6A),
                       ),
                     ),
                   ),
@@ -167,17 +205,24 @@ class MonthlyBudgetNonPro extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 
-  Widget _buildBudgetItem(String category, String amount, String percentage, IconData icon) {
+  Widget _buildBudgetItem(ThemeController themeController, String category,
+      String amount, String percentage, IconData icon) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: themeController.isDarkMode.value
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF0F0F0)),
+        border: Border.all(
+          color: themeController.isDarkMode.value
+              ? Colors.grey.shade800
+              : const Color(0xFFF0F0F0),
+        ),
       ),
       child: Row(
         children: [
@@ -185,19 +230,27 @@ class MonthlyBudgetNonPro extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
+              color: themeController.isDarkMode.value
+                  ? const Color(0xFF2C2C2C)
+                  : const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: Colors.blue),
+            child: Icon(icon,
+                color: themeController.isDarkMode.value
+                    ? Colors.blue.shade200
+                    : Colors.blue),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
               category,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w500,
                 fontSize: 16,
+                color: themeController.isDarkMode.value
+                    ? Colors.white
+                    : Colors.black,
               ),
             ),
           ),
@@ -206,19 +259,24 @@ class MonthlyBudgetNonPro extends StatelessWidget {
             children: [
               Text(
                 amount,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
+                  color: themeController.isDarkMode.value
+                      ? Colors.white
+                      : Colors.black,
                 ),
               ),
               Text(
                 percentage,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w400,
                   fontSize: 12,
-                  color: Color(0xFF6A6A6A),
+                  color: themeController.isDarkMode.value
+                      ? Colors.grey.shade400
+                      : const Color(0xFF6A6A6A),
                 ),
               ),
             ],

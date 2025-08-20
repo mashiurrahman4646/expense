@@ -1,122 +1,161 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../Settings/appearance/ThemeController.dart';
+
 class MonthlyBudgetScreen extends StatelessWidget {
   const MonthlyBudgetScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.find<ThemeController>();
+    final bool isDarkMode = themeController.isDarkModeActive;
+
+    final Color backgroundColor = isDarkMode ? Color(0xFF121212) : Color(0xFFF8F9FA);
+    final Color cardColor = isDarkMode ? Color(0xFF1E1E1E) : Colors.white;
+    final Color textColor = isDarkMode ? Colors.white : Colors.black;
+    final Color secondaryTextColor = isDarkMode ? Colors.grey[400]! : Color(0xFF6A6A6A);
+    final Color borderColor = isDarkMode ? Color(0xFF333333) : Color(0xFFE0E0E0);
+    final Color lightBorderColor = isDarkMode ? Color(0xFF444444) : Color(0xFFF0F0F0);
+    final Color hintTextColor = isDarkMode ? Colors.grey[500]! : Color(0xFF9E9E9E);
+    final Color iconBackgroundColor = isDarkMode ? Color(0xFF2A2A2A) : Color(0xFFF8F9FA);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: const Text(
-          "Monthly Budget",
+        title: Text(
+          "monthly_budget".tr,
           style: TextStyle(
             fontFamily: 'Inter',
             fontWeight: FontWeight.w600,
             fontSize: 18,
-            color: Colors.black,
+            color: textColor,
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: backgroundColor,
         elevation: 0,
+        iconTheme: IconThemeData(color: textColor),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () => Get.offAllNamed('/mainHome'), // Updated back button navigation
+          icon: Icon(Icons.arrow_back_ios, color: textColor, size: 20),
+          onPressed: () => Get.offAllNamed('/mainHome'),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 16),
+
             // Current Monthly Budget Section
-            Text(
-              'Current Monthly Budget',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-                color: Color(0xFF6A6A6A),
-              ),
-            ),
-            const SizedBox(height: 8),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFF0F0F0)),
+                color: cardColor,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: isDarkMode ? null : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: const Text(
-                '\$25000',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 28,
-                  color: Colors.black,
-                ),
+              child: Column(
+                children: [
+                  Text(
+                    'current_monthly_budget'.tr,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      color: secondaryTextColor,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '\$25000',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 32,
+                      color: textColor,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
             // Edit Budget Section
-            const Text(
-              'Edit Your Budget',
+            Text(
+              'edit_your_budget'.tr,
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w600,
                 fontSize: 16,
-                color: Colors.black,
+                color: textColor,
               ),
             ),
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
+                color: cardColor,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFE0E0E0)),
+                border: Border.all(color: borderColor),
               ),
               child: TextField(
-                decoration: const InputDecoration(
-                  hintText: '\$ Enter amount',
+                decoration: InputDecoration(
+                  hintText: 'enter_amount'.tr,
                   hintStyle: TextStyle(
-                    color: Color(0xFF9E9E9E),
+                    color: hintTextColor,
                     fontSize: 16,
+                    fontFamily: 'Inter',
                   ),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 ),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: Colors.black,
+                  color: textColor,
+                  fontFamily: 'Inter',
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(
-                  Icons.info_outline,
-                  size: 16,
-                  color: Color(0xFF9E9E9E),
+                Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    border: Border.all(color: hintTextColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.info_outline,
+                    size: 12,
+                    color: hintTextColor,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: const Text(
-                    'Changing your budget will update your available balance on the home page.',
+                  child: Text(
+                    'budget_change_info'.tr,
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
                       fontSize: 12,
-                      color: Color(0xFF6A6A6A),
+                      color: secondaryTextColor,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
             // Confirm Button
             SizedBox(
@@ -129,9 +168,10 @@ class MonthlyBudgetScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
+                  elevation: 0,
                 ),
-                child: const Text(
-                  'Confirm',
+                child: Text(
+                  'confirm'.tr,
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w600,
@@ -141,65 +181,74 @@ class MonthlyBudgetScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 32),
 
             // Select Category Section
-            const Text(
-              'Select Category',
+            Text(
+              'select_category'.tr,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
-                color: Colors.black,
+                color: textColor,
               ),
             ),
             const SizedBox(height: 16),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: isDarkMode ? null : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildCategoryItem('Food', 'assets/icons/soft-drink-01.png'),
-                  const SizedBox(width: 16),
-                  _buildCategoryItem('Transport', 'assets/icons/car.png'),
-                  const SizedBox(width: 16),
-                  _buildCategoryItem('Groceries', 'assets/icons/Groceries.png'),
-                  const SizedBox(width: 16),
-                  _buildCategoryItem('Eating Out', 'assets/icons/eating_out.png'),
-                  const SizedBox(width: 16),
-                  _buildCategoryItem('Home', 'assets/icons/home_icon.png'),
+                  _buildCategoryItem('food'.tr, 'assets/icons/soft-drink-01.png', iconBackgroundColor, borderColor, secondaryTextColor),
+                  _buildCategoryItem('transport'.tr, 'assets/icons/car.png', iconBackgroundColor, borderColor, secondaryTextColor),
+                  _buildCategoryItem('groceries'.tr, 'assets/icons/Groceries.png', iconBackgroundColor, borderColor, secondaryTextColor),
+                  _buildCategoryItem('eating_out'.tr, 'assets/icons/eating_out.png', iconBackgroundColor, borderColor, secondaryTextColor),
+                  _buildCategoryItem('home'.tr, 'assets/icons/home_icon.png', iconBackgroundColor, borderColor, secondaryTextColor),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-            _buildAddCategoryButton(),
-            const SizedBox(height: 28),
+            _buildAddCategoryButton(cardColor, borderColor, textColor),
+            const SizedBox(height: 32),
 
             // Budget Distribution Section
-            const Text(
-              'Budget Distribution',
+            Text(
+              'budget_distribution'.tr,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
-                color: Colors.black,
+                color: textColor,
               ),
             ),
             const SizedBox(height: 16),
             Column(
               children: [
-                _buildBudgetListItem('Food', '\$120', '15%', 'assets/icons/soft-drink-01.png'),
-                const SizedBox(height: 12),
-                _buildBudgetListItem('Transport', '\$100', '7%', 'assets/icons/car.png'),
-                const SizedBox(height: 12),
-                _buildBudgetListItem('Groceries', '\$50', '5%', 'assets/icons/Groceries.png'),
-                const SizedBox(height: 12),
-                _buildBudgetListItem('Eating Out', '\$300', '25%', 'assets/icons/eating_out.png'),
-                const SizedBox(height: 12),
-                _buildBudgetListItem('Home', '\$200', '20%', 'assets/icons/home_icon.png'),
-                const SizedBox(height: 12),
-                _buildBudgetListItem('Gift', '\$100', '7%', 'assets/icons/gift.png'),
-                const SizedBox(height: 12),
-                _buildBudgetListItem('Shopping', '\$20', '2%', 'assets/icons/shoping.png'),
+                _buildBudgetListItem('food'.tr, '\$120', '15%', 'assets/icons/soft-drink-01.png', cardColor, lightBorderColor, textColor, secondaryTextColor, iconBackgroundColor),
+                const SizedBox(height: 8),
+                _buildBudgetListItem('transport'.tr, '\$100', '7%', 'assets/icons/car.png', cardColor, lightBorderColor, textColor, secondaryTextColor, iconBackgroundColor),
+                const SizedBox(height: 8),
+                _buildBudgetListItem('groceries'.tr, '\$50', '5%', 'assets/icons/Groceries.png', cardColor, lightBorderColor, textColor, secondaryTextColor, iconBackgroundColor),
+                const SizedBox(height: 8),
+                _buildBudgetListItem('eating_out'.tr, '\$300', '25%', 'assets/icons/eating_out.png', cardColor, lightBorderColor, textColor, secondaryTextColor, iconBackgroundColor),
+                const SizedBox(height: 8),
+                _buildBudgetListItem('home'.tr, '\$200', '20%', 'assets/icons/home_icon.png', cardColor, lightBorderColor, textColor, secondaryTextColor, iconBackgroundColor),
+                const SizedBox(height: 8),
+                _buildBudgetListItem('gift'.tr, '\$100', '7%', 'assets/icons/gift.png', cardColor, lightBorderColor, textColor, secondaryTextColor, iconBackgroundColor),
+                const SizedBox(height: 8),
+                _buildBudgetListItem('shopping'.tr, '\$20', '2%', 'assets/icons/shoping.png', cardColor, lightBorderColor, textColor, secondaryTextColor, iconBackgroundColor),
               ],
             ),
             const SizedBox(height: 20),
@@ -209,114 +258,132 @@ class MonthlyBudgetScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryItem(String label, String iconPath) {
-    return Column(
-      children: [
-        Container(
-          width: 56,
-          height: 56,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFF0F0F0)),
-          ),
-          child: Center(
-            child: Image.asset(
-              iconPath,
-              width: 28,
-              height: 28,
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(
-                  Icons.category,
-                  size: 28,
-                  color: Colors.grey[400],
-                );
-              },
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w400,
-            fontSize: 12,
-            color: Color(0xFF6A6A6A),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAddCategoryButton() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildCategoryItem(String label, String iconPath, Color iconBackgroundColor, Color borderColor, Color textColor) {
+    return Expanded(
+      child: Column(
         children: [
           Container(
-            width: 20,
-            height: 20,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(10),
+              color: iconBackgroundColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor),
             ),
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 14,
+            child: Center(
+              child: Image.asset(
+                iconPath,
+                width: 24,
+                height: 24,
+                color: textColor, // Added color filter to make icons adapt to theme
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.category,
+                    size: 24,
+                    color: textColor,
+                  );
+                },
+              ),
             ),
           ),
-          const SizedBox(width: 8),
-          const Text(
-            'Add Custom Category',
+          const SizedBox(height: 8),
+          Text(
+            label,
             style: TextStyle(
               fontFamily: 'Inter',
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-              color: Colors.black,
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              color: textColor,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
+  Widget _buildAddCategoryButton(Color cardColor, Color borderColor, Color textColor) {
+    return GestureDetector(
+      onTap: () {
+        Get.toNamed('/addCategory');
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: borderColor, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: textColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.add,
+                color: cardColor,
+                size: 14,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'add_custom_category'.tr,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildBudgetListItem(
-      String category, String amount, String percentage, String iconPath) {
+      String category, String amount, String percentage, String iconPath,
+      Color cardColor, Color borderColor, Color textColor, Color secondaryTextColor, Color iconBackgroundColor) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF0F0F0)),
+        color: cardColor,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
-              color: const Color(0xFFF8F9FA),
-              borderRadius: BorderRadius.circular(8),
+              color: iconBackgroundColor,
+              borderRadius: BorderRadius.circular(6),
             ),
             child: Center(
               child: Image.asset(
                 iconPath,
-                width: 20,
-                height: 20,
+                width: 18,
+                height: 18,
+                color: textColor, // Added color filter to make icons adapt to theme
                 errorBuilder: (context, error, stackTrace) {
                   return Icon(
                     Icons.category,
-                    size: 20,
-                    color: Colors.grey[400],
+                    size: 18,
+                    color: textColor,
                   );
                 },
               ),
@@ -326,34 +393,34 @@ class MonthlyBudgetScreen extends StatelessWidget {
           Expanded(
             child: Text(
               category,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w500,
-                fontSize: 16,
-                color: Colors.black,
+                fontSize: 14,
+                color: textColor,
               ),
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 amount,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  color: Colors.black,
+                  fontSize: 14,
+                  color: textColor,
                 ),
               ),
-              const SizedBox(height: 2),
               Text(
                 percentage,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w400,
-                  fontSize: 12,
-                  color: Color(0xFF6A6A6A),
+                  fontSize: 11,
+                  color: secondaryTextColor,
                 ),
               ),
             ],

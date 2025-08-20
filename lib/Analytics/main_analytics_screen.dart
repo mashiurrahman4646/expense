@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import '../homepage/main_home_page_controller.dart';
 import 'analytics_controller.dart';
+import '../../Settings/appearance/ThemeController.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   @override
@@ -12,6 +13,7 @@ class AnalyticsScreen extends StatelessWidget {
     final homeCtrl = Get.isRegistered<HomeController>()
         ? Get.find<HomeController>()
         : Get.put(HomeController());
+    final themeController = Get.find<ThemeController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (homeCtrl.selectedNavIndex.value != 1) {
@@ -22,69 +24,160 @@ class AnalyticsScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    final bool isDarkMode = themeController.isDarkModeActive;
+    final Color backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final Color cardColor = isDarkMode ? Color(0xFF1E1E1E) : Colors.white;
+    final Color textColor = isDarkMode ? Colors.white : Colors.black;
+    final Color secondaryTextColor = isDarkMode ? Colors.grey[400]! : Color(0xFF6A6A6A);
+    final Color iconBackgroundColor = isDarkMode ? Color(0xFF2A2A2A) : Colors.grey.shade200;
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(screenWidth),
+      backgroundColor: backgroundColor,
+      appBar: _buildAppBar(screenWidth, textColor, backgroundColor),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(screenWidth * 0.05),
           child: Column(
             children: [
-              _buildChartTypeButtons(controller, screenWidth),
+              _buildChartTypeButtons(controller, screenWidth, iconBackgroundColor, textColor),
               SizedBox(height: screenHeight * 0.03),
               _buildMonthSelector(controller, screenWidth, screenHeight),
               SizedBox(height: screenHeight * 0.04),
               _buildChart(controller, screenWidth, screenHeight),
               SizedBox(height: screenHeight * 0.03),
-              _buildLegend(controller, screenWidth),
+              _buildLegend(controller, screenWidth, textColor, secondaryTextColor),
               SizedBox(height: screenHeight * 0.04),
-              _buildSummaryCards(screenWidth, screenHeight),
+              _buildSummaryCards(screenWidth, screenHeight, cardColor, textColor, secondaryTextColor),
               SizedBox(height: screenHeight * 0.04),
-              _buildActionsSection(controller, screenWidth, screenHeight),
+              _buildActionsSection(controller, screenWidth, screenHeight, cardColor, textColor),
               SizedBox(height: screenHeight * 0.02),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(controller, homeCtrl, screenWidth, screenHeight),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(double screenWidth) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      automaticallyImplyLeading: false,
-      title: Text(
-        'Analytics',
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: screenWidth * 0.05,
-          fontWeight: FontWeight.w600,
+      bottomNavigationBar: Obx(() => Container(
+        height: screenHeight * 0.1,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
         ),
-      ),
-      centerTitle: true,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Expanded(
+              child: _buildNavItem(0, 'assets/icons/home (2).png', 'home'.tr, screenWidth, isDarkMode),
+            ),
+            Expanded(
+              child: _buildNavItem(1, 'assets/icons/analysis.png', 'analytics'.tr, screenWidth, isDarkMode),
+            ),
+            Container(
+              width: screenWidth * 0.18,
+              child: GestureDetector(
+                onTap: () => homeCtrl.navigateToAddTransaction(isExpense: true),
+                child: Container(
+                  width: screenWidth * 0.14,
+                  height: screenWidth * 0.14,
+                  decoration: BoxDecoration(color: Color(0xFF2196F3), shape: BoxShape.circle),
+                  child: Center(
+                    child: Image.asset(
+                      'assets/icons/plus.png',
+                      width: screenWidth * 0.06,
+                      height: screenWidth * 0.06,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: _buildNavItem(2, 'assets/icons/compare.png', 'comparison'.tr, screenWidth, isDarkMode),
+            ),
+            Expanded(
+              child: _buildNavItem(3, 'assets/icons/setting.png', 'settings'.tr, screenWidth, isDarkMode),
+            ),
+          ],
+        ),
+      )),
     );
   }
 
-  Widget _buildChartTypeButtons(AnalyticsController controller, double screenWidth) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(screenWidth * 0.05),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildNavItem(int index, String iconPath, String label, double screenWidth, bool isDarkMode) {
+    final homeCtrl = Get.find<HomeController>();
+    bool isActive = homeCtrl.selectedNavIndex.value == index;
+    final activeColor = isDarkMode ? Colors.white : Color(0xFF2196F3);
+    final inactiveColor = isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600;
+
+    return GestureDetector(
+      onTap: () => homeCtrl.changeNavIndex(index),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Obx(() => _buildChartTypeButton('Pie Chart', 0, controller, screenWidth)),
-          Obx(() => _buildChartTypeButton('Bar Chart', 1, controller, screenWidth)),
-          Obx(() => _buildChartTypeButton('Line Chart', 2, controller, screenWidth)),
+          Image.asset(
+            iconPath,
+            width: screenWidth * 0.06,
+            height: screenWidth * 0.06,
+            color: isActive ? activeColor : inactiveColor,
+          ),
+          SizedBox(height: screenWidth * 0.015),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: screenWidth * 0.03,
+              color: isActive ? activeColor : inactiveColor,
+            ),
+          ),
+          if (isActive) ...[
+            SizedBox(height: screenWidth * 0.005),
+            Container(width: screenWidth * 0.05, height: 2, color: activeColor),
+          ]
         ],
       ),
     );
   }
 
-  Widget _buildChartTypeButton(String title, int index, AnalyticsController controller, double screenWidth) {
+  PreferredSizeWidget _buildAppBar(double screenWidth, Color textColor, Color backgroundColor) {
+    return AppBar(
+      backgroundColor: backgroundColor,
+      elevation: 0,
+      automaticallyImplyLeading: false,
+      title: Text(
+        'analytics'.tr,
+        style: TextStyle(
+          color: textColor,
+          fontSize: screenWidth * 0.05,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      centerTitle: true,
+      iconTheme: IconThemeData(color: textColor),
+    );
+  }
+
+  Widget _buildChartTypeButtons(AnalyticsController controller, double screenWidth, Color backgroundColor, Color textColor) {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(screenWidth * 0.05),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Obx(() => _buildChartTypeButton('pie_chart'.tr, 0, controller, screenWidth, textColor)),
+          Obx(() => _buildChartTypeButton('bar_chart'.tr, 1, controller, screenWidth, textColor)),
+          Obx(() => _buildChartTypeButton('line_chart'.tr, 2, controller, screenWidth, textColor)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChartTypeButton(String title, int index, AnalyticsController controller, double screenWidth, Color textColor) {
     bool isSelected = controller.selectedChartType.value == index;
     return Expanded(
       child: GestureDetector(
@@ -99,7 +192,7 @@ class AnalyticsScreen extends StatelessWidget {
           child: Text(
             title,
             style: TextStyle(
-              color: isSelected ? Colors.white : Colors.grey.shade600,
+              color: isSelected ? Colors.white : textColor,
               fontSize: screenWidth * 0.032,
               fontWeight: FontWeight.w500,
             ),
@@ -186,7 +279,7 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLegend(AnalyticsController controller, double screenWidth) {
+  Widget _buildLegend(AnalyticsController controller, double screenWidth, Color textColor, Color secondaryTextColor) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -195,15 +288,16 @@ class AnalyticsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Expenses',
+                'expenses'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.04,
                   fontWeight: FontWeight.w600,
+                  color: textColor,
                 ),
               ),
               SizedBox(height: screenWidth * 0.02),
               ...controller.expenseData.map((data) {
-                return _buildLegendItem(data.label, '${data.value.toStringAsFixed(0)}%', data.color, screenWidth);
+                return _buildLegendItem(data.label.tr, '${data.value.toStringAsFixed(0)}%', data.color, screenWidth, textColor);
               }).toList(),
             ],
           ),
@@ -214,15 +308,16 @@ class AnalyticsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Income',
+                'income'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.04,
                   fontWeight: FontWeight.w600,
+                  color: textColor,
                 ),
               ),
               SizedBox(height: screenWidth * 0.02),
               ...controller.incomeData.map((data) {
-                return _buildLegendItem(data.label, '${data.value.toStringAsFixed(0)}%', data.color, screenWidth);
+                return _buildLegendItem(data.label.tr, '${data.value.toStringAsFixed(0)}%', data.color, screenWidth, textColor);
               }).toList(),
             ],
           ),
@@ -231,7 +326,7 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLegendItem(String label, String amount, Color color, double screenWidth) {
+  Widget _buildLegendItem(String label, String amount, Color color, double screenWidth, Color textColor) {
     return Padding(
       padding: EdgeInsets.only(bottom: screenWidth * 0.02),
       child: Row(
@@ -250,7 +345,7 @@ class AnalyticsScreen extends StatelessWidget {
               '$label: $amount',
               style: TextStyle(
                 fontSize: screenWidth * 0.032,
-                color: Colors.grey.shade700,
+                color: textColor,
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -260,28 +355,34 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCards(double screenWidth, double screenHeight) {
+  Widget _buildSummaryCards(double screenWidth, double screenHeight, Color cardColor, Color textColor, Color secondaryTextColor) {
     return Row(
       children: [
         Expanded(
           child: _buildSummaryCard(
-            'Total Expenses',
+            'total_expenses'.tr,
             '\$2012',
             Icons.arrow_downward,
             Colors.orange,
             screenWidth,
             screenHeight,
+            cardColor,
+            textColor,
+            secondaryTextColor,
           ),
         ),
         SizedBox(width: screenWidth * 0.04),
         Expanded(
           child: _buildSummaryCard(
-            'Total Income',
+            'total_income'.tr,
             '\$3124',
             Icons.arrow_upward,
             Colors.green,
             screenWidth,
             screenHeight,
+            cardColor,
+            textColor,
+            secondaryTextColor,
           ),
         ),
       ],
@@ -289,11 +390,11 @@ class AnalyticsScreen extends StatelessWidget {
   }
 
   Widget _buildSummaryCard(String title, String amount, IconData icon, Color iconColor,
-      double screenWidth, double screenHeight) {
+      double screenWidth, double screenHeight, Color cardColor, Color textColor, Color secondaryTextColor) {
     return Container(
       padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: cardColor,
         borderRadius: BorderRadius.circular(screenWidth * 0.03),
       ),
       child: Column(
@@ -308,7 +409,7 @@ class AnalyticsScreen extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontSize: screenWidth * 0.032,
-                    color: Colors.grey.shade700,
+                    color: secondaryTextColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -321,6 +422,7 @@ class AnalyticsScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: screenWidth * 0.05,
               fontWeight: FontWeight.w700,
+              color: textColor,
             ),
           ),
         ],
@@ -328,44 +430,45 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionsSection(AnalyticsController controller, double screenWidth, double screenHeight) {
+  Widget _buildActionsSection(AnalyticsController controller, double screenWidth, double screenHeight, Color cardColor, Color textColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Actions',
+          'actions'.tr,
           style: TextStyle(
             fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.w600,
+            color: textColor,
           ),
         ),
         SizedBox(height: screenHeight * 0.02),
         GestureDetector(
           onTap: controller.onExpensesClick,
-          child: _buildActionItem('Expenses', screenWidth),
+          child: _buildActionItem('expenses'.tr, screenWidth, cardColor, textColor),
         ),
         GestureDetector(
           onTap: controller.onIncomeClick,
-          child: _buildActionItem('Income', screenWidth),
+          child: _buildActionItem('income'.tr, screenWidth, cardColor, textColor),
         ),
         GestureDetector(
           onTap: controller.onExportReportClick,
-          child: _buildActionItem('Export Report', screenWidth),
+          child: _buildActionItem('export_report'.tr, screenWidth, cardColor, textColor),
         ),
       ],
     );
   }
 
-  Widget _buildActionItem(String title, double screenWidth) {
+  Widget _buildActionItem(String title, double screenWidth, Color cardColor, Color textColor) {
     return Container(
       margin: EdgeInsets.only(bottom: screenWidth * 0.03),
       padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(screenWidth * 0.03),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, 2),
@@ -380,89 +483,14 @@ class AnalyticsScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: screenWidth * 0.04,
               fontWeight: FontWeight.w500,
+              color: textColor,
             ),
           ),
           Icon(
             Icons.arrow_forward_ios,
-            color: Colors.grey.shade600,
+            color: textColor.withOpacity(0.7),
             size: screenWidth * 0.04,
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar(AnalyticsController controller, HomeController homeCtrl, double screenWidth, double screenHeight) {
-    return Obx(() => Container(
-      height: screenHeight * 0.1,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildImageNavItem(homeCtrl, 0, 'assets/icons/home (2).png', 'Home', screenWidth),
-          _buildImageNavItem(homeCtrl, 1, 'assets/icons/analysis.png', 'Analytics', screenWidth),
-          GestureDetector(
-            // FIX: This line has been updated to use the HomeController's new method.
-            onTap: () => homeCtrl.navigateToAddTransaction(isExpense: true),
-            child: Container(
-              width: screenWidth * 0.14,
-              height: screenWidth * 0.14,
-              decoration: const BoxDecoration(
-                color: Color(0xFF2196F3),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Image.asset(
-                  'assets/icons/plus.png',
-                  width: screenWidth * 0.06,
-                  height: screenWidth * 0.06,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          _buildImageNavItem(homeCtrl, 2, 'assets/icons/compare.png', 'Comparison', screenWidth),
-          _buildImageNavItem(homeCtrl, 3, 'assets/icons/setting.png', 'Settings', screenWidth),
-        ],
-      ),
-    ));
-  }
-
-  Widget _buildImageNavItem(HomeController homeCtrl, int index, String iconPath, String label, double screenWidth) {
-    bool isActive = homeCtrl.selectedNavIndex.value == index;
-    return GestureDetector(
-      onTap: () => homeCtrl.changeNavIndex(index),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            iconPath,
-            width: screenWidth * 0.06,
-            height: screenWidth * 0.06,
-            color: isActive ? const Color(0xFF2196F3) : Colors.grey.shade600,
-          ),
-          SizedBox(height: screenWidth * 0.015),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: screenWidth * 0.03,
-              color: isActive ? const Color(0xFF2196F3) : Colors.grey.shade600,
-            ),
-          ),
-          if (isActive) ...[
-            SizedBox(height: screenWidth * 0.005),
-            Container(width: screenWidth * 0.05, height: 2, color: const Color(0xFF2196F3)),
-          ]
         ],
       ),
     );
@@ -516,6 +544,11 @@ class BarChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDarkMode = themeController.isDarkModeActive;
+    final Color gridColor = isDarkMode ? Colors.grey[800]! : Colors.grey[300]!;
+    final Color textColor = isDarkMode ? Colors.grey[400]! : Colors.grey[600]!;
+
     final chartHeight = size.height * 0.7;
     final chartTop = size.height * 0.1;
     final chartBottom = chartTop + chartHeight;
@@ -524,12 +557,12 @@ class BarChartPainter extends CustomPainter {
     final chartWidth = chartRight - chartLeft;
 
     final gridPaint = Paint()
-      ..color = Colors.grey.shade300
+      ..color = gridColor
       ..strokeWidth = 0.5;
 
     final maxVal = 100.0;
     final textStyle = TextStyle(
-      color: Colors.grey.shade600,
+      color: textColor,
       fontSize: 11,
       fontWeight: FontWeight.w400,
     );
@@ -552,7 +585,7 @@ class BarChartPainter extends CustomPainter {
     double currentX = chartLeft + barGap;
 
     final categoryTextStyle = TextStyle(
-      color: Colors.grey.shade700,
+      color: textColor,
       fontSize: 10,
       fontWeight: FontWeight.w500,
     );
@@ -614,20 +647,20 @@ class BarChartPainter extends CustomPainter {
     canvas.drawCircle(Offset(incomeEnd, lineY), 4, paintCircle);
 
     final labelTextStyle = TextStyle(
-      color: Colors.grey.shade700,
+      color: textColor,
       fontSize: 12,
       fontWeight: FontWeight.w600,
     );
 
     final expenseLabelPainter = TextPainter(
-      text: TextSpan(text: 'Expense', style: labelTextStyle),
+      text: TextSpan(text: 'expense'.tr, style: labelTextStyle),
       textDirection: TextDirection.ltr,
     );
     expenseLabelPainter.layout();
     expenseLabelPainter.paint(canvas, Offset(expenseStart + (expenseEnd - expenseStart) / 2 - expenseLabelPainter.width / 2, lineY + 10));
 
     final incomeLabelPainter = TextPainter(
-      text: TextSpan(text: 'Income', style: labelTextStyle),
+      text: TextSpan(text: 'income'.tr, style: labelTextStyle),
       textDirection: TextDirection.ltr,
     );
     incomeLabelPainter.layout();
@@ -645,6 +678,11 @@ class LineChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDarkMode = themeController.isDarkModeActive;
+    final Color gridColor = isDarkMode ? Colors.grey[800]! : Colors.grey[300]!;
+    final Color textColor = isDarkMode ? Colors.grey[400]! : Colors.grey[600]!;
+
     final chartHeight = size.height * 0.7;
     final chartTop = size.height * 0.1;
     final chartBottom = chartTop + chartHeight;
@@ -653,12 +691,12 @@ class LineChartPainter extends CustomPainter {
     final chartWidth = chartRight - chartLeft;
 
     final gridPaint = Paint()
-      ..color = Colors.grey.shade300
+      ..color = gridColor
       ..strokeWidth = 0.5;
 
     final maxVal = 100.0;
     final textStyle = TextStyle(
-      color: Colors.grey.shade600,
+      color: textColor,
       fontSize: 11,
       fontWeight: FontWeight.w400,
     );
@@ -683,7 +721,7 @@ class LineChartPainter extends CustomPainter {
       textAlign: TextAlign.center,
       text: TextSpan(
         style: TextStyle(
-          color: Colors.grey.shade700,
+          color: textColor,
           fontSize: 10,
           fontWeight: FontWeight.w500,
         ),

@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../Comparison/prosavingpage/proserviceui.dart';
-// Make sure to import your MonthlyBudgetScreen
-// import 'monthly_budget_screen.dart'; // Adjust path as needed
+import '../../Settings/appearance/ThemeController.dart';
+import '../../routes/app_routes.dart'; // Import your routes file
 
 class MonthlyBudgetPro extends StatefulWidget {
   const MonthlyBudgetPro({super.key});
@@ -19,6 +18,7 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
   late Timer _timer;
   bool _isVideoPlaying = false;
   bool _isVideoComplete = false;
+  final ThemeController themeController = Get.find<ThemeController>();
 
   @override
   void dispose() {
@@ -62,32 +62,44 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
 
   void _showUnlockMessage() {
     Get.snackbar(
-      'Unlocked!',
-      'You can now access the monthly budget feature',
+      'unlocked'.tr,
+      'unlocked_message'.tr,
       snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
+      backgroundColor: themeController.isDarkModeActive ? Colors.grey[800] : Colors.green,
       colorText: Colors.white,
     );
   }
 
+  void _navigateToPremiumPlans() {
+    Get.toNamed(AppRoutes.premiumPlans); // Navigate to premium plans page
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = themeController.isDarkModeActive;
+    final Color backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final Color textColor = isDarkMode ? Colors.white : Colors.black;
+    final Color containerColor = isDarkMode ? Color(0xFF1E1E1E) : Colors.white;
+    final Color greyColor = isDarkMode ? Colors.grey[400]! : Colors.grey[600]!;
+    final Color lightGreyColor = isDarkMode ? Colors.grey[600]! : Colors.grey[500]!;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         title: Text(
-          'Monthly Budget Pro',
+          'monthly_budget_pro'.tr,
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            color: textColor,
             fontSize: 18,
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: backgroundColor,
         elevation: 0,
+        iconTheme: IconThemeData(color: textColor),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: const Icon(Icons.arrow_back_ios, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -124,7 +136,7 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Watch Video to Unlock (${_remainingSeconds}s)',
+                              '${'watch_video_unlock'.tr} (${_remainingSeconds}s)',
                               style: GoogleFonts.poppins(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -160,18 +172,18 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
                               width: 60,
                               height: 60,
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: containerColor,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.play_arrow,
                                 size: 30,
-                                color: Colors.black,
+                                color: textColor,
                               ),
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Watch Video to Unlock (30s)',
+                              '${'watch_video_unlock'.tr} (30s)',
                               style: GoogleFonts.poppins(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -185,10 +197,10 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Watch a short video to unlock monthly\nbudget planning features for free',
+                    'video_message'.tr,
                     style: GoogleFonts.poppins(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: greyColor,
                       height: 1.4,
                     ),
                     textAlign: TextAlign.center,
@@ -220,10 +232,7 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
                     color: Colors.transparent,
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
-                      onTap: () {
-                        // Handle upgrade to pro
-                        Get.offAllNamed('/monthlyBudget');
-                      },
+                      onTap: _navigateToPremiumPlans, // Updated to call the new method
                       child: Container(
                         alignment: Alignment.center,
                         child: Row(
@@ -236,7 +245,7 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Upgrade to Pro',
+                              'upgrade_to_pro'.tr,
                               style: GoogleFonts.poppins(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -252,10 +261,10 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
                 const SizedBox(height: 16),
                 // Small text at bottom
                 Text(
-                  'No ads • Unlimited budgets • Premium features',
+                  'no_ads_info'.tr,
                   style: GoogleFonts.poppins(
                     fontSize: 12,
-                    color: Colors.grey[500],
+                    color: lightGreyColor,
                   ),
                   textAlign: TextAlign.center,
                 ),

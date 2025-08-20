@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../Settings/appearance/ThemeController.dart';
+
+
 class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkMode.value
+          ? const Color(0xFF121212) // Dark background
+          : Colors.white, // Light background
       body: SafeArea(
         child: Column(
           children: [
@@ -24,7 +30,9 @@ class NotificationScreen extends StatelessWidget {
                     onTap: () => Get.back(),
                     child: Icon(
                       Icons.arrow_back_ios,
-                      color: Colors.black,
+                      color: themeController.isDarkMode.value
+                          ? Colors.white
+                          : Colors.black,
                       size: screenWidth * 0.05,
                     ),
                   ),
@@ -35,7 +43,9 @@ class NotificationScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: screenWidth * 0.045,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: themeController.isDarkMode.value
+                              ? Colors.white
+                              : Colors.black,
                         ),
                       ),
                     ),
@@ -48,19 +58,28 @@ class NotificationScreen extends StatelessWidget {
             // Notifications List
             Expanded(
               child: ListView(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                padding:
+                EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                 children: [
-                  _buildDateSection('Today', screenWidth),
-                  _buildNotificationItem(screenWidth, screenHeight),
-                  _buildNotificationItem(screenWidth, screenHeight),
-                  _buildNotificationItem(screenWidth, screenHeight),
+                  _buildDateSection(
+                      'Today', screenWidth, themeController.isDarkMode.value),
+                  _buildNotificationItem(
+                      screenWidth, screenHeight, themeController.isDarkMode.value),
+                  _buildNotificationItem(
+                      screenWidth, screenHeight, themeController.isDarkMode.value),
+                  _buildNotificationItem(
+                      screenWidth, screenHeight, themeController.isDarkMode.value),
 
                   SizedBox(height: screenHeight * 0.025),
 
-                  _buildDateSection('Yesterday', screenWidth),
-                  _buildNotificationItem(screenWidth, screenHeight),
-                  _buildNotificationItem(screenWidth, screenHeight),
-                  _buildNotificationItem(screenWidth, screenHeight),
+                  _buildDateSection('Yesterday', screenWidth,
+                      themeController.isDarkMode.value),
+                  _buildNotificationItem(
+                      screenWidth, screenHeight, themeController.isDarkMode.value),
+                  _buildNotificationItem(
+                      screenWidth, screenHeight, themeController.isDarkMode.value),
+                  _buildNotificationItem(
+                      screenWidth, screenHeight, themeController.isDarkMode.value),
 
                   SizedBox(height: screenHeight * 0.03),
                 ],
@@ -69,10 +88,11 @@ class NotificationScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
-  Widget _buildDateSection(String date, double screenWidth) {
+  Widget _buildDateSection(
+      String date, double screenWidth, bool isDarkMode) {
     return Padding(
       padding: EdgeInsets.only(
         left: screenWidth * 0.02,
@@ -84,29 +104,31 @@ class NotificationScreen extends StatelessWidget {
         style: TextStyle(
           fontSize: screenWidth * 0.038,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF333333),
+          color: isDarkMode ? Colors.white70 : const Color(0xFF333333),
         ),
       ),
     );
   }
 
-  Widget _buildNotificationItem(double screenWidth, double screenHeight) {
+  Widget _buildNotificationItem(
+      double screenWidth, double screenHeight, bool isDarkMode) {
     return Container(
       margin: EdgeInsets.only(bottom: screenHeight * 0.015),
       padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
-        color: Color(0xFFF8F9FA),
+        color: isDarkMode ? const Color(0xFF1E1E1E) : const Color(0xFFF8F9FA),
         borderRadius: BorderRadius.circular(screenWidth * 0.03),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: EdgeInsets.only(right: screenWidth * 0.03, top: screenHeight * 0.002),
+            margin: EdgeInsets.only(
+                right: screenWidth * 0.03, top: screenHeight * 0.002),
             child: Icon(
               Icons.mail_outline,
               size: screenWidth * 0.055,
-              color: Color(0xFF666666),
+              color: isDarkMode ? Colors.white70 : const Color(0xFF666666),
             ),
           ),
           Expanded(
@@ -118,7 +140,7 @@ class NotificationScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: screenWidth * 0.04,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF333333),
+                    color: isDarkMode ? Colors.white : const Color(0xFF333333),
                     height: 1.3,
                   ),
                 ),
@@ -128,7 +150,7 @@ class NotificationScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: screenWidth * 0.032,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xFF999999),
+                    color: isDarkMode ? Colors.white54 : const Color(0xFF999999),
                   ),
                 ),
               ],

@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../Settings/appearance/ThemeController.dart';
+
 class ExpenseListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final themeController = Get.find<ThemeController>();
+
+    // Define colors based on theme
+    final backgroundColor = themeController.isDarkModeActive ? Color(0xFF121212) : Colors.white;
+    final cardColor = themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white;
+    final textColor = themeController.isDarkModeActive ? Colors.white : Colors.black;
+    final secondaryTextColor = themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
+    final iconColor = themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
+    final shadowColor = themeController.isDarkModeActive ? Colors.black.withOpacity(0.3) : Colors.grey.withOpacity(0.1);
 
     // Sample expense data
     final List<ExpenseItem> expenses = [
@@ -68,34 +79,44 @@ class ExpenseListScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(screenWidth),
+      backgroundColor: backgroundColor,
+      appBar: _buildAppBar(screenWidth, textColor, backgroundColor),
       body: ListView.builder(
         padding: EdgeInsets.all(screenWidth * 0.04),
         itemCount: expenses.length,
         itemBuilder: (context, index) {
-          return _buildExpenseItem(expenses[index], screenWidth, screenHeight);
+          return _buildExpenseItem(
+              expenses[index],
+              screenWidth,
+              screenHeight,
+              cardColor,
+              textColor,
+              secondaryTextColor,
+              iconColor,
+              shadowColor,
+              themeController // Pass themeController as parameter
+          );
         },
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(double screenWidth) {
+  PreferredSizeWidget _buildAppBar(double screenWidth, Color textColor, Color backgroundColor) {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       elevation: 0,
       leading: GestureDetector(
         onTap: () => Get.back(),
         child: Icon(
           Icons.arrow_back_ios,
-          color: Colors.black,
+          color: textColor,
           size: screenWidth * 0.05,
         ),
       ),
       title: Text(
         'Expense List',
         style: TextStyle(
-          color: Colors.black,
+          color: textColor,
           fontSize: screenWidth * 0.045,
           fontWeight: FontWeight.w600,
         ),
@@ -104,16 +125,26 @@ class ExpenseListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildExpenseItem(ExpenseItem expense, double screenWidth, double screenHeight) {
+  Widget _buildExpenseItem(
+      ExpenseItem expense,
+      double screenWidth,
+      double screenHeight,
+      Color cardColor,
+      Color textColor,
+      Color secondaryTextColor,
+      Color iconColor,
+      Color shadowColor,
+      ThemeController themeController // Add themeController parameter
+      ) {
     return Container(
       margin: EdgeInsets.only(bottom: screenHeight * 0.015),
       padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(screenWidth * 0.03),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: shadowColor,
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, 2),
@@ -127,7 +158,7 @@ class ExpenseListScreen extends StatelessWidget {
             width: screenWidth * 0.12,
             height: screenWidth * 0.12,
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: themeController.isDarkModeActive ? Color(0xFF2D2D2D) : Colors.grey.shade100,
               borderRadius: BorderRadius.circular(screenWidth * 0.02),
             ),
             child: Center(
@@ -135,12 +166,12 @@ class ExpenseListScreen extends StatelessWidget {
                 expense.icon,
                 width: screenWidth * 0.06,
                 height: screenWidth * 0.06,
-                color: Colors.grey.shade600,
+                color: iconColor,
                 errorBuilder: (context, error, stackTrace) {
                   return Icon(
                     Icons.fastfood,
                     size: screenWidth * 0.06,
-                    color: Colors.grey.shade600,
+                    color: iconColor,
                   );
                 },
               ),
@@ -159,7 +190,7 @@ class ExpenseListScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: screenWidth * 0.04,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                    color: textColor,
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.005),
@@ -167,7 +198,7 @@ class ExpenseListScreen extends StatelessWidget {
                   expense.description,
                   style: TextStyle(
                     fontSize: screenWidth * 0.032,
-                    color: Colors.grey.shade600,
+                    color: secondaryTextColor,
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.008),
@@ -176,14 +207,14 @@ class ExpenseListScreen extends StatelessWidget {
                     Icon(
                       Icons.access_time,
                       size: screenWidth * 0.035,
-                      color: Colors.grey.shade500,
+                      color: secondaryTextColor,
                     ),
                     SizedBox(width: screenWidth * 0.01),
                     Text(
                       expense.date,
                       style: TextStyle(
                         fontSize: screenWidth * 0.03,
-                        color: Colors.grey.shade500,
+                        color: secondaryTextColor,
                       ),
                     ),
                   ],
@@ -201,7 +232,7 @@ class ExpenseListScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: screenWidth * 0.04,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: textColor,
                 ),
               ),
               SizedBox(height: screenHeight * 0.01),
@@ -216,12 +247,12 @@ class ExpenseListScreen extends StatelessWidget {
                     'assets/icons/edit-00.png',
                     width: screenWidth * 0.05,
                     height: screenWidth * 0.05,
-                    color: Colors.grey.shade600,
+                    color: iconColor,
                     errorBuilder: (context, error, stackTrace) {
                       return Icon(
                         Icons.edit,
                         size: screenWidth * 0.05,
-                        color: Colors.grey.shade600,
+                        color: iconColor,
                       );
                     },
                   ),

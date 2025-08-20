@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:your_expense/Analytics/uplode_drive_controller.dart';
 
-
 class UploadToDriveScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(UploadToDriveController());
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(screenWidth),
+      backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
+      appBar: _buildAppBar(screenWidth, isDark),
       body: Obx(() => Stack(
         children: [
           SingleChildScrollView(
@@ -21,45 +21,45 @@ class UploadToDriveScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildConnectedAccount(screenWidth, screenHeight),
+                  _buildConnectedAccount(screenWidth, screenHeight, isDark),
                   SizedBox(height: screenHeight * 0.03),
-                  _buildExportDataSection(controller, screenWidth, screenHeight),
+                  _buildExportDataSection(controller, screenWidth, screenHeight, isDark),
                   SizedBox(height: screenHeight * 0.03),
-                  _buildFileFormatSection(controller, screenWidth, screenHeight),
+                  _buildFileFormatSection(controller, screenWidth, screenHeight, isDark),
                   SizedBox(height: screenHeight * 0.03),
-                  _buildLastUploadedInfo(screenWidth),
+                  _buildLastUploadedInfo(screenWidth, isDark),
                   SizedBox(height: screenHeight * 0.02),
-                  _buildAutoUploadToggle(controller, screenWidth, screenHeight),
+                  _buildAutoUploadToggle(controller, screenWidth, screenHeight, isDark),
                   SizedBox(height: screenHeight * 0.04),
-                  _buildActionButtons(controller, screenWidth, screenHeight),
+                  _buildActionButtons(controller, screenWidth, screenHeight, isDark),
                 ],
               ),
             ),
           ),
           // Success Dialog Overlay
           if (controller.showSuccessDialog.value)
-            _buildSuccessDialog(controller, screenWidth, screenHeight),
+            _buildSuccessDialog(controller, screenWidth, screenHeight, isDark),
         ],
       )),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(double screenWidth) {
+  PreferredSizeWidget _buildAppBar(double screenWidth, bool isDark) {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
       elevation: 0,
       leading: GestureDetector(
         onTap: () => Get.back(),
         child: Icon(
           Icons.arrow_back_ios,
-          color: Colors.black,
+          color: isDark ? Colors.white : Colors.black,
           size: screenWidth * 0.05,
         ),
       ),
       title: Text(
-        'Upload to drive',
+        'upload_to_drive'.tr,
         style: TextStyle(
-          color: Colors.black,
+          color: isDark ? Colors.white : Colors.black,
           fontSize: screenWidth * 0.045,
           fontWeight: FontWeight.w600,
         ),
@@ -68,15 +68,15 @@ class UploadToDriveScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildConnectedAccount(double screenWidth, double screenHeight) {
+  Widget _buildConnectedAccount(double screenWidth, double screenHeight, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Connected Account',
+          'connected_account'.tr,
           style: TextStyle(
             fontSize: screenWidth * 0.035,
-            color: Colors.grey.shade700,
+            color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -84,8 +84,11 @@ class UploadToDriveScreen extends StatelessWidget {
         Container(
           padding: EdgeInsets.all(screenWidth * 0.04),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(
+              color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
+            ),
             borderRadius: BorderRadius.circular(screenWidth * 0.02),
+            color: isDark ? const Color(0xFF2A2A2A) : Colors.white,
           ),
           child: Row(
             children: [
@@ -124,10 +127,11 @@ class UploadToDriveScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: screenWidth * 0.035,
                         fontWeight: FontWeight.w500,
+                        color: isDark ? Colors.white : Colors.black,
                       ),
                     ),
                     Text(
-                      'Connected',
+                      'connected'.tr,
                       style: TextStyle(
                         fontSize: screenWidth * 0.03,
                         color: Colors.green,
@@ -143,37 +147,40 @@ class UploadToDriveScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildExportDataSection(UploadToDriveController controller, double screenWidth, double screenHeight) {
+  Widget _buildExportDataSection(UploadToDriveController controller, double screenWidth, double screenHeight, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Select Export Data',
+          'select_export_data'.tr,
           style: TextStyle(
             fontSize: screenWidth * 0.035,
-            color: Colors.grey.shade700,
+            color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
             fontWeight: FontWeight.w500,
           ),
         ),
         SizedBox(height: screenHeight * 0.015),
-        _buildCheckboxItem('All files', controller.allFiles, controller.toggleAllFiles, screenWidth),
-        _buildCheckboxItem('Monthly reports', controller.monthlyReports, controller.toggleMonthlyReports, screenWidth),
-        _buildCheckboxItem('Income reports', controller.incomeReports, controller.toggleIncomeReports, screenWidth),
-        _buildCheckboxItem('Expense reports', controller.expenseReports, controller.toggleExpenseReports, screenWidth),
-        _buildCheckboxItem('Savings reports', controller.savingsReports, controller.toggleSavingsReports, screenWidth),
+        _buildCheckboxItem('all_files'.tr, controller.allFiles, controller.toggleAllFiles, screenWidth, isDark),
+        _buildCheckboxItem('monthly_reports'.tr, controller.monthlyReports, controller.toggleMonthlyReports, screenWidth, isDark),
+        _buildCheckboxItem('income_reports'.tr, controller.incomeReports, controller.toggleIncomeReports, screenWidth, isDark),
+        _buildCheckboxItem('expense_reports'.tr, controller.expenseReports, controller.toggleExpenseReports, screenWidth, isDark),
+        _buildCheckboxItem('savings_reports'.tr, controller.savingsReports, controller.toggleSavingsReports, screenWidth, isDark),
       ],
     );
   }
 
-  Widget _buildCheckboxItem(String title, RxBool value, VoidCallback onTap, double screenWidth) {
+  Widget _buildCheckboxItem(String title, RxBool value, VoidCallback onTap, double screenWidth, bool isDark) {
     return Obx(() => GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.only(bottom: screenWidth * 0.02),
         padding: EdgeInsets.all(screenWidth * 0.04),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(
+            color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
+          ),
           borderRadius: BorderRadius.circular(screenWidth * 0.02),
+          color: isDark ? const Color(0xFF2A2A2A) : Colors.white,
         ),
         child: Row(
           children: [
@@ -183,7 +190,8 @@ class UploadToDriveScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: value.value ? const Color(0xFF2196F3) : Colors.transparent,
                 border: Border.all(
-                  color: value.value ? const Color(0xFF2196F3) : Colors.grey.shade400,
+                  color: value.value ? const Color(0xFF2196F3) :
+                  (isDark ? Colors.grey.shade500 : Colors.grey.shade400),
                   width: 2,
                 ),
                 borderRadius: BorderRadius.circular(screenWidth * 0.01),
@@ -201,7 +209,7 @@ class UploadToDriveScreen extends StatelessWidget {
               title,
               style: TextStyle(
                 fontSize: screenWidth * 0.035,
-                color: Colors.black,
+                color: isDark ? Colors.white : Colors.black,
               ),
             ),
           ],
@@ -210,35 +218,38 @@ class UploadToDriveScreen extends StatelessWidget {
     ));
   }
 
-  Widget _buildFileFormatSection(UploadToDriveController controller, double screenWidth, double screenHeight) {
+  Widget _buildFileFormatSection(UploadToDriveController controller, double screenWidth, double screenHeight, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Choose file format',
+          'choose_file_format'.tr,
           style: TextStyle(
             fontSize: screenWidth * 0.035,
-            color: Colors.grey.shade700,
+            color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
             fontWeight: FontWeight.w500,
           ),
         ),
         SizedBox(height: screenHeight * 0.015),
-        _buildRadioItem('PDF (Recommended)', 'PDF', controller.selectedFormat, controller.selectFormat, screenWidth),
-        _buildRadioItem('Excel.xlsx', 'Excel', controller.selectedFormat, controller.selectFormat, screenWidth),
-        _buildRadioItem('CSV', 'CSV', controller.selectedFormat, controller.selectFormat, screenWidth),
+        _buildRadioItem('pdf_recommended'.tr, 'PDF', controller.selectedFormat, controller.selectFormat, screenWidth, isDark),
+        _buildRadioItem('excel_xlsx'.tr, 'Excel', controller.selectedFormat, controller.selectFormat, screenWidth, isDark),
+        _buildRadioItem('csv'.tr, 'CSV', controller.selectedFormat, controller.selectFormat, screenWidth, isDark),
       ],
     );
   }
 
-  Widget _buildRadioItem(String title, String value, RxString selectedValue, Function(String) onSelect, double screenWidth) {
+  Widget _buildRadioItem(String title, String value, RxString selectedValue, Function(String) onSelect, double screenWidth, bool isDark) {
     return Obx(() => GestureDetector(
       onTap: () => onSelect(value),
       child: Container(
         margin: EdgeInsets.only(bottom: screenWidth * 0.02),
         padding: EdgeInsets.all(screenWidth * 0.04),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(
+            color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
+          ),
           borderRadius: BorderRadius.circular(screenWidth * 0.02),
+          color: isDark ? const Color(0xFF2A2A2A) : Colors.white,
         ),
         child: Row(
           children: [
@@ -248,7 +259,8 @@ class UploadToDriveScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: selectedValue.value == value ? const Color(0xFF2196F3) : Colors.grey.shade400,
+                  color: selectedValue.value == value ? const Color(0xFF2196F3) :
+                  (isDark ? Colors.grey.shade500 : Colors.grey.shade400),
                   width: 2,
                 ),
               ),
@@ -270,7 +282,7 @@ class UploadToDriveScreen extends StatelessWidget {
               title,
               style: TextStyle(
                 fontSize: screenWidth * 0.035,
-                color: Colors.black,
+                color: isDark ? Colors.white : Colors.black,
               ),
             ),
           ],
@@ -279,37 +291,40 @@ class UploadToDriveScreen extends StatelessWidget {
     ));
   }
 
-  Widget _buildLastUploadedInfo(double screenWidth) {
+  Widget _buildLastUploadedInfo(double screenWidth, bool isDark) {
     return Text(
-      'Last uploaded: July 20, 2025, at 11:30 PM',
+      'last_uploaded'.tr,
       style: TextStyle(
         fontSize: screenWidth * 0.03,
-        color: Colors.grey.shade600,
+        color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
       ),
     );
   }
 
-  Widget _buildAutoUploadToggle(UploadToDriveController controller, double screenWidth, double screenHeight) {
+  Widget _buildAutoUploadToggle(UploadToDriveController controller, double screenWidth, double screenHeight, bool isDark) {
     return Obx(() => Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Automatically upload reports monthly',
+          'auto_upload_monthly'.tr,
           style: TextStyle(
             fontSize: screenWidth * 0.035,
-            color: Colors.black,
+            color: isDark ? Colors.white : Colors.black,
           ),
         ),
         Switch(
           value: controller.autoUpload.value,
           onChanged: controller.toggleAutoUpload,
           activeColor: const Color(0xFF2196F3),
+          activeTrackColor: const Color(0xFF2196F3).withOpacity(0.3),
+          inactiveThumbColor: isDark ? Colors.grey.shade400 : Colors.grey.shade300,
+          inactiveTrackColor: isDark ? Colors.grey.shade700 : Colors.grey.shade400,
         ),
       ],
     ));
   }
 
-  Widget _buildActionButtons(UploadToDriveController controller, double screenWidth, double screenHeight) {
+  Widget _buildActionButtons(UploadToDriveController controller, double screenWidth, double screenHeight, bool isDark) {
     return Column(
       children: [
         // Download Button
@@ -321,9 +336,22 @@ class UploadToDriveScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF2196F3),
               borderRadius: BorderRadius.circular(screenWidth * 0.02),
+              boxShadow: isDark ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                )
+              ] : [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                )
+              ],
             ),
             child: Text(
-              'Download',
+              'download'.tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
@@ -343,6 +371,19 @@ class UploadToDriveScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF2196F3),
               borderRadius: BorderRadius.circular(screenWidth * 0.02),
+              boxShadow: isDark ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                )
+              ] : [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                )
+              ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -362,7 +403,7 @@ class UploadToDriveScreen extends StatelessWidget {
                 ),
                 SizedBox(width: screenWidth * 0.02),
                 Text(
-                  'Upload to drive',
+                  'upload_to_drive'.tr,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: screenWidth * 0.04,
@@ -377,7 +418,7 @@ class UploadToDriveScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSuccessDialog(UploadToDriveController controller, double screenWidth, double screenHeight) {
+  Widget _buildSuccessDialog(UploadToDriveController controller, double screenWidth, double screenHeight, bool isDark) {
     return Container(
       color: Colors.black.withOpacity(0.5),
       child: Center(
@@ -385,8 +426,15 @@ class UploadToDriveScreen extends StatelessWidget {
           margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
           padding: EdgeInsets.all(screenWidth * 0.06),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? const Color(0xFF2A2A2A) : Colors.white,
             borderRadius: BorderRadius.circular(screenWidth * 0.04),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -406,20 +454,20 @@ class UploadToDriveScreen extends StatelessWidget {
               ),
               SizedBox(height: screenHeight * 0.02),
               Text(
-                'Upload Successful',
+                'upload_successful'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.045,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
               ),
               SizedBox(height: screenHeight * 0.01),
               Text(
-                'Your selected data has been\nUploaded to Google Drive',
+                'upload_success_message'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: screenWidth * 0.035,
-                  color: Colors.grey.shade600,
+                  color: isDark ? Colors.grey.shade300 : Colors.grey.shade600,
                 ),
               ),
               SizedBox(height: screenHeight * 0.03),
@@ -433,7 +481,7 @@ class UploadToDriveScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(screenWidth * 0.02),
                   ),
                   child: Text(
-                    'OK',
+                    'ok'.tr,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,

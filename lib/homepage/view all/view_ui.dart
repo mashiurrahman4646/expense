@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../Settings/appearance/ThemeController.dart';
 
-// Controller for the All Transactions Screen.
-// This is a minimal controller to manage transactions,
-// but it can be expanded to fetch real data from a service.
+
 class AllTransactionsController extends GetxController {
   final List<Map<String, dynamic>> allTransactions = [
     {'title': 'Salary Deposit', 'time': 'Today, 13:45 PM', 'amount': '3,500.00', 'isIncome': true},
@@ -23,15 +22,23 @@ class AllTransactionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AllTransactionsController controller = Get.put(AllTransactionsController());
+    final ThemeController themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkMode.value
+          ? const Color(0xFF121212) // Dark background
+          : Colors.white, // Light background
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: themeController.isDarkMode.value
+            ? const Color(0xFF121212)
+            : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: themeController.isDarkMode.value ? Colors.white : Colors.black,
+          ),
           onPressed: () => Get.back(),
         ),
         title: Text(
@@ -39,7 +46,7 @@ class AllTransactionsScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: screenWidth * 0.06,
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            color: themeController.isDarkMode.value ? Colors.white : Colors.black,
           ),
         ),
         centerTitle: true,
@@ -51,28 +58,28 @@ class AllTransactionsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: screenWidth * 0.04),
-              // Transaction list heading
               Text(
-                'Recent Transections',
+                'Recent Transactions',
                 style: TextStyle(
                   fontSize: screenWidth * 0.05,
                   fontWeight: FontWeight.w700,
-                  color: Colors.black,
+                  color: themeController.isDarkMode.value ? Colors.white : Colors.black,
                 ),
               ),
               SizedBox(height: screenWidth * 0.04),
-              // Transaction list using individual Card widgets
+              // Transaction list
               Obx(() => Column(
                 children: controller.allTransactions.asMap().entries.map((entry) {
                   var transaction = entry.value;
                   return Padding(
-                    padding: EdgeInsets.only(bottom: screenWidth * 0.03), // Add space between cards
+                    padding: EdgeInsets.only(bottom: screenWidth * 0.03),
                     child: _buildTransactionItem(
                       transaction['title'] as String,
                       transaction['time'] as String,
                       transaction['amount'] as String,
                       transaction['isIncome'] as bool,
                       screenWidth,
+                      themeController.isDarkMode.value,
                     ),
                   );
                 }).toList(),
@@ -81,17 +88,18 @@ class AllTransactionsScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 
-  Widget _buildTransactionItem(String title, String time, String amount, bool isIncome, double screenWidth) {
+  Widget _buildTransactionItem(
+      String title, String time, String amount, bool isIncome, double screenWidth, bool isDarkMode) {
     return Card(
-      color: Colors.white,
+      color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
       elevation: 0.5,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(screenWidth * 0.03),
       ),
-      margin: EdgeInsets.zero, // No margin on the card itself, padding is applied on the parent widget
+      margin: EdgeInsets.zero,
       child: Padding(
         padding: EdgeInsets.all(screenWidth * 0.04),
         child: Row(
@@ -100,14 +108,16 @@ class AllTransactionsScreen extends StatelessWidget {
               width: screenWidth * 0.1,
               height: screenWidth * 0.1,
               decoration: BoxDecoration(
-                color: isIncome ? const Color(0xFFE8F5E9) : const Color(0xFFFFF3E0), // Use light background color
+                color: isIncome
+                    ? (isDarkMode ? Colors.green.withOpacity(0.2) : const Color(0xFFE8F5E9))
+                    : (isDarkMode ? Colors.orange.withOpacity(0.2) : const Color(0xFFFFF3E0)),
                 borderRadius: BorderRadius.circular(screenWidth * 0.02),
               ),
               child: Center(
                 child: Icon(
                   isIncome ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
                   size: screenWidth * 0.05,
-                  color: isIncome ? const Color(0xFF4CAF50) : const Color(0xFFF57C00), // Use contrasting icon color
+                  color: isIncome ? const Color(0xFF4CAF50) : const Color(0xFFF57C00),
                 ),
               ),
             ),
@@ -121,13 +131,14 @@ class AllTransactionsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: screenWidth * 0.04,
                       fontWeight: FontWeight.w600,
+                      color: isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
                   SizedBox(height: screenWidth * 0.005),
                   Text(
                     time,
                     style: TextStyle(
-                      color: Colors.grey.shade600,
+                      color: isDarkMode ? Colors.white70 : Colors.grey.shade600,
                       fontSize: screenWidth * 0.035,
                     ),
                   ),

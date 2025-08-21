@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'dart:math' as math;
 
 import '../homepage/main_home_page_controller.dart';
+import '../reuseablenav/reuseablenavui.dart';
 import 'analytics_controller.dart';
 import '../../Settings/appearance/ThemeController.dart';
 
@@ -55,89 +56,8 @@ class AnalyticsScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: Obx(() => Container(
-        height: screenHeight * 0.1,
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Expanded(
-              child: _buildNavItem(0, 'assets/icons/home (2).png', 'home'.tr, screenWidth, isDarkMode),
-            ),
-            Expanded(
-              child: _buildNavItem(1, 'assets/icons/analysis.png', 'analytics'.tr, screenWidth, isDarkMode),
-            ),
-            Container(
-              width: screenWidth * 0.18,
-              child: GestureDetector(
-                onTap: () => homeCtrl.navigateToAddTransaction(isExpense: true),
-                child: Container(
-                  width: screenWidth * 0.14,
-                  height: screenWidth * 0.14,
-                  decoration: BoxDecoration(color: Color(0xFF2196F3), shape: BoxShape.circle),
-                  child: Center(
-                    child: Image.asset(
-                      'assets/icons/plus.png',
-                      width: screenWidth * 0.06,
-                      height: screenWidth * 0.06,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: _buildNavItem(2, 'assets/icons/compare.png', 'comparison'.tr, screenWidth, isDarkMode),
-            ),
-            Expanded(
-              child: _buildNavItem(3, 'assets/icons/setting.png', 'settings'.tr, screenWidth, isDarkMode),
-            ),
-          ],
-        ),
-      )),
-    );
-  }
-
-  Widget _buildNavItem(int index, String iconPath, String label, double screenWidth, bool isDarkMode) {
-    final homeCtrl = Get.find<HomeController>();
-    bool isActive = homeCtrl.selectedNavIndex.value == index;
-    final activeColor = isDarkMode ? Colors.white : Color(0xFF2196F3);
-    final inactiveColor = isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600;
-
-    return GestureDetector(
-      onTap: () => homeCtrl.changeNavIndex(index),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            iconPath,
-            width: screenWidth * 0.06,
-            height: screenWidth * 0.06,
-            color: isActive ? activeColor : inactiveColor,
-          ),
-          SizedBox(height: screenWidth * 0.015),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: screenWidth * 0.03,
-              color: isActive ? activeColor : inactiveColor,
-            ),
-          ),
-          if (isActive) ...[
-            SizedBox(height: screenWidth * 0.005),
-            Container(width: screenWidth * 0.05, height: 2, color: activeColor),
-          ]
-        ],
+      bottomNavigationBar: CustomBottomNavBar(
+        isDarkMode: isDarkMode,
       ),
     );
   }
@@ -734,7 +654,7 @@ class LineChartPainter extends CustomPainter {
       labelPaint.layout();
       final labelX = x - labelPaint.width / 2;
       final labelY = chartBottom + 8;
-      labelPaint.paint(canvas, Offset(labelX, labelY));
+      labelPaint.paint(canvas, Offset(labelX, labelY)); // Fixed: changed 'cancanvas' to 'canvas'
     }
 
     final linePoints = [

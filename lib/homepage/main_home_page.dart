@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../Settings/appearance/ThemeController.dart';
+import '../reuseablenav/reuseablenavui.dart';
 import '../routes/app_routes.dart';
 import 'main_home_page_controller.dart';
-// Import the ThemeController
+
 
 class MainHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController controller = Get.put(HomeController());
-    final ThemeController themeController = Get.find<ThemeController>(); // Get the ThemeController
+    final ThemeController themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
@@ -20,7 +21,7 @@ class MainHomeScreen extends StatelessWidget {
     final textColor = themeController.isDarkModeActive ? Colors.white : Colors.black;
     final secondaryTextColor = themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
     final iconColor = themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
-    final primaryColor = Color(0xFF2196F3); // Keep primary color consistent
+    final primaryColor = Color(0xFF2196F3);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -368,56 +369,9 @@ class MainHomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: Obx(() => Container(
-        height: screenHeight * 0.1,
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Expanded(
-              child: _buildNavItem(0, 'assets/icons/home (2).png', 'home'.tr, screenWidth, themeController.isDarkModeActive),
-            ),
-            Expanded(
-              child: _buildNavItem(1, 'assets/icons/analysis.png', 'analytics'.tr, screenWidth, themeController.isDarkModeActive),
-            ),
-            Container(
-              width: screenWidth * 0.18,
-              child: GestureDetector(
-                onTap: () => controller.navigateToAddTransaction(isExpense: true),
-                child: Container(
-                  width: screenWidth * 0.14,
-                  height: screenWidth * 0.14,
-                  decoration: BoxDecoration(color: primaryColor, shape: BoxShape.circle),
-                  child: Center(
-                    child: Image.asset(
-                      'assets/icons/plus.png',
-                      width: screenWidth * 0.06,
-                      height: screenWidth * 0.06,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: _buildNavItem(2, 'assets/icons/compare.png', 'comparison'.tr, screenWidth, themeController.isDarkModeActive),
-            ),
-            Expanded(
-              child: _buildNavItem(3, 'assets/icons/setting.png', 'settings'.tr, screenWidth, themeController.isDarkModeActive),
-            ),
-          ],
-        ),
-      )),
+      bottomNavigationBar: CustomBottomNavBar(
+        isDarkMode: themeController.isDarkModeActive,
+      ),
     );
   }
 
@@ -529,40 +483,6 @@ class MainHomeScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(int index, String iconPath, String label, double screenWidth, bool isDarkMode) {
-    final controller = Get.find<HomeController>();
-    bool isActive = controller.selectedNavIndex.value == index;
-    final activeColor = isDarkMode ? Colors.white : Color(0xFF2196F3);
-    final inactiveColor = isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600;
-
-    return GestureDetector(
-      onTap: () => controller.changeNavIndex(index),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            iconPath,
-            width: screenWidth * 0.06,
-            height: screenWidth * 0.06,
-            color: isActive ? activeColor : inactiveColor,
-          ),
-          SizedBox(height: screenWidth * 0.015),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: screenWidth * 0.03,
-              color: isActive ? activeColor : inactiveColor,
-            ),
-          ),
-          if (isActive) ...[
-            SizedBox(height: screenWidth * 0.005),
-            Container(width: screenWidth * 0.05, height: 2, color: activeColor),
-          ]
-        ],
       ),
     );
   }

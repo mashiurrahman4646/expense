@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../Comparison/prosavingpage/proserviceui.dart';
-// Make sure to import your ProSavingsPage
-// import 'pro_savings_page.dart'; // Adjust path as needed
+import '../../Settings/appearance/ThemeController.dart';
+import '../../Settings/premium/paymentui.dart';
+
 
 class TotalSavingAdvertisement extends StatefulWidget {
   const TotalSavingAdvertisement({super.key});
@@ -65,8 +65,8 @@ class _TotalSavingAdvertisementState extends State<TotalSavingAdvertisement> {
 
   void _showUnlockMessage() {
     Get.snackbar(
-      'Unlocked!',
-      'You can now compare products at the best price',
+      'unlocked'.tr,
+      'unlockMessage'.tr,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.green,
       colorText: Colors.white,
@@ -75,22 +75,27 @@ class _TotalSavingAdvertisementState extends State<TotalSavingAdvertisement> {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDarkMode = themeController.isDarkModeActive;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDarkMode ? const Color(0xFF121212) : Colors.white,
       appBar: AppBar(
         title: Text(
-          'Comparison Page',
+          'comparisonPage'.tr,
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            color: isDarkMode ? Colors.white : Colors.black,
             fontSize: 18,
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios,
+              color: isDarkMode ? Colors.white : Colors.black,
+              size: 20),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -127,7 +132,7 @@ class _TotalSavingAdvertisementState extends State<TotalSavingAdvertisement> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Watch Video to Unlock (${_remainingSeconds}s)',
+                              '${'watchVideoToUnlock'.tr} (${_remainingSeconds}s)',
                               style: GoogleFonts.poppins(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -166,15 +171,15 @@ class _TotalSavingAdvertisementState extends State<TotalSavingAdvertisement> {
                                 color: Colors.white,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.play_arrow,
                                 size: 30,
-                                color: Colors.black,
+                                color: isDarkMode ? Colors.black : Colors.black,
                               ),
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Watch Video to Unlock (30s)',
+                              '${'watchVideoToUnlock'.tr} (30s)',
                               style: GoogleFonts.poppins(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -188,10 +193,10 @@ class _TotalSavingAdvertisementState extends State<TotalSavingAdvertisement> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Watch a short video to find products\nat the best price for free',
+                    'watchVideoDescription'.tr,
                     style: GoogleFonts.poppins(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
                       height: 1.4,
                     ),
                     textAlign: TextAlign.center,
@@ -224,10 +229,10 @@ class _TotalSavingAdvertisementState extends State<TotalSavingAdvertisement> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
                       onTap: () {
-                        // Handle upgrade to pro
+                        // Navigate to Premium Plans Screen
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => ProSavingsPage()),
+                          MaterialPageRoute(builder: (context) => PremiumPlansScreen()),
                         );
                       },
                       child: Container(
@@ -242,7 +247,7 @@ class _TotalSavingAdvertisementState extends State<TotalSavingAdvertisement> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Upgrade to Pro',
+                              'upgradeToPro'.tr,
                               style: GoogleFonts.poppins(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -258,10 +263,10 @@ class _TotalSavingAdvertisementState extends State<TotalSavingAdvertisement> {
                 const SizedBox(height: 16),
                 // Small text at bottom
                 Text(
-                  'No ads • Unlimited comparisons • Premium features',
+                  'proFeatures'.tr,
                   style: GoogleFonts.poppins(
                     fontSize: 12,
-                    color: Colors.grey[500],
+                    color: isDarkMode ? Colors.grey[500] : Colors.grey[500],
                   ),
                   textAlign: TextAlign.center,
                 ),

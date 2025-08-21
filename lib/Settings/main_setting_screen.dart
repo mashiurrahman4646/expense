@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../reuseablenav/reuseablenavui.dart';
 import '../routes/app_routes.dart';
 import '../homepage/main_home_page_controller.dart';
+
+import '../Settings/appearance/ThemeController.dart';
 
 class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController homeController = Get.find<HomeController>();
+    final ThemeController themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: themeController.isDarkModeActive ? Color(0xFF121212) : Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             size: screenWidth * 0.05,
           ),
           onPressed: () => Get.back(),
@@ -26,7 +30,7 @@ class SettingsScreen extends StatelessWidget {
         title: Text(
           'Setting',
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.w600,
           ),
@@ -47,7 +51,7 @@ class SettingsScreen extends StatelessWidget {
                     height: screenWidth * 0.22,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white,
+                      color: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
@@ -71,7 +75,7 @@ class SettingsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: screenWidth * 0.05,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black,
+                      color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                     ),
                   ),
                 ],
@@ -86,6 +90,7 @@ class SettingsScreen extends StatelessWidget {
                     () => Get.toNamed(AppRoutes.personalInformation),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
               _buildSettingsItem(
                 'Premium Plans',
@@ -94,6 +99,7 @@ class SettingsScreen extends StatelessWidget {
                     () => Get.toNamed(AppRoutes.premiumPlans),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
               _buildSettingsItem(
                 'Notification Setting',
@@ -102,14 +108,16 @@ class SettingsScreen extends StatelessWidget {
                     () => Get.toNamed(AppRoutes.notificationSettings),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
               _buildSettingsItem(
                 'Language',
                 'Change your preferred language',
                 'assets/icons/Language.png',
-                    () => Get.toNamed(AppRoutes.languageSettings), // 🔥 Updated: Navigate to Language Settings
+                    () => Get.toNamed(AppRoutes.languageSettings),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
               _buildSettingsItem(
                 'App Unlock',
@@ -118,6 +126,7 @@ class SettingsScreen extends StatelessWidget {
                     () => Get.toNamed(AppRoutes.appUnlock),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
               _buildSettingsItem(
                 'Appearance',
@@ -126,6 +135,7 @@ class SettingsScreen extends StatelessWidget {
                     () => Get.toNamed(AppRoutes.appearance),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
               _buildSettingsItem(
                 'Currency Change',
@@ -134,6 +144,7 @@ class SettingsScreen extends StatelessWidget {
                     () => Get.toNamed(AppRoutes.currencyChange),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
               _buildSettingsItem(
                 'Terms & Conditions',
@@ -142,6 +153,7 @@ class SettingsScreen extends StatelessWidget {
                     () => Get.toNamed(AppRoutes.termsConditions),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
 
               SizedBox(height: screenHeight * 0.05),
@@ -154,12 +166,21 @@ class SettingsScreen extends StatelessWidget {
                   onPressed: () {
                     Get.dialog(
                       AlertDialog(
+                        backgroundColor: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         title: Text(
                           'Logout',
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
+                          ),
                         ),
-                        content: Text('Are you sure you want to logout?'),
+                        content: Text(
+                          'Are you sure you want to logout?',
+                          style: TextStyle(
+                            color: themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600,
+                          ),
+                        ),
                         actions: [
                           TextButton(
                             onPressed: () => Get.back(),
@@ -187,7 +208,7 @@ class SettingsScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(screenWidth * 0.03),
                     ),
-                    backgroundColor: Colors.white,
+                    backgroundColor: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
                   ),
                   child: Text(
                     'Logout',
@@ -204,48 +225,9 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: Obx(() => Container(
-        height: screenHeight * 0.1,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildNavItem(0, 'assets/icons/home (2).png', 'Home', screenWidth, homeController),
-            _buildNavItem(1, 'assets/icons/analysis.png', 'Analytics', screenWidth, homeController),
-            GestureDetector(
-              onTap: () => homeController.navigateToAddTransaction(isExpense: true),
-              child: Container(
-                width: screenWidth * 0.14,
-                height: screenWidth * 0.14,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF2196F3),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Image.asset(
-                    'assets/icons/plus.png',
-                    width: screenWidth * 0.06,
-                    height: screenWidth * 0.06,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            _buildNavItem(2, 'assets/icons/compare.png', 'Comparison', screenWidth, homeController),
-            _buildNavItem(3, 'assets/icons/setting.png', 'Settings', screenWidth, homeController),
-          ],
-        ),
-      )),
+      bottomNavigationBar: CustomBottomNavBar(
+        isDarkMode: themeController.isDarkModeActive,
+      ),
     );
   }
 
@@ -256,6 +238,7 @@ class SettingsScreen extends StatelessWidget {
       VoidCallback onTap,
       double screenWidth,
       double screenHeight,
+      bool isDarkMode,
       ) {
     return Container(
       margin: EdgeInsets.only(bottom: screenHeight * 0.015),
@@ -276,7 +259,7 @@ class SettingsScreen extends StatelessWidget {
                   width: screenWidth * 0.12,
                   height: screenWidth * 0.12,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FA),
+                    color: isDarkMode ? Color(0xFF2D2D2D) : const Color(0xFFF8F9FA),
                     borderRadius: BorderRadius.circular(screenWidth * 0.025),
                   ),
                   child: Center(
@@ -300,7 +283,7 @@ class SettingsScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: screenWidth * 0.042,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: isDarkMode ? Colors.white : Colors.black,
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.005),
@@ -326,47 +309,6 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(
-      int index,
-      String iconPath,
-      String label,
-      double screenWidth,
-      HomeController homeController,
-      ) {
-    bool isActive = homeController.selectedNavIndex.value == index;
-    return GestureDetector(
-      onTap: () => homeController.changeNavIndex(index),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            iconPath,
-            width: screenWidth * 0.06,
-            height: screenWidth * 0.06,
-            color: isActive ? const Color(0xFF2196F3) : Colors.grey.shade600,
-          ),
-          SizedBox(height: screenWidth * 0.015),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: screenWidth * 0.03,
-              color: isActive ? const Color(0xFF2196F3) : Colors.grey.shade600,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-            ),
-          ),
-          if (isActive) ...[
-            SizedBox(height: screenWidth * 0.005),
-            Container(
-              width: screenWidth * 0.05,
-              height: 2,
-              color: const Color(0xFF2196F3),
-            ),
-          ]
-        ],
       ),
     );
   }

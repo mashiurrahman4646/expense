@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../Settings/appearance/ThemeController.dart';
 
 class ReportDownloadScreen extends StatefulWidget {
   const ReportDownloadScreen({super.key});
@@ -13,20 +14,25 @@ class _ReportDownloadScreenState extends State<ReportDownloadScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDarkMode = themeController.isDarkModeActive;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: isDarkMode ? const Color(0xFF121212) : const Color(0xFFF9FAFB),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios,
+              color: isDarkMode ? Colors.white : Colors.black,
+              size: 20),
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
-        title: const Text(
-          'Report',
+        title: Text(
+          'report'.tr,
           style: TextStyle(
-            color: Color(0xFF111827),
+            color: isDarkMode ? Colors.white : const Color(0xFF111827),
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -37,44 +43,47 @@ class _ReportDownloadScreenState extends State<ReportDownloadScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Export Period',
+            Text(
+              'exportPeriod'.tr,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF6B7280),
+                color: isDarkMode ? Colors.grey[400] : const Color(0xFF6B7280),
               ),
             ),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFE5E7EB)),
+                border: Border.all(
+                  color: isDarkMode ? const Color(0xFF333333) : const Color(0xFFE5E7EB),
+                ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Monthly',
+                    'monthly'.tr,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF111827),
+                      color: isDarkMode ? Colors.white : const Color(0xFF111827),
                     ),
                   ),
                   Icon(Icons.keyboard_arrow_down,
-                      color: Color(0xFF6B7280), size: 20),
+                      color: isDarkMode ? Colors.grey[400] : const Color(0xFF6B7280),
+                      size: 20),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            _buildOption('pdf'),
+            _buildOption('pdf', isDarkMode),
             const SizedBox(height: 12),
-            _buildOption('CSV'),
+            _buildOption('CSV', isDarkMode),
             const SizedBox(height: 12),
-            _buildOption('Excel.xlsx'),
+            _buildOption('Excel.xlsx', isDarkMode),
             const Spacer(),
             SizedBox(
               width: double.infinity,
@@ -83,10 +92,10 @@ class _ReportDownloadScreenState extends State<ReportDownloadScreen> {
                     ? () {
                   Get.back();
                   Get.snackbar(
-                    'Download Started',
-                    'Your ${selectedOption!} report is being prepared',
+                    'downloadStarted'.tr,
+                    '${'reportBeingPrepared'.tr} ${selectedOption!}',
                     snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.green,
+                    backgroundColor: isDarkMode ? const Color(0xFF2E7D32) : Colors.green,
                     colorText: Colors.white,
                   );
                 }
@@ -98,11 +107,11 @@ class _ReportDownloadScreenState extends State<ReportDownloadScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  disabledBackgroundColor: const Color(0xFFE5E7EB),
+                  disabledBackgroundColor: isDarkMode ? const Color(0xFF333333) : const Color(0xFFE5E7EB),
                 ),
-                child: const Text(
-                  'Download',
-                  style: TextStyle(
+                child: Text(
+                  'download'.tr,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -115,7 +124,7 @@ class _ReportDownloadScreenState extends State<ReportDownloadScreen> {
     );
   }
 
-  Widget _buildOption(String title) {
+  Widget _buildOption(String title, bool isDarkMode) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -126,9 +135,11 @@ class _ReportDownloadScreenState extends State<ReportDownloadScreen> {
         height: 56,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
+          border: Border.all(
+            color: isDarkMode ? const Color(0xFF333333) : const Color(0xFFE5E7EB),
+          ),
         ),
         child: Row(
           children: [
@@ -140,7 +151,7 @@ class _ReportDownloadScreenState extends State<ReportDownloadScreen> {
                 border: Border.all(
                   color: selectedOption == title
                       ? const Color(0xFF2563EB)
-                      : const Color(0xFFD1D5DB),
+                      : isDarkMode ? const Color(0xFF555555) : const Color(0xFFD1D5DB),
                   width: 2,
                 ),
               ),
@@ -160,10 +171,10 @@ class _ReportDownloadScreenState extends State<ReportDownloadScreen> {
             const SizedBox(width: 12),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF111827),
+                color: isDarkMode ? Colors.white : const Color(0xFF111827),
               ),
             ),
           ],

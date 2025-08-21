@@ -102,16 +102,19 @@ class HomeController extends GetxController {
 
     switch (index) {
       case 0: // Home
-        Get.offAllNamed(AppRoutes.mainHome);
+      // Don't navigate if we're already on the home screen
+        if (Get.currentRoute != AppRoutes.mainHome) {
+          Get.offAllNamed(AppRoutes.mainHome);
+        }
         break;
       case 1: // Analytics
-        Get.offAllNamed(AppRoutes.analytics);
+        Get.toNamed(AppRoutes.analytics);
         break;
       case 2: // Comparison
-        Get.offAllNamed(AppRoutes.comparison);
+        Get.toNamed(AppRoutes.comparison);
         break;
       case 3: // Settings
-        Get.offAllNamed(AppRoutes.settings);
+        Get.toNamed(AppRoutes.settings);
         break;
     }
   }

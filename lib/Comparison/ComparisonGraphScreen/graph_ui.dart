@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../Settings/appearance/ThemeController.dart';
 import '../../routes/app_routes.dart';
-
 
 class ComparisonGraphScreen extends StatelessWidget {
   const ComparisonGraphScreen({super.key});
@@ -11,20 +10,24 @@ class ComparisonGraphScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
+    final themeController = Get.find<ThemeController>();
+    final bool isDarkMode = themeController.isDarkModeActive;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDarkMode ? const Color(0xFF121212) : Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios,
+              color: isDarkMode ? Colors.white : Colors.black,
+              size: 20),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Compare & save',
+        title: Text(
+          'compareAndSave'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: isDarkMode ? Colors.white : Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -43,9 +46,11 @@ class ComparisonGraphScreen extends StatelessWidget {
               width: double.infinity,
               height: screenHeight * 0.35,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[200]!),
+                border: Border.all(
+                  color: isDarkMode ? const Color(0xFF333333) : Colors.grey[200]!,
+                ),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -54,20 +59,20 @@ class ComparisonGraphScreen extends StatelessWidget {
                     // Graph Area
                     Expanded(
                       child: CustomPaint(
-                        size: Size(double.infinity, double.infinity),
-                        painter: BarChartPainter(),
+                        size: const Size(double.infinity, double.infinity),
+                        painter: BarChartPainter(isDarkMode: isDarkMode),
                       ),
                     ),
 
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     // Legend
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildLegendItem('Original Price', Colors.grey),
-                        _buildLegendItem('With Tool', Colors.blue),
-                        _buildLegendItem('Saving', Colors.green),
+                        _buildLegendItem('originalPrice'.tr, Colors.grey, isDarkMode),
+                        _buildLegendItem('withTool'.tr, Colors.blue, isDarkMode),
+                        _buildLegendItem('saving'.tr, Colors.green, isDarkMode),
                       ],
                     ),
                   ],
@@ -80,12 +85,14 @@ class ComparisonGraphScreen extends StatelessWidget {
             // Amazon Deal Card
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[200]!),
+                border: Border.all(
+                  color: isDarkMode ? const Color(0xFF333333) : Colors.grey[200]!,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: isDarkMode ? Colors.black.withOpacity(0.3) : Colors.grey.withOpacity(0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -100,17 +107,30 @@ class ComparisonGraphScreen extends StatelessWidget {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: isDarkMode ? const Color(0xFF333333) : Colors.grey[100]!,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Image.asset(
-                        'assets/icons/AmazonLogo.png',
+                      child: isDarkMode
+                          ? Image.asset(
+                        'assets/icons/AmazonLogo (1).png', // White Amazon logo for dark mode
                         width: 24,
                         height: 24,
                         errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
+                          return Icon(
                             Icons.store,
-                            color: Colors.orange,
+                            color: Colors.white, // White icon as fallback
+                            size: 24,
+                          );
+                        },
+                      )
+                          : Image.asset(
+                        'assets/icons/AmazonLogo.png', // Regular Amazon logo for light mode
+                        width: 24,
+                        height: 24,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            Icons.store,
+                            color: Colors.orange, // Orange icon as fallback
                             size: 24,
                           );
                         },
@@ -123,25 +143,25 @@ class ComparisonGraphScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Amazon',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Nike Air Max 270 - Men\'s Running',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
+                              color: isDarkMode ? Colors.white : Colors.black,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Save 23%',
+                            'Nike Air Max 270 - Men\'s Running',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isDarkMode ? Colors.grey[300] : Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${'save'.tr} 23%',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.green[600],
@@ -178,9 +198,9 @@ class ComparisonGraphScreen extends StatelessWidget {
                   color: Colors.white,
                   size: 20,
                 ),
-                label: const Text(
-                  'Purchase Now',
-                  style: TextStyle(
+                label: Text(
+                  'purchaseNow'.tr,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -192,12 +212,12 @@ class ComparisonGraphScreen extends StatelessWidget {
             SizedBox(height: screenHeight * 0.04),
 
             // Recent Purchase Section
-            const Text(
-              'Recent Purchase',
+            Text(
+              'recentPurchase'.tr,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: isDarkMode ? Colors.white : Colors.black,
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
@@ -209,6 +229,7 @@ class ComparisonGraphScreen extends StatelessWidget {
               title: 'Magic keyboard',
               date: '06/06/25, 05:00 PM',
               price: '\$20.20',
+              isDarkMode: isDarkMode,
             ),
 
             SizedBox(height: screenHeight * 0.02),
@@ -219,6 +240,7 @@ class ComparisonGraphScreen extends StatelessWidget {
               title: 'Motor parts',
               date: '06/06/25, 05:00 PM',
               price: '\$150.2',
+              isDarkMode: isDarkMode,
             ),
 
             SizedBox(height: screenHeight * 0.03),
@@ -229,18 +251,21 @@ class ComparisonGraphScreen extends StatelessWidget {
               height: 48,
               child: OutlinedButton(
                 onPressed: () {
-                  Get.toNamed(AppRoutes.nonProSavings); // Updated navigation
+                  Get.toNamed(AppRoutes.nonProSavings);
                 },
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.grey[300]!),
+                  side: BorderSide(
+                    color: isDarkMode ? const Color(0xFF333333) : Colors.grey[300]!,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
+                  backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
                 ),
-                child: const Text(
-                  'View all Purchase',
+                child: Text(
+                  'viewAllPurchase'.tr,
                   style: TextStyle(
-                    color: Colors.black87,
+                    color: isDarkMode ? Colors.white : Colors.black87,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -255,7 +280,7 @@ class ComparisonGraphScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLegendItem(String label, Color color) {
+  Widget _buildLegendItem(String label, Color color, bool isDarkMode) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -273,7 +298,7 @@ class ComparisonGraphScreen extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12,
-            color: Colors.grey[600],
+            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -287,103 +312,110 @@ class ComparisonGraphScreen extends StatelessWidget {
     required String title,
     required String date,
     required String price,
+    required bool isDarkMode,
   }) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            // Icon
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Image.asset(
-                  iconAsset,
-                  width: 20,
-                  height: 20,
-                  color: iconColor,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Icon(
-                      title.toLowerCase().contains('keyboard')
-                          ? Icons.keyboard
-                          : Icons.build,
-                      color: iconColor,
-                      size: 20,
-                    );
-                  },
+        decoration: BoxDecoration(
+          color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDarkMode ? const Color(0xFF333333) : Colors.grey[200]!,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // Icon
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(isDarkMode ? 0.2 : 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Image.asset(
+                    iconAsset,
+                    width: 20,
+                    height: 20,
+                    color: iconColor,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(
+                        title.toLowerCase().contains('keyboard')
+                            ? Icons.keyboard
+                            : Icons.build,
+                        color: iconColor,
+                        size: 20,
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
+              const SizedBox(width: 12),
 
-            // Details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
+              // Details
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 14,
-                        color: Colors.grey[500],
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        date,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[500],
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 14,
+                          color: isDarkMode ? Colors.grey[400] : Colors.grey[500],
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 4),
+                        Text(
+                          date,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDarkMode ? Colors.grey[400] : Colors.grey[500],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            // Price
-            Text(
-              price,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+              // Price
+              Text(
+                price,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        )
     );
   }
 }
 
 class BarChartPainter extends CustomPainter {
+  final bool isDarkMode;
+
+  BarChartPainter({required this.isDarkMode});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint();
     final double barWidth = size.width * 0.25;
-    final double spacing = 2;
+    const double spacing = 2;
     final double maxHeight = size.height * 0.7;
 
     final double originalPriceHeight = maxHeight * 1.0;
@@ -392,7 +424,7 @@ class BarChartPainter extends CustomPainter {
 
     final double startX = (size.width - (3 * barWidth + 2 * spacing)) / 2;
 
-    paint.color = Colors.grey[300]!;
+    paint.color = isDarkMode ? const Color(0xFF333333) : Colors.grey[300]!;
     paint.strokeWidth = 1;
     canvas.drawLine(
       Offset(startX - 20, 0),
@@ -404,13 +436,13 @@ class BarChartPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
 
-    List<double> yValues = [0.0, 0.5, 1.0];
-    List<String> labels = ['0', '50', '100'];
+    const List<double> yValues = [0.0, 0.5, 1.0];
+    const List<String> labels = ['0', '50', '100'];
 
     for (int i = 0; i < yValues.length; i++) {
       double y = maxHeight - (maxHeight * yValues[i]);
 
-      paint.color = Colors.grey[300]!;
+      paint.color = isDarkMode ? const Color(0xFF333333) : Colors.grey[300]!;
       paint.strokeWidth = 0.5;
       canvas.drawLine(
         Offset(startX - 25, y),
@@ -421,7 +453,7 @@ class BarChartPainter extends CustomPainter {
       textPainter.text = TextSpan(
         text: labels[i],
         style: TextStyle(
-          color: Colors.grey[600],
+          color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
           fontSize: 10,
         ),
       );
@@ -456,12 +488,16 @@ class BarChartPainter extends CustomPainter {
       color: Colors.green,
     );
 
-    final List<String> barLabels = ['Original Price', 'With Tool', 'Saving'];
+    final List<String> barLabels = [
+      'originalPrice'.tr,
+      'withTool'.tr,
+      'saving'.tr
+    ];
     for (int i = 0; i < 3; i++) {
       textPainter.text = TextSpan(
         text: barLabels[i],
         style: TextStyle(
-          color: Colors.grey[600],
+          color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
           fontSize: 10,
         ),
       );

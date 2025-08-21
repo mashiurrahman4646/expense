@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../Settings/appearance/ThemeController.dart';
 
 class ProSavingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDarkMode = themeController.isDarkModeActive;
+
     return WillPopScope(
       onWillPop: () async {
         // Navigate to MainHomeScreen when back button is pressed
@@ -11,21 +15,23 @@ class ProSavingsPage extends StatelessWidget {
         return false; // Prevent default back navigation
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? const Color(0xFF121212) : Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+            icon: Icon(Icons.arrow_back_ios,
+                color: isDarkMode ? Colors.white : Colors.black,
+                size: 20),
             onPressed: () {
               // Navigate to MainHomeScreen when back arrow is pressed
-              Get.offAllNamed('/mainHome'); // or use your route name
+              Get.offAllNamed('/comparison'); // or use your route name
             },
           ),
           title: Text(
-            'Total Savings',
+            'totalSavings'.tr,
             style: TextStyle(
-              color: Colors.black,
+              color: isDarkMode ? Colors.white : Colors.black,
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -46,10 +52,10 @@ class ProSavingsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Total saving',
+                          'totalSaving'.tr,
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[600],
+                            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
                             fontWeight: FontWeight.w400,
                           ),
                         ),
@@ -59,7 +65,7 @@ class ProSavingsPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: isDarkMode ? Colors.white : Colors.black,
                           ),
                         ),
                       ],
@@ -67,21 +73,26 @@ class ProSavingsPage extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
+                        border: Border.all(
+                          color: isDarkMode ? const Color(0xFF333333) : Colors.grey[300]!,
+                        ),
                         borderRadius: BorderRadius.circular(20),
+                        color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Monthly',
+                            'monthly'.tr,
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.black,
+                              color: isDarkMode ? Colors.white : Colors.black,
                             ),
                           ),
                           SizedBox(width: 4),
-                          Icon(Icons.keyboard_arrow_down, size: 16),
+                          Icon(Icons.keyboard_arrow_down,
+                              size: 16,
+                              color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
                         ],
                       ),
                     ),
@@ -93,13 +104,13 @@ class ProSavingsPage extends StatelessWidget {
               Container(
                 height: 200,
                 margin: EdgeInsets.symmetric(horizontal: 16),
-                child: _buildGraph(),
+                child: _buildGraph(isDarkMode),
               ),
 
               // Legend
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: _buildLegend(),
+                child: _buildLegend(isDarkMode),
               ),
 
               // Summary Section
@@ -107,16 +118,16 @@ class ProSavingsPage extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: 16),
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
+                  color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.grey[50],
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Column(
                   children: [
-                    _buildSummaryRow('Without apps total', '\$3,450.00', Colors.black),
+                    _buildSummaryRow('withoutAppsTotal'.tr, '\$3,450.00', isDarkMode ? Colors.white : Colors.black, isDarkMode),
                     SizedBox(height: 8),
-                    _buildSummaryRow('With apps total', '\$3,450.00', Colors.black),
+                    _buildSummaryRow('withAppsTotal'.tr, '\$3,450.00', isDarkMode ? Colors.white : Colors.black, isDarkMode),
                     SizedBox(height: 8),
-                    _buildSummaryRow('Total Saving', '\$3,450.00', Color(0xFF88C999)),
+                    _buildSummaryRow('totalSavingAmount'.tr, '\$3,450.00', Color(0xFF88C999), isDarkMode),
                   ],
                 ),
               ),
@@ -127,11 +138,11 @@ class ProSavingsPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  'Recent Transaction',
+                  'recentTransaction'.tr,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: isDarkMode ? Colors.white : Colors.black,
                   ),
                 ),
               ),
@@ -151,14 +162,36 @@ class ProSavingsPage extends StatelessWidget {
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
                             borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: Colors.grey[200]!),
+                            border: Border.all(
+                              color: isDarkMode ? const Color(0xFF333333) : Colors.grey[200]!,
+                            ),
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(6),
-                            child: Image.asset(
-                              'assets/icons/AmazonLogo.png',
+                            child: isDarkMode
+                                ? Image.asset(
+                              'assets/icons/AmazonLogo (1).png', // White Amazon logo for dark mode
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.orange[50],
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.shopping_bag,
+                                      color: Colors.orange[700],
+                                      size: 16,
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                                : Image.asset(
+                              'assets/icons/AmazonLogo.png', // Regular Amazon logo for light mode
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
@@ -192,7 +225,7 @@ class ProSavingsPage extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.black,
+                                      color: isDarkMode ? Colors.white : Colors.black,
                                     ),
                                   ),
                                   Text(
@@ -200,7 +233,7 @@ class ProSavingsPage extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.black,
+                                      color: isDarkMode ? Colors.white : Colors.black,
                                     ),
                                   ),
                                 ],
@@ -214,7 +247,7 @@ class ProSavingsPage extends StatelessWidget {
                                       'Nike Air Max 270 - Men\'s Running',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: Colors.grey[600],
+                                        color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
                                       ),
                                     ),
                                   ),
@@ -223,7 +256,7 @@ class ProSavingsPage extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 14,
                                       decoration: TextDecoration.lineThrough,
-                                      color: Colors.grey[500],
+                                      color: isDarkMode ? Colors.grey[500] : Colors.grey[500],
                                     ),
                                   ),
                                 ],
@@ -244,7 +277,7 @@ class ProSavingsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildGraph() {
+  Widget _buildGraph(bool isDarkMode) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
@@ -261,12 +294,12 @@ class ProSavingsPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('100', style: TextStyle(fontSize: 11, color: Colors.grey[600])),
-                      Text('80', style: TextStyle(fontSize: 11, color: Colors.grey[600])),
-                      Text('60', style: TextStyle(fontSize: 11, color: Colors.grey[600])),
-                      Text('40', style: TextStyle(fontSize: 11, color: Colors.grey[600])),
-                      Text('20', style: TextStyle(fontSize: 11, color: Colors.grey[600])),
-                      Text('0', style: TextStyle(fontSize: 11, color: Colors.grey[600])),
+                      Text('100', style: TextStyle(fontSize: 11, color: isDarkMode ? Colors.grey[400] : Colors.grey[600])),
+                      Text('80', style: TextStyle(fontSize: 11, color: isDarkMode ? Colors.grey[400] : Colors.grey[600])),
+                      Text('60', style: TextStyle(fontSize: 11, color: isDarkMode ? Colors.grey[400] : Colors.grey[600])),
+                      Text('40', style: TextStyle(fontSize: 11, color: isDarkMode ? Colors.grey[400] : Colors.grey[600])),
+                      Text('20', style: TextStyle(fontSize: 11, color: isDarkMode ? Colors.grey[400] : Colors.grey[600])),
+                      Text('0', style: TextStyle(fontSize: 11, color: isDarkMode ? Colors.grey[400] : Colors.grey[600])),
                     ],
                   ),
                 ),
@@ -277,11 +310,11 @@ class ProSavingsPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      _buildBarGroup('Laptop', 75, 60, 25),
-                      _buildBarGroup('Food', 95, 70, 45),
-                      _buildBarGroup('Gift', 50, 30, 20),
-                      _buildBarGroup('Shopping', 70, 45, 30),
-                      _buildBarGroup('Electronics', 80, 55, 35),
+                      _buildBarGroup('laptop'.tr, 75, 60, 25, isDarkMode),
+                      _buildBarGroup('food'.tr, 95, 70, 45, isDarkMode),
+                      _buildBarGroup('gift'.tr, 50, 30, 20, isDarkMode),
+                      _buildBarGroup('shopping'.tr, 70, 45, 30, isDarkMode),
+                      _buildBarGroup('electronics'.tr, 80, 55, 35, isDarkMode),
                     ],
                   ),
                 ),
@@ -293,7 +326,7 @@ class ProSavingsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBarGroup(String label, double original, double usingApp, double savings) {
+  Widget _buildBarGroup(String label, double original, double usingApp, double savings, bool isDarkMode) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -337,27 +370,27 @@ class ProSavingsPage extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 11,
-            color: Colors.grey[600],
+            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
           ),
         ),
       ],
     );
   }
 
-  Widget _buildLegend() {
+  Widget _buildLegend(bool isDarkMode) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _legendItem(Color(0xFFA3A3A3), 'Original Price'),
+        _legendItem(Color(0xFFA3A3A3), 'originalPrice'.tr, isDarkMode),
         SizedBox(width: 12),
-        _legendItem(Color(0xFF4A90E2), 'Using app'),
+        _legendItem(Color(0xFF4A90E2), 'usingApp'.tr, isDarkMode),
         SizedBox(width: 12),
-        _legendItem(Color(0xFF88C999), 'Saving'),
+        _legendItem(Color(0xFF88C999), 'saving'.tr, isDarkMode),
       ],
     );
   }
 
-  Widget _legendItem(Color color, String label) {
+  Widget _legendItem(Color color, String label, bool isDarkMode) {
     return Row(
       children: [
         Container(
@@ -373,14 +406,14 @@ class ProSavingsPage extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 11,
-            color: Colors.grey[600],
+            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSummaryRow(String label, String value, Color valueColor) {
+  Widget _buildSummaryRow(String label, String value, Color valueColor, bool isDarkMode) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -388,7 +421,7 @@ class ProSavingsPage extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey[700],
+            color: isDarkMode ? Colors.grey[400] : Colors.grey[700],
           ),
         ),
         Text(

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../Settings/appearance/ThemeController.dart';
+import '../homepage/main_home_page_controller.dart';
+import '../reuseablenav/reuseablenavui.dart';
+ // Import the custom navbar
+
 class ComparisonPageScreen extends StatelessWidget {
   final bool isFromExpense;
 
@@ -8,22 +13,33 @@ class ComparisonPageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
+    final homeCtrl = Get.find<HomeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (homeCtrl.selectedNavIndex.value != 2) {
+        homeCtrl.selectedNavIndex.value = 2;
+      }
+    });
+
+    final bool isDarkMode = themeController.isDarkModeActive;
+    final Color backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final Color cardColor = isDarkMode ? Color(0xFF1E1E1E) : Colors.white;
+    final Color textColor = isDarkMode ? Colors.white : Colors.black;
+    final Color secondaryTextColor = isDarkMode ? Colors.grey[400]! : Colors.grey.shade600;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () => Get.offAllNamed('/mainHome'), // Navigate to home page
-        ),
-        title: const Text(
-          'Compare & save',
+        automaticallyImplyLeading: false,
+        title: Text(
+          'compare_save'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: isDarkMode ? Colors.white : Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -38,110 +54,117 @@ class ComparisonPageScreen extends StatelessWidget {
             SizedBox(height: screenHeight * 0.02),
 
             // Find Better Deals Section
-            const Text(
-              'Find Better Deals',
+            Text(
+              'find_better_deals'.tr,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: isDarkMode ? Colors.white : Colors.black,
               ),
             ),
             SizedBox(height: screenHeight * 0.01),
-            const Text(
-              'Enter what you bought. We\'ll help you find it cheaper.',
+            Text(
+              'find_better_deals_desc'.tr,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey,
+                color: isDarkMode ? Colors.grey[400] : Colors.grey,
                 fontWeight: FontWeight.w400,
               ),
             ),
             SizedBox(height: screenHeight * 0.03),
 
             // Product Name Field
-            const Text(
-              'Product Name',
+            Text(
+              'product_name'.tr,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Colors.black87,
+                color: isDarkMode ? Colors.white : Colors.black87,
               ),
             ),
             SizedBox(height: screenHeight * 0.01),
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
+                color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+                border: Border.all(color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const TextField(
+              child: TextField(
+                style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  hintStyle: TextStyle(color: isDarkMode ? Colors.grey[500] : Colors.grey),
                 ),
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
 
             // Price Paid Field
-            const Text(
-              'Price Paid',
+            Text(
+              'price_paid'.tr,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Colors.black87,
+                color: isDarkMode ? Colors.white : Colors.black87,
               ),
             ),
             SizedBox(height: screenHeight * 0.01),
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
+                color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+                border: Border.all(color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const TextField(
+              child: TextField(
                 keyboardType: TextInputType.number,
+                style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                 decoration: InputDecoration(
-                  hintText: '\$ Enter amount',
-                  hintStyle: TextStyle(color: Colors.grey),
+                  hintText: 'enter_amount'.tr,
+                  hintStyle: TextStyle(color: isDarkMode ? Colors.grey[500] : Colors.grey),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 ),
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
 
             // Product Description Field
-            const Text(
-              'Product Description',
+            Text(
+              'product_description'.tr,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Colors.black87,
+                color: isDarkMode ? Colors.white : Colors.black87,
               ),
             ),
             SizedBox(height: screenHeight * 0.01),
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
+                color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+                border: Border.all(color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const TextField(
+              child: TextField(
                 maxLines: 4,
+                style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                 decoration: InputDecoration(
-                  hintText: 'Color, Size, Specification...',
-                  hintStyle: TextStyle(color: Colors.grey),
+                  hintText: 'description_hint'.tr,
+                  hintStyle: TextStyle(color: isDarkMode ? Colors.grey[500] : Colors.grey),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 ),
               ),
             ),
             SizedBox(height: screenHeight * 0.04),
 
             // Better Deals Found Section
-            const Text(
-              'Better Deals Found (8)',
+            Text(
+              'better_deals_found'.tr,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: isDarkMode ? Colors.white : Colors.black,
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
@@ -149,12 +172,12 @@ class ComparisonPageScreen extends StatelessWidget {
             // Amazon Deal Card
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[200]!),
+                border: Border.all(color: isDarkMode ? Colors.grey[700]! : Colors.grey[200]!),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.black.withOpacity(isDarkMode ? 0.3 : 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -164,25 +187,16 @@ class ComparisonPageScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    // Amazon Logo
+                    // Amazon Logo - Fixed with better error handling
                     Container(
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: isDarkMode ? Colors.grey[800]! : Colors.grey[100],
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Image.asset(
-                        'assets/icons/AmazonLogo.png',
-                        width: 24,
-                        height: 24,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.store,
-                            color: Colors.orange,
-                            size: 24,
-                          );
-                        },
+                      child: Center(
+                        child: _buildAmazonLogo(isDarkMode),
                       ),
                     ),
                     SizedBox(width: screenWidth * 0.03),
@@ -192,38 +206,38 @@ class ComparisonPageScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Amazon',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black,
+                              color: isDarkMode ? Colors.white : Colors.black,
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          const Text(
+                          SizedBox(height: 4),
+                          Text(
                             'Nike Air Max 270 - Men\'s Running',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.black87,
+                              color: isDarkMode ? Colors.grey[300] : Colors.black87,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4),
                           Row(
                             children: [
-                              const Text(
+                              Text(
                                 'Best Deal',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.blue,
+                                  color: Colors.blue[300],
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              const SizedBox(width: 4),
-                              const Icon(
+                              SizedBox(width: 4),
+                              Icon(
                                 Icons.arrow_forward_ios,
                                 size: 12,
-                                color: Colors.blue,
+                                color: Colors.blue[300],
                               ),
                             ],
                           ),
@@ -238,7 +252,7 @@ class ComparisonPageScreen extends StatelessWidget {
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Save 23%',
                         style: TextStyle(
                           color: Colors.white,
@@ -260,7 +274,8 @@ class ComparisonPageScreen extends StatelessWidget {
                   child: Container(
                     height: 48,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey[300]!),
+                      color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+                      border: Border.all(color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: ElevatedButton.icon(
@@ -268,28 +283,17 @@ class ComparisonPageScreen extends StatelessWidget {
                         // Handle Copy Link action
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      icon: Image.asset(
-                        'assets/icons/copy_link.png',
-                        width: 20,
-                        height: 20,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.link,
-                            size: 20,
-                            color: Colors.black54,
-                          );
-                        },
-                      ),
-                      label: const Text(
-                        'Copy Link',
+                      icon: _buildCopyLinkIcon(isDarkMode),
+                      label: Text(
+                        'copy_link'.tr,
                         style: TextStyle(
-                          color: Colors.black87,
+                          color: isDarkMode ? Colors.white : Colors.black87,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
@@ -302,7 +306,8 @@ class ComparisonPageScreen extends StatelessWidget {
                   child: Container(
                     height: 48,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey[300]!),
+                      color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+                      border: Border.all(color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: ElevatedButton.icon(
@@ -311,28 +316,17 @@ class ComparisonPageScreen extends StatelessWidget {
                         Get.toNamed('/comparisonGraph');
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      icon: Image.asset(
-                        'assets/icons/Group 4.png',
-                        width: 20,
-                        height: 20,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.compare,
-                            size: 20,
-                            color: Colors.black54,
-                          );
-                        },
-                      ),
-                      label: const Text(
-                        'Compare',
+                      icon: _buildCompareIcon(isDarkMode),
+                      label: Text(
+                        'compare'.tr,
                         style: TextStyle(
-                          color: Colors.black87,
+                          color: isDarkMode ? Colors.white : Colors.black87,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
@@ -359,13 +353,13 @@ class ComparisonPageScreen extends StatelessWidget {
                   ),
                   elevation: 0,
                 ),
-                icon: const Icon(
+                icon: Icon(
                   Icons.shopping_bag_outlined,
                   color: Colors.white,
                   size: 20,
                 ),
-                label: const Text(
-                  'Confirm Purchase',
+                label: Text(
+                  'confirm_purchase'.tr,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -378,6 +372,80 @@ class ComparisonPageScreen extends StatelessWidget {
           ],
         ),
       ),
+      // Use the consistent navigation bar
+      bottomNavigationBar: CustomBottomNavBar(
+        isDarkMode: isDarkMode,
+      ),
     );
+  }
+
+  // Helper method to build Amazon logo based on theme
+  Widget _buildAmazonLogo(bool isDarkMode) {
+    return Image.asset(
+      isDarkMode
+          ? 'assets/icons/AmazonLogo (1).png'
+          : 'assets/icons/AmazonLogo.png',
+      width: 40,
+      height: 40,
+      fit: BoxFit.contain,
+    );
+  }
+
+  // Helper method to build copy link icon
+  Widget _buildCopyLinkIcon(bool isDarkMode) {
+    try {
+      return Image.asset(
+        'assets/icons/copy_link.png',
+        width: 20,
+        height: 20,
+        color: isDarkMode ? Colors.white : null,
+        errorBuilder: (context, error, stackTrace) {
+          return Icon(
+            Icons.link,
+            size: 20,
+            color: isDarkMode ? Colors.white : Colors.black54,
+          );
+        },
+      );
+    } catch (e) {
+      return Icon(
+        Icons.link,
+        size: 20,
+        color: isDarkMode ? Colors.white : Colors.black54,
+      );
+    }
+  }
+
+  // Helper method to build compare icon
+  Widget _buildCompareIcon(bool isDarkMode) {
+    try {
+      return Image.asset(
+        'assets/icons/compare.png',
+        width: 20,
+        height: 20,
+        color: isDarkMode ? Colors.white : null,
+        errorBuilder: (context, error, stackTrace) {
+          return Image.asset(
+            'assets/icons/Group 4.png',
+            width: 20,
+            height: 20,
+            color: isDarkMode ? Colors.white : null,
+            errorBuilder: (context, error, stackTrace) {
+              return Icon(
+                Icons.compare,
+                size: 20,
+                color: isDarkMode ? Colors.white : Colors.black54,
+              );
+            },
+          );
+        },
+      );
+    } catch (e) {
+      return Icon(
+        Icons.compare,
+        size: 20,
+        color: isDarkMode ? Colors.white : Colors.black54,
+      );
+    }
   }
 }

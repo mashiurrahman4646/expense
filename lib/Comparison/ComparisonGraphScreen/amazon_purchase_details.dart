@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../Settings/appearance/ThemeController.dart';
 import 'ReportDownloadScreen.dart';
 
 class AmazonPurchaseDetailsScreen extends StatelessWidget {
@@ -8,20 +8,25 @@ class AmazonPurchaseDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
+    final bool isDarkMode = themeController.isDarkModeActive;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: isDarkMode ? const Color(0xFF121212) : const Color(0xFFF9FAFB),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios,
+              color: isDarkMode ? Colors.white : Colors.black,
+              size: 20),
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
-        title: const Text(
-          'Comparison Page',
+        title: Text(
+          'comparisonPage'.tr,
           style: TextStyle(
-            color: Color(0xFF111827),
+            color: isDarkMode ? Colors.white : const Color(0xFF111827),
             fontSize: 18,
             fontWeight: FontWeight.w600,
             height: 1.2,
@@ -34,29 +39,30 @@ class AmazonPurchaseDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _storeCard(),
+            _storeCard(isDarkMode),
             const SizedBox(height: 20),
-            const _SectionTitle('Price Breakdown'),
+            _SectionTitle('priceBreakdown'.tr, isDarkMode),
             const SizedBox(height: 10),
-            _priceCard(),
+            _priceCard(isDarkMode),
             const SizedBox(height: 20),
-            const _SectionTitle('Purchase Summary'),
+            _SectionTitle('purchaseSummary'.tr, isDarkMode),
             const SizedBox(height: 10),
-            _summaryCard(),
+            _summaryCard(isDarkMode),
             const SizedBox(height: 20),
             OutlinedButton(
               onPressed: () {},
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 48),
-                side: const BorderSide(color: Color(0xFF2563EB)),
+                side: BorderSide(color: isDarkMode ? const Color(0xFF2563EB) : const Color(0xFF2563EB)),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
+                backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
               ),
-              child: const Text(
-                'View All Saving',
+              child: Text(
+                'viewAllSaving'.tr,
                 style: TextStyle(
-                  color: Color(0xFF2563EB),
+                  color: isDarkMode ? Colors.white : const Color(0xFF2563EB),
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                   height: 1.2,
@@ -72,12 +78,13 @@ class AmazonPurchaseDetailsScreen extends StatelessWidget {
                 'assets/icons/downlodebill.png',
                 height: 22,
                 width: 22,
+                color: Colors.white,
                 errorBuilder: (_, __, ___) =>
                 const Icon(Icons.download_rounded, color: Colors.white, size: 20),
               ),
-              label: const Text(
-                'Download PDF Report',
-                style: TextStyle(
+              label: Text(
+                'downloadPdfReport'.tr,
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                   height: 1.2,
@@ -99,46 +106,55 @@ class AmazonPurchaseDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _storeCard() {
+  Widget _storeCard(bool isDarkMode) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset(
-            'assets/icons/AmazonLogo.png',
+          isDarkMode
+              ? Image.asset(
+            'assets/icons/AmazonLogo (1).png', // White Amazon logo for dark mode
             height: 36,
             width: 36,
             fit: BoxFit.contain,
             errorBuilder: (_, __, ___) =>
-            const Icon(Icons.store_rounded, size: 28, color: Color(0xFF111827)),
+                Icon(Icons.store_rounded, size: 28, color: isDarkMode ? Colors.white : const Color(0xFF111827)),
+          )
+              : Image.asset(
+            'assets/icons/AmazonLogo.png', // Regular Amazon logo for light mode
+            height: 36,
+            width: 36,
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) =>
+                Icon(Icons.store_rounded, size: 28, color: isDarkMode ? Colors.white : const Color(0xFF111827)),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   'Amazon',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF111827),
+                    color: isDarkMode ? Colors.white : const Color(0xFF111827),
                     height: 1.2,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
                   'Nike Air Max 270 - Men\'s Running',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF6B7280),
+                    color: isDarkMode ? Colors.grey[400] : const Color(0xFF6B7280),
                     height: 1.25,
                   ),
                   maxLines: 1,
@@ -154,9 +170,9 @@ class AmazonPurchaseDetailsScreen extends StatelessWidget {
               color: const Color(0xFFECFDF5),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Text(
-              'Save 23%',
-              style: TextStyle(
+            child: Text(
+              '${'save'.tr} 23%',
+              style: const TextStyle(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF16A34A),
@@ -169,72 +185,79 @@ class AmazonPurchaseDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _priceCard() {
+  Widget _priceCard(bool isDarkMode) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
-        children: const [
+        children: [
           _PriceRow(
-            label: 'Original Price',
+            label: 'originalPrice'.tr,
             value: '\$169.99',
-            valueColor: Color(0xFF9CA3AF),
+            valueColor: isDarkMode ? Colors.grey[600]! : const Color(0xFF9CA3AF),
             strikeThrough: true,
+            isDarkMode: isDarkMode,
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           _PriceRow(
-            label: 'Purchase Price',
+            label: 'purchasePrice'.tr,
             value: '\$129.99',
-            valueColor: Color(0xFF111827),
+            valueColor: isDarkMode ? Colors.white : const Color(0xFF111827),
             bold: true,
+            isDarkMode: isDarkMode,
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           _PriceRow(
-            label: 'You Saved',
-            labelColor: Color(0xFF16A34A),
+            label: 'youSaved'.tr,
+            labelColor: const Color(0xFF16A34A),
             value: '\$40.00 (23%)',
-            valueColor: Color(0xFF16A34A),
+            valueColor: const Color(0xFF16A34A),
             bold: true,
+            isDarkMode: isDarkMode,
           ),
         ],
       ),
     );
   }
 
-  Widget _summaryCard() {
+  Widget _summaryCard(bool isDarkMode) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         children: [
           _SummaryRow(
             iconPath: 'assets/icons/credit-card.png',
-            title: 'Payment Method',
+            title: 'paymentMethod'.tr,
             value: 'VISA *****123',
+            isDarkMode: isDarkMode,
           ),
           const SizedBox(height: 14),
           _SummaryRow(
             iconPath: 'assets/icons/order_status.png',
-            title: 'Order Status',
-            value: 'Confirmed',
+            title: 'orderStatus'.tr,
+            value: 'confirmed'.tr,
+            isDarkMode: isDarkMode,
           ),
           const SizedBox(height: 14),
           _SummaryRow(
             iconPath: 'assets/icons/purchases_date.png',
-            title: 'Purchase Date',
+            title: 'purchaseDate'.tr,
             value: 'July 30, 2025',
+            isDarkMode: isDarkMode,
           ),
           const SizedBox(height: 14),
           _SummaryRow(
             iconPath: 'assets/icons/order_id.png',
-            title: 'Order ID',
+            title: 'orderId'.tr,
             value: '#AEX123456789',
+            isDarkMode: isDarkMode,
           ),
         ],
       ),
@@ -243,17 +266,18 @@ class AmazonPurchaseDetailsScreen extends StatelessWidget {
 }
 
 class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.text);
+  const _SectionTitle(this.text, this.isDarkMode);
   final String text;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w700,
-        color: Color(0xFF111827),
+        color: isDarkMode ? Colors.white : const Color(0xFF111827),
         height: 1.2,
       ),
     );
@@ -268,6 +292,7 @@ class _PriceRow extends StatelessWidget {
     this.strikeThrough = false,
     this.labelColor = const Color(0xFF111827),
     this.valueColor = const Color(0xFF111827),
+    required this.isDarkMode,
   });
 
   final String label;
@@ -276,6 +301,7 @@ class _PriceRow extends StatelessWidget {
   final bool strikeThrough;
   final Color labelColor;
   final Color valueColor;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -287,7 +313,7 @@ class _PriceRow extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: labelColor,
+              color: isDarkMode ? Colors.grey[400] : labelColor,
               height: 1.2,
             ),
             overflow: TextOverflow.ellipsis,
@@ -319,11 +345,13 @@ class _SummaryRow extends StatelessWidget {
     required this.iconPath,
     required this.title,
     required this.value,
+    required this.isDarkMode,
   });
 
   final String iconPath;
   final String title;
   final String value;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -333,25 +361,26 @@ class _SummaryRow extends StatelessWidget {
           height: 28,
           width: 28,
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F4F6),
+            color: isDarkMode ? const Color(0xFF333333) : const Color(0xFFF3F4F6),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Image.asset(
             iconPath,
             height: 18,
             width: 18,
+            color: isDarkMode ? Colors.grey[400] : null,
             fit: BoxFit.contain,
             errorBuilder: (_, __, ___) =>
-            const Icon(Icons.help_outline, size: 16, color: Color(0xFF111827)),
+                Icon(Icons.help_outline, size: 16, color: isDarkMode ? Colors.grey[400]! : const Color(0xFF111827)),
           ),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Color(0xFF6B7280),
+              color: isDarkMode ? Colors.grey[400] : const Color(0xFF6B7280),
               fontWeight: FontWeight.w600,
               height: 1.2,
             ),
@@ -364,9 +393,9 @@ class _SummaryRow extends StatelessWidget {
             textAlign: TextAlign.right,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Color(0xFF111827),
+              color: isDarkMode ? Colors.white : const Color(0xFF111827),
               fontWeight: FontWeight.w500,
               height: 1.2,
             ),

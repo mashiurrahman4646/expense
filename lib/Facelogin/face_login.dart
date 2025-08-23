@@ -78,6 +78,8 @@ class _FaceLoginScreenState extends State<FaceLoginScreen>
     Timer(const Duration(seconds: 5), () {
       if (mounted) {
         controller.completeVerification();
+        // Navigate to MainHomeScreen after successful verification
+        Get.offNamed(AppRoutes.mainHome);
       }
     });
   }
@@ -98,10 +100,7 @@ class _FaceLoginScreenState extends State<FaceLoginScreen>
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Get.back(),
-        ),
+        automaticallyImplyLeading: false, // Remove back arrow
         title: const Text(
           'Face Verification',
           style: TextStyle(
@@ -238,7 +237,7 @@ class _FaceLoginScreenState extends State<FaceLoginScreen>
                     const SizedBox(height: 12),
                     if (!controller.isVerifying)
                       TextButton(
-                        onPressed: () => Get.back(),
+                        onPressed: () => Get.offNamed(AppRoutes.login),
                         child: const Text(
                           'Back to Login',
                           style: TextStyle(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../appearance/ThemeController.dart';
 
 class EditNameScreen extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class _EditNameScreenState extends State<EditNameScreen> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final ThemeController themeController = Get.find<ThemeController>();
 
   @override
   void initState() {
@@ -32,22 +34,22 @@ class _EditNameScreenState extends State<EditNameScreen> {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: themeController.isDarkModeActive ? Color(0xFF121212) : Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Color(0xFFF8F9FA),
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             size: screenWidth * 0.05,
           ),
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Edit Name',
+          'edit_name'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.w600,
           ),
@@ -72,7 +74,7 @@ class _EditNameScreenState extends State<EditNameScreen> {
                   width: screenWidth * 0.25,
                   height: screenWidth * 0.25,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE3F2FD),
+                    color: themeController.isDarkModeActive ? Color(0xFF2D2D2D) : Color(0xFFE3F2FD),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -88,11 +90,11 @@ class _EditNameScreenState extends State<EditNameScreen> {
               // Instruction Text
               Center(
                 child: Text(
-                  'Your name will appear on your profile and transactions',
+                  'name_appearance_info'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: screenWidth * 0.035,
-                    color: Colors.grey.shade600,
+                    color: themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600,
                   ),
                 ),
               ),
@@ -101,11 +103,11 @@ class _EditNameScreenState extends State<EditNameScreen> {
 
               // First Name Field
               Text(
-                'First Name',
+                'first_name'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.038,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black87,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black87,
                 ),
               ),
               SizedBox(height: screenHeight * 0.01),
@@ -113,14 +115,20 @@ class _EditNameScreenState extends State<EditNameScreen> {
                 controller: _firstNameController,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter your first name';
+                    return 'first_name_required'.tr;
                   }
                   return null;
                 },
+                style: TextStyle(
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
+                ),
                 decoration: InputDecoration(
-                  hintText: 'Enter first name',
+                  hintText: 'enter_first_name'.tr,
+                  hintStyle: TextStyle(
+                    color: themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600,
+                  ),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -136,11 +144,11 @@ class _EditNameScreenState extends State<EditNameScreen> {
 
               // Last Name Field
               Text(
-                'Last Name',
+                'last_name'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.038,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black87,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black87,
                 ),
               ),
               SizedBox(height: screenHeight * 0.01),
@@ -148,14 +156,20 @@ class _EditNameScreenState extends State<EditNameScreen> {
                 controller: _lastNameController,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter your last name';
+                    return 'last_name_required'.tr;
                   }
                   return null;
                 },
+                style: TextStyle(
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
+                ),
                 decoration: InputDecoration(
-                  hintText: 'Enter last name',
+                  hintText: 'enter_last_name'.tr,
+                  hintStyle: TextStyle(
+                    color: themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600,
+                  ),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -183,7 +197,7 @@ class _EditNameScreenState extends State<EditNameScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Save Changes',
+                    'save_changes'.tr,
                     style: TextStyle(
                       fontSize: screenWidth * 0.04,
                       fontWeight: FontWeight.w600,
@@ -206,8 +220,8 @@ class _EditNameScreenState extends State<EditNameScreen> {
 
       Get.back();
       Get.snackbar(
-        'Success',
-        'Name updated to $newFullName',
+        'success'.tr,
+        '${'name_updated_to'.tr} $newFullName',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green,
         colorText: Colors.white,

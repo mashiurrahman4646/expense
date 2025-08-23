@@ -1,4 +1,3 @@
-// widgets/custom_bottom_navbar.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../homepage/main_home_page_controller.dart';

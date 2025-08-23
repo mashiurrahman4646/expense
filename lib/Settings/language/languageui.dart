@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+ // Import your ThemeController
+import '../appearance/ThemeController.dart';
 import 'language_controller.dart';
 
 class LanguageSettingsScreen extends StatelessWidget {
@@ -8,20 +10,29 @@ class LanguageSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final LanguageController languageController = Get.put(LanguageController());
+    final themeController = Get.find<ThemeController>();
 
     return Obx(() => Scaffold(
-      backgroundColor: const Color(0xFFF2F2F7),
+      backgroundColor: themeController.isDarkModeActive
+          ? const Color(0xFF121212)
+          : const Color(0xFFF2F2F7),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF2F2F7),
+        backgroundColor: themeController.isDarkModeActive
+            ? const Color(0xFF1E1E1E)
+            : const Color(0xFFF2F2F7),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 16),
+          icon: Icon(
+              Icons.arrow_back_ios,
+              color: themeController.isDarkModeActive ? Colors.white : Colors.black,
+              size: 16
+          ),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Language Settings',
+        title: Text(
+          'language_settings'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: 17,
             fontWeight: FontWeight.w600,
           ),
@@ -33,8 +44,12 @@ class LanguageSettingsScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
-              'Choose your preferred language for the app interface',
-              style: const TextStyle(fontSize: 14, color: Color(0xFF8E8E93), height: 1.4),
+              'language_settings_desc'.tr,
+              style: TextStyle(
+                  fontSize: 14,
+                  color: themeController.isDarkModeActive ? Colors.grey[400] : const Color(0xFF8E8E93),
+                  height: 1.4
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -43,7 +58,7 @@ class LanguageSettingsScreen extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: themeController.isDarkModeActive ? const Color(0xFF1E1E1E) : Colors.white,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
@@ -56,11 +71,14 @@ class LanguageSettingsScreen extends StatelessWidget {
                           () {
                         languageController.changeLanguage(languageController.languages[i]);
                       },
+                      isDarkMode: themeController.isDarkModeActive,
                     ),
                     if (i < languageController.languages.length - 1)
                       Container(
                         height: 0.5,
-                        color: const Color(0xFFE5E5EA),
+                        color: themeController.isDarkModeActive
+                            ? const Color(0xFF333333)
+                            : const Color(0xFFE5E5EA),
                         margin: const EdgeInsets.only(left: 16),
                       ),
                   ],
@@ -73,17 +91,31 @@ class LanguageSettingsScreen extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 16),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF2CC),
+              color: themeController.isDarkModeActive
+                  ? const Color(0xFF332900)
+                  : const Color(0xFFFFF2CC),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               children: [
-                const Icon(Icons.warning_amber, color: Color(0xFFFF9500), size: 16),
+                Icon(
+                    Icons.warning_amber,
+                    color: themeController.isDarkModeActive
+                        ? const Color(0xFFFFB300)
+                        : const Color(0xFFFF9500),
+                    size: 16
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Some changes may require restarting the app to fully apply',
-                    style: const TextStyle(fontSize: 12, color: Color(0xFF8E6914), height: 1.3),
+                    'language_warning'.tr,
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: themeController.isDarkModeActive
+                            ? const Color(0xFFFFB300)
+                            : const Color(0xFF8E6914),
+                        height: 1.3
+                    ),
                   ),
                 ),
               ],
@@ -105,9 +137,9 @@ class LanguageSettingsScreen extends StatelessWidget {
                 ),
                 elevation: 0,
               ),
-              child: const Text(
-                'Apply Changes',
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+              child: Text(
+                'apply_changes'.tr,
+                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -117,7 +149,7 @@ class LanguageSettingsScreen extends StatelessWidget {
     ));
   }
 
-  Widget _buildLanguageOption(String language, bool isSelected, VoidCallback onTap) {
+  Widget _buildLanguageOption(String language, bool isSelected, VoidCallback onTap, {required bool isDarkMode}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -127,7 +159,11 @@ class LanguageSettingsScreen extends StatelessWidget {
           children: [
             Text(
               language,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: Colors.black),
+              style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w400,
+                  color: isDarkMode ? Colors.white : Colors.black
+              ),
             ),
             const Spacer(),
             Container(
@@ -137,7 +173,9 @@ class LanguageSettingsScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: isSelected ? const Color(0xFF007AFF) : Colors.transparent,
                 border: Border.all(
-                  color: isSelected ? const Color(0xFF007AFF) : const Color(0xFFD1D1D6),
+                  color: isSelected
+                      ? const Color(0xFF007AFF)
+                      : (isDarkMode ? const Color(0xFF555555) : const Color(0xFFD1D1D6)),
                   width: isSelected ? 6 : 2,
                 ),
               ),

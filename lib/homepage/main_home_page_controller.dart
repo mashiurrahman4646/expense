@@ -102,7 +102,6 @@ class HomeController extends GetxController {
 
     switch (index) {
       case 0: // Home
-      // Don't navigate if we're already on the home screen
         if (Get.currentRoute != AppRoutes.mainHome) {
           Get.offAllNamed(AppRoutes.mainHome);
         }
@@ -117,6 +116,17 @@ class HomeController extends GetxController {
         Get.toNamed(AppRoutes.settings);
         break;
     }
+  }
+
+  // Add this method to reset navigation index
+  void logout() {
+    selectedNavIndex.value = 0; // Reset to home index
+    Get.offAllNamed(AppRoutes.login);
+  }
+
+  // Add this method to manually set navigation index
+  void setNavIndex(int index) {
+    selectedNavIndex.value = index;
   }
 
   void addTransaction(String title, String amount, bool isIncome) {

@@ -1,33 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'PersonalInformationScreen.dart';
+import '../appearance/ThemeController.dart'; // Import your ThemeController
 
-class passwordvarificationscreen extends StatelessWidget {
+class PasswordVerificationScreen extends StatelessWidget {
   final List<TextEditingController> otpControllers =
   List.generate(6, (index) => TextEditingController());
 
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkModeActive
+          ? Color(0xFF121212)
+          : Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: themeController.isDarkModeActive
+            ? Color(0xFF1E1E1E)
+            : Color(0xFFF8F9FA),
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             size: screenWidth * 0.05,
           ),
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Verification',
+          'verification'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.w600,
           ),
@@ -46,13 +52,15 @@ class passwordvarificationscreen extends StatelessWidget {
                 width: screenWidth * 0.18,
                 height: screenWidth * 0.18,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2196F3).withOpacity(0.1),
+                  color: themeController.isDarkModeActive
+                      ? Color(0xFF2196F3).withOpacity(0.2)
+                      : Color(0xFF2196F3).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.lock_outline,
                   size: screenWidth * 0.09,
-                  color: const Color(0xFF2196F3),
+                  color: Color(0xFF2196F3),
                 ),
               ),
 
@@ -60,11 +68,11 @@ class passwordvarificationscreen extends StatelessWidget {
 
               // Title
               Text(
-                'Verification code',
+                'verificationCode'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.055,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
               ),
 
@@ -72,10 +80,10 @@ class passwordvarificationscreen extends StatelessWidget {
 
               // Description
               Text(
-                'We\'ve sent a verification code',
+                'sentVerification'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.035,
-                  color: const Color(0xFF6B7280),
+                  color: themeController.isDarkModeActive ? Color(0xFFA0A0A0) : Color(0xFF6B7280),
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -86,10 +94,10 @@ class passwordvarificationscreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Enter six digit code',
+                  'enterSixDigit'.tr,
                   style: TextStyle(
                     fontSize: screenWidth * 0.035,
-                    color: Colors.black,
+                    color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -105,10 +113,10 @@ class passwordvarificationscreen extends StatelessWidget {
                     width: screenWidth * 0.12,
                     height: screenWidth * 0.12,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
                       borderRadius: BorderRadius.circular(screenWidth * 0.02),
                       border: Border.all(
-                        color: Colors.grey.shade300,
+                        color: themeController.isDarkModeActive ? Color(0xFF333333) : Colors.grey.shade300,
                         width: 1,
                       ),
                     ),
@@ -120,7 +128,7 @@ class passwordvarificationscreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: screenWidth * 0.045,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black,
+                        color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                       ),
                       decoration: InputDecoration(
                         counterText: '',
@@ -145,10 +153,10 @@ class passwordvarificationscreen extends StatelessWidget {
 
               // Timer
               Text(
-                'Code expires in: 02:59',
+                'codeExpires'.tr.replaceAll('@time', '02:59'),
                 style: TextStyle(
                   fontSize: screenWidth * 0.035,
-                  color: Colors.black,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -160,10 +168,10 @@ class passwordvarificationscreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Don\'t get any code? ',
+                    'dontGetCode'.tr,
                     style: TextStyle(
                       fontSize: screenWidth * 0.035,
-                      color: const Color(0xFF6B7280),
+                      color: themeController.isDarkModeActive ? Color(0xFFA0A0A0) : Color(0xFF6B7280),
                     ),
                   ),
                   GestureDetector(
@@ -172,15 +180,15 @@ class passwordvarificationscreen extends StatelessWidget {
                         controller.clear();
                       }
                       Get.snackbar(
-                        'Code Resent',
-                        'A new verification code has been sent',
+                        'codeResent'.tr,
+                        'newCodeSent'.tr,
                         snackPosition: SnackPosition.BOTTOM,
                         backgroundColor: const Color(0xFF2196F3),
                         colorText: Colors.white,
                       );
                     },
                     child: Text(
-                      'Resend',
+                      'resend'.tr,
                       style: TextStyle(
                         fontSize: screenWidth * 0.035,
                         color: const Color(0xFF2196F3),
@@ -210,8 +218,8 @@ class passwordvarificationscreen extends StatelessWidget {
                     } else {
                       // Show error message
                       Get.snackbar(
-                        'Incomplete Code',
-                        'Please enter the complete 6-digit verification code',
+                        'incompleteCode'.tr,
+                        'enterCompleteCode'.tr,
                         snackPosition: SnackPosition.BOTTOM,
                         backgroundColor: Colors.red,
                         colorText: Colors.white,
@@ -226,7 +234,7 @@ class passwordvarificationscreen extends StatelessWidget {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Submit',
+                    'submit'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: screenWidth * 0.04,
@@ -241,6 +249,6 @@ class passwordvarificationscreen extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 }

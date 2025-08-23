@@ -2,21 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:your_expense/Settings/premium/paymenttypetui.dart';
 
+
+import '../appearance/ThemeController.dart'; // Import your ThemeController
+
 class PremiumPlansScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkModeActive
+          ? const Color(0xFF121212)
+          : const Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: themeController.isDarkModeActive
+            ? const Color(0xFF1E1E1E)
+            : const Color(0xFFF8F9FA),
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             size: screenWidth * 0.05,
           ),
           onPressed: () {
@@ -24,9 +32,9 @@ class PremiumPlansScreen extends StatelessWidget {
           },
         ),
         title: Text(
-          'Premium Plans',
+          'premium_plans'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.w600,
           ),
@@ -43,19 +51,21 @@ class PremiumPlansScreen extends StatelessWidget {
 
               // Header Section
               Text(
-                'Unlock Premium Features',
+                'premium_header'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.05,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
               ),
               SizedBox(height: screenHeight * 0.01),
               Text(
-                'Get more control over your finances with\nadvanced tools',
+                'premium_subheader'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.035,
-                  color: const Color(0xFF6B7280),
+                  color: themeController.isDarkModeActive
+                      ? Colors.grey[400]
+                      : const Color(0xFF6B7280),
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -64,59 +74,64 @@ class PremiumPlansScreen extends StatelessWidget {
 
               // Monthly Plan
               _buildPlanCard(
-                title: 'Monthly Plan',
-                price: '€3.99/month',
-                trialText: '7Days Free Trial',
+                title: 'monthly_plan'.tr,
+                price: 'monthly_price'.tr,
+                trialText: 'free_trial'.tr,
                 isRecommended: false,
                 isSelected: false,
                 screenWidth: screenWidth,
                 screenHeight: screenHeight,
+                isDarkMode: themeController.isDarkModeActive,
               ),
 
               SizedBox(height: screenHeight * 0.02),
 
               // Yearly Plan
               _buildPlanCard(
-                title: 'Yearly Plan',
-                price: '€34.99/yearly',
-                trialText: '7Days Free Trial',
+                title: 'yearly_plan'.tr,
+                price: 'yearly_price'.tr,
+                trialText: 'free_trial'.tr,
                 isRecommended: true,
                 isSelected: true,
                 screenWidth: screenWidth,
                 screenHeight: screenHeight,
-                saveText: 'Save 27%',
+                saveText: 'save_percentage'.tr,
+                isDarkMode: themeController.isDarkModeActive,
               ),
 
               SizedBox(height: screenHeight * 0.04),
 
               // What's Included Section
               Text(
-                'What\'s Included',
+                'whats_included'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.04,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
               ),
 
               SizedBox(height: screenHeight * 0.02),
 
               _buildFeatureItem(
-                'Access to compare various products',
+                'feature_1'.tr,
                 screenWidth,
                 screenHeight,
+                isDarkMode: themeController.isDarkModeActive,
               ),
 
               _buildFeatureItem(
-                'Export to PDF/Excel',
+                'feature_2'.tr,
                 screenWidth,
                 screenHeight,
+                isDarkMode: themeController.isDarkModeActive,
               ),
 
               _buildFeatureItem(
-                'Secure cloud backup',
+                'feature_3'.tr,
                 screenWidth,
                 screenHeight,
+                isDarkMode: themeController.isDarkModeActive,
               ),
 
               SizedBox(height: screenHeight * 0.06),
@@ -137,7 +152,7 @@ class PremiumPlansScreen extends StatelessWidget {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Upgrade Now',
+                    'upgrade_now'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: screenWidth * 0.04,
@@ -152,7 +167,7 @@ class PremiumPlansScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildPlanCard({
@@ -163,14 +178,17 @@ class PremiumPlansScreen extends StatelessWidget {
     required bool isSelected,
     required double screenWidth,
     required double screenHeight,
+    required bool isDarkMode,
     String? saveText,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(screenWidth * 0.03),
         border: Border.all(
-          color: isSelected ? const Color(0xFF2196F3) : Colors.grey.shade300,
+          color: isSelected
+              ? const Color(0xFF2196F3)
+              : (isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300),
           width: isSelected ? 2 : 1,
         ),
         boxShadow: [
@@ -195,7 +213,9 @@ class PremiumPlansScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isSelected ? const Color(0xFF2196F3) : Colors.grey.shade400,
+                      color: isSelected
+                          ? const Color(0xFF2196F3)
+                          : (isDarkMode ? Colors.grey.shade600 : Colors.grey.shade400),
                       width: 2,
                     ),
                   ),
@@ -222,7 +242,7 @@ class PremiumPlansScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: screenWidth * 0.04,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: isDarkMode ? Colors.white : Colors.black,
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.005),
@@ -230,7 +250,7 @@ class PremiumPlansScreen extends StatelessWidget {
                         price,
                         style: TextStyle(
                           fontSize: screenWidth * 0.035,
-                          color: const Color(0xFF6B7280),
+                          color: isDarkMode ? Colors.grey[400] : const Color(0xFF6B7280),
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -283,7 +303,7 @@ class PremiumPlansScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(screenWidth * 0.02),
                       ),
                       child: Text(
-                        'Recommended',
+                        'recommended'.tr,
                         style: TextStyle(
                           fontSize: screenWidth * 0.03,
                           color: const Color(0xFF2196F3),
@@ -301,7 +321,7 @@ class PremiumPlansScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureItem(String text, double screenWidth, double screenHeight) {
+  Widget _buildFeatureItem(String text, double screenWidth, double screenHeight, {required bool isDarkMode}) {
     return Container(
       margin: EdgeInsets.only(bottom: screenHeight * 0.015),
       child: Row(
@@ -325,7 +345,7 @@ class PremiumPlansScreen extends StatelessWidget {
               text,
               style: TextStyle(
                 fontSize: screenWidth * 0.035,
-                color: Colors.black,
+                color: isDarkMode ? Colors.white : Colors.black,
                 fontWeight: FontWeight.w400,
               ),
             ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../appearance/ThemeController.dart';
 import 'passwordvarificationscreen.dart'; // Import your verification screen
+
 
 class PasswordChangeScreen extends StatelessWidget {
   final TextEditingController currentPasswordController = TextEditingController();
@@ -9,26 +11,31 @@ class PasswordChangeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkModeActive
+          ? Color(0xFF121212)
+          : Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: themeController.isDarkModeActive
+            ? Color(0xFF1E1E1E)
+            : Color(0xFFF8F9FA),
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             size: screenWidth * 0.05,
           ),
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Password Change',
+          'password_change'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.w600,
           ),
@@ -49,12 +56,14 @@ class PasswordChangeScreen extends StatelessWidget {
                 height: screenWidth * 0.2,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF2196F3).withOpacity(0.1),
+                  color: themeController.isDarkModeActive
+                      ? Color(0xFF2196F3).withOpacity(0.2)
+                      : Color(0xFF2196F3).withOpacity(0.1),
                 ),
                 child: Icon(
                   Icons.lock_outline,
                   size: screenWidth * 0.1,
-                  color: const Color(0xFF2196F3),
+                  color: Color(0xFF2196F3),
                 ),
               ),
 
@@ -62,11 +71,11 @@ class PasswordChangeScreen extends StatelessWidget {
 
               // Title
               Text(
-                'Set new password',
+                'set_new_password'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.055,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
               ),
 
@@ -74,10 +83,10 @@ class PasswordChangeScreen extends StatelessWidget {
 
               // Subtitle
               Text(
-                'Enter a new password for your account',
+                'enter_new_password'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.035,
-                  color: const Color(0xFF6B7280),
+                  color: themeController.isDarkModeActive ? Color(0xFFA0A0A0) : Color(0xFF6B7280),
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -89,11 +98,11 @@ class PasswordChangeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Current password',
+                    'current_password'.tr,
                     style: TextStyle(
                       fontSize: screenWidth * 0.038,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black,
+                      color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.01),
@@ -101,31 +110,31 @@ class PasswordChangeScreen extends StatelessWidget {
                     controller: currentPasswordController,
                     obscureText: true,
                     decoration: InputDecoration(
-                      hintText: 'Enter your current password',
+                      hintText: 'enter_current_password'.tr,
                       hintStyle: TextStyle(
-                        color: const Color(0xFF9CA3AF),
+                        color: themeController.isDarkModeActive ? Color(0xFFA0A0A0) : Color(0xFF9CA3AF),
                         fontSize: screenWidth * 0.035,
                       ),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(screenWidth * 0.025),
                         borderSide: BorderSide(
-                          color: Colors.grey.shade300,
+                          color: themeController.isDarkModeActive ? Color(0xFF333333) : Colors.grey.shade300,
                           width: 1,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(screenWidth * 0.025),
                         borderSide: BorderSide(
-                          color: Colors.grey.shade300,
+                          color: themeController.isDarkModeActive ? Color(0xFF333333) : Colors.grey.shade300,
                           width: 1,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(screenWidth * 0.025),
                         borderSide: BorderSide(
-                          color: const Color(0xFF2196F3),
+                          color: Color(0xFF2196F3),
                           width: 1.5,
                         ),
                       ),
@@ -133,6 +142,9 @@ class PasswordChangeScreen extends StatelessWidget {
                         horizontal: screenWidth * 0.04,
                         vertical: screenHeight * 0.018,
                       ),
+                    ),
+                    style: TextStyle(
+                      color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                     ),
                   ),
                 ],
@@ -145,11 +157,11 @@ class PasswordChangeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'New password',
+                    'new_password'.tr,
                     style: TextStyle(
                       fontSize: screenWidth * 0.038,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black,
+                      color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.01),
@@ -157,31 +169,31 @@ class PasswordChangeScreen extends StatelessWidget {
                     controller: newPasswordController,
                     obscureText: true,
                     decoration: InputDecoration(
-                      hintText: 'Enter your new password',
+                      hintText: 'enter_new_password_field'.tr,
                       hintStyle: TextStyle(
-                        color: const Color(0xFF9CA3AF),
+                        color: themeController.isDarkModeActive ? Color(0xFFA0A0A0) : Color(0xFF9CA3AF),
                         fontSize: screenWidth * 0.035,
                       ),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(screenWidth * 0.025),
                         borderSide: BorderSide(
-                          color: Colors.grey.shade300,
+                          color: themeController.isDarkModeActive ? Color(0xFF333333) : Colors.grey.shade300,
                           width: 1,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(screenWidth * 0.025),
                         borderSide: BorderSide(
-                          color: Colors.grey.shade300,
+                          color: themeController.isDarkModeActive ? Color(0xFF333333) : Colors.grey.shade300,
                           width: 1,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(screenWidth * 0.025),
                         borderSide: BorderSide(
-                          color: const Color(0xFF2196F3),
+                          color: Color(0xFF2196F3),
                           width: 1.5,
                         ),
                       ),
@@ -189,6 +201,9 @@ class PasswordChangeScreen extends StatelessWidget {
                         horizontal: screenWidth * 0.04,
                         vertical: screenHeight * 0.018,
                       ),
+                    ),
+                    style: TextStyle(
+                      color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                     ),
                   ),
                 ],
@@ -201,11 +216,11 @@ class PasswordChangeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Confirm new password',
+                    'confirm_new_password'.tr,
                     style: TextStyle(
                       fontSize: screenWidth * 0.038,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black,
+                      color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.01),
@@ -213,31 +228,31 @@ class PasswordChangeScreen extends StatelessWidget {
                     controller: confirmPasswordController,
                     obscureText: true,
                     decoration: InputDecoration(
-                      hintText: 'Confirm your new password',
+                      hintText: 'confirm_new_password_field'.tr,
                       hintStyle: TextStyle(
-                        color: const Color(0xFF9CA3AF),
+                        color: themeController.isDarkModeActive ? Color(0xFFA0A0A0) : Color(0xFF9CA3AF),
                         fontSize: screenWidth * 0.035,
                       ),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(screenWidth * 0.025),
                         borderSide: BorderSide(
-                          color: Colors.grey.shade300,
+                          color: themeController.isDarkModeActive ? Color(0xFF333333) : Colors.grey.shade300,
                           width: 1,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(screenWidth * 0.025),
                         borderSide: BorderSide(
-                          color: Colors.grey.shade300,
+                          color: themeController.isDarkModeActive ? Color(0xFF333333) : Colors.grey.shade300,
                           width: 1,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(screenWidth * 0.025),
                         borderSide: BorderSide(
-                          color: const Color(0xFF2196F3),
+                          color: Color(0xFF2196F3),
                           width: 1.5,
                         ),
                       ),
@@ -245,6 +260,9 @@ class PasswordChangeScreen extends StatelessWidget {
                         horizontal: screenWidth * 0.04,
                         vertical: screenHeight * 0.018,
                       ),
+                    ),
+                    style: TextStyle(
+                      color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                     ),
                   ),
                 ],
@@ -261,8 +279,8 @@ class PasswordChangeScreen extends StatelessWidget {
                     // Validation logic
                     if (currentPasswordController.text.isEmpty) {
                       Get.snackbar(
-                        'Error',
-                        'Please enter your current password',
+                        'error'.tr,
+                        'enter_current_password_error'.tr,
                         snackPosition: SnackPosition.BOTTOM,
                         backgroundColor: Colors.red,
                         colorText: Colors.white,
@@ -272,8 +290,8 @@ class PasswordChangeScreen extends StatelessWidget {
 
                     if (newPasswordController.text != confirmPasswordController.text) {
                       Get.snackbar(
-                        'Error',
-                        'Passwords do not match',
+                        'error'.tr,
+                        'passwords_not_match'.tr,
                         snackPosition: SnackPosition.BOTTOM,
                         backgroundColor: Colors.red,
                         colorText: Colors.white,
@@ -283,8 +301,8 @@ class PasswordChangeScreen extends StatelessWidget {
 
                     if (newPasswordController.text.length < 10) {
                       Get.snackbar(
-                        'Error',
-                        'Password must be at least 10 characters',
+                        'error'.tr,
+                        'password_length_error'.tr,
                         snackPosition: SnackPosition.BOTTOM,
                         backgroundColor: Colors.red,
                         colorText: Colors.white,
@@ -293,17 +311,17 @@ class PasswordChangeScreen extends StatelessWidget {
                     }
 
                     // If validation passes, navigate to verification screen
-                    Get.to(() => passwordvarificationscreen());
+                    Get.to(() => PasswordVerificationScreen());
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2196F3),
+                    backgroundColor: Color(0xFF2196F3),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(screenWidth * 0.025),
                     ),
                     elevation: 0,
                   ),
                   child: Text(
-                    'Continue',
+                    'continue'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: screenWidth * 0.04,
@@ -322,7 +340,7 @@ class PasswordChangeScreen extends StatelessWidget {
                   vertical: screenHeight * 0.015,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF3CD),
+                  color: themeController.isDarkModeActive ? Color(0xFF2D2D2D) : Color(0xFFFFF3CD),
                   borderRadius: BorderRadius.circular(screenWidth * 0.02),
                 ),
                 child: Row(
@@ -330,15 +348,15 @@ class PasswordChangeScreen extends StatelessWidget {
                     Icon(
                       Icons.info_outline,
                       size: screenWidth * 0.04,
-                      color: const Color(0xFF856404),
+                      color: themeController.isDarkModeActive ? Color(0xFFFFCC00) : Color(0xFF856404),
                     ),
                     SizedBox(width: screenWidth * 0.02),
                     Expanded(
                       child: Text(
-                        'Your password must be at least 10 characters. Include multiple words to make it more secure.',
+                        'password_requirements'.tr,
                         style: TextStyle(
                           fontSize: screenWidth * 0.032,
-                          color: const Color(0xFF856404),
+                          color: themeController.isDarkModeActive ? Color(0xFFFFCC00) : Color(0xFF856404),
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -352,6 +370,6 @@ class PasswordChangeScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 }

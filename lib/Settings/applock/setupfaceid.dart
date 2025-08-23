@@ -1,29 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../appearance/ThemeController.dart';
+ // Import your ThemeController
+
 class SetupFaceIDScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkModeActive
+          ? const Color(0xFF121212)
+          : const Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: themeController.isDarkModeActive
+            ? const Color(0xFF1E1E1E)
+            : const Color(0xFFF8F9FA),
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             size: screenWidth * 0.05,
           ),
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Setup FaceID',
+          'setup_faceid'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.w600,
           ),
@@ -38,11 +46,11 @@ class SetupFaceIDScreen extends StatelessWidget {
 
             // Title Text
             Text(
-              'Unlock XYZ with your\nFaceID, quick and secured.',
+              'setup_faceid_desc'.tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: screenWidth * 0.042,
-                color: const Color(0xFF374151),
+                color: themeController.isDarkModeActive ? Colors.grey[400] : const Color(0xFF374151),
                 fontWeight: FontWeight.w400,
                 height: 1.5,
               ),
@@ -62,6 +70,7 @@ class SetupFaceIDScreen extends StatelessWidget {
                 child: Image.asset(
                   'assets/images/face-id (2).png',
                   fit: BoxFit.contain,
+                  color: themeController.isDarkModeActive ? Colors.white : null,
                 ),
               ),
             ),
@@ -77,10 +86,10 @@ class SetupFaceIDScreen extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: screenHeight * 0.025),
                 ),
                 child: Text(
-                  'Use PIN instead',
+                  'use_pin_instead'.tr,
                   style: TextStyle(
                     fontSize: screenWidth * 0.042,
-                    color: const Color(0xFF6B7280),
+                    color: themeController.isDarkModeActive ? Colors.grey[400] : const Color(0xFF6B7280),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -96,7 +105,9 @@ class SetupFaceIDScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => Get.back(),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF8F9FA),
+                  backgroundColor: themeController.isDarkModeActive
+                      ? const Color(0xFF1E1E1E)
+                      : const Color(0xFFF8F9FA),
                   foregroundColor: const Color(0xFFDC2626),
                   elevation: 0,
                   side: const BorderSide(
@@ -109,7 +120,7 @@ class SetupFaceIDScreen extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Cancel',
+                  'cancel'.tr,
                   style: TextStyle(
                     fontSize: screenWidth * 0.042,
                     fontWeight: FontWeight.w600,
@@ -122,6 +133,6 @@ class SetupFaceIDScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }

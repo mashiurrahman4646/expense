@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../appearance/ThemeController.dart';
+// Import your ThemeController
+
 class ConfirmPinScreen extends StatefulWidget {
   @override
   _ConfirmPinScreenState createState() => _ConfirmPinScreenState();
@@ -70,8 +73,8 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
     if (pin.length >= 4) {
       if (pin == originalPin) {
         Get.snackbar(
-          'Success',
-          'PIN has been set successfully!',
+          'success'.tr,
+          'pin_set_success'.tr,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green.shade100,
           colorText: Colors.green.shade800,
@@ -81,8 +84,8 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
         Get.until((route) => route.settings.name == '/appUnlock');
       } else {
         Get.snackbar(
-          'Error',
-          'PINs do not match. Please try again.',
+          'error'.tr,
+          'pin_mismatch'.tr,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red.shade100,
           colorText: Colors.red.shade800,
@@ -92,8 +95,8 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
       }
     } else {
       Get.snackbar(
-        'Invalid PIN',
-        'PIN must be at least 4 digits',
+        'invalid_pin'.tr,
+        'pin_min_length'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade100,
         colorText: Colors.red.shade800,
@@ -104,26 +107,31 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkModeActive
+          ? const Color(0xFF121212)
+          : Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: themeController.isDarkModeActive
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             size: screenWidth * 0.05,
           ),
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Confirm PIN',
+          'confirm_pin'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.w600,
           ),
@@ -139,21 +147,21 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
 
             // Title
             Text(
-              'Confirm PIN',
+              'confirm_pin'.tr,
               style: TextStyle(
                 fontSize: screenWidth * 0.06,
                 fontWeight: FontWeight.w600,
-                color: Colors.black,
+                color: themeController.isDarkModeActive ? Colors.white : Colors.black,
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
 
             // Description
             Text(
-              'Please re-enter your PIN to confirm',
+              'confirm_pin_desc'.tr,
               style: TextStyle(
                 fontSize: screenWidth * 0.04,
-                color: const Color(0xFF6B7280),
+                color: themeController.isDarkModeActive ? Colors.grey[400] : const Color(0xFF6B7280),
                 height: 1.4,
               ),
             ),
@@ -162,7 +170,7 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
             // PIN Input Fields
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(6, (index) => _buildPinField(index, screenWidth)),
+              children: List.generate(6, (index) => _buildPinField(index, screenWidth, themeController.isDarkModeActive)),
             ),
 
             Spacer(),
@@ -175,9 +183,9 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
                 TextButton(
                   onPressed: _clearPin,
                   child: Text(
-                    'Clear',
+                    'clear'.tr,
                     style: TextStyle(
-                      color: const Color(0xFF6B7280),
+                      color: themeController.isDarkModeActive ? Colors.grey[400] : const Color(0xFF6B7280),
                       fontSize: screenWidth * 0.04,
                       fontWeight: FontWeight.w500,
                     ),
@@ -188,11 +196,11 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
                 TextButton(
                   onPressed: pin.length >= 4 ? _confirmAction : null,
                   child: Text(
-                    'Confirm',
+                    'confirm'.tr,
                     style: TextStyle(
                       color: pin.length >= 4
                           ? const Color(0xFF2196F3)
-                          : const Color(0xFF9CA3AF),
+                          : (themeController.isDarkModeActive ? Colors.grey[600] : const Color(0xFF9CA3AF)),
                       fontSize: screenWidth * 0.04,
                       fontWeight: FontWeight.w600,
                     ),
@@ -204,10 +212,10 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
           ],
         ),
       ),
-    );
+    ));
   }
 
-  Widget _buildPinField(int index, double screenWidth) {
+  Widget _buildPinField(int index, double screenWidth, bool isDarkMode) {
     return Container(
       width: screenWidth * 0.12,
       height: screenWidth * 0.12,
@@ -215,10 +223,11 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
         border: Border.all(
           color: pinControllers[index].text.isNotEmpty
               ? const Color(0xFF2196F3)
-              : const Color(0xFFE5E7EB),
+              : (isDarkMode ? const Color(0xFF444444) : const Color(0xFFE5E7EB)),
           width: 2,
         ),
         borderRadius: BorderRadius.circular(8),
+        color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
       ),
       child: TextField(
         controller: pinControllers[index],
@@ -227,7 +236,7 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
         style: TextStyle(
           fontSize: screenWidth * 0.05,
           fontWeight: FontWeight.w600,
-          color: Colors.black,
+          color: isDarkMode ? Colors.white : Colors.black,
         ),
         keyboardType: TextInputType.number,
         inputFormatters: [
@@ -237,7 +246,10 @@ class _ConfirmPinScreenState extends State<ConfirmPinScreen> {
         decoration: InputDecoration(
           border: InputBorder.none,
           counterText: '',
+          filled: true,
+          fillColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
         ),
+        cursorColor: const Color(0xFF2196F3),
         onChanged: (value) => _onPinChanged(index, value),
         onTap: () {
           // Clear the field when tapped

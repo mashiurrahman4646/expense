@@ -3,22 +3,24 @@ import 'package:get/get.dart';
 import 'package:your_expense/Settings/userprofile/passwordchangescreen.dart';
 import '../../routes/app_routes.dart';
 import 'changeemail.dart';
+import '../appearance/ThemeController.dart';
 
 class PersonalInformationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: themeController.isDarkModeActive ? Color(0xFF121212) : Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Color(0xFFF8F9FA),
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             size: screenWidth * 0.05,
           ),
           onPressed: () {
@@ -39,9 +41,9 @@ class PersonalInformationScreen extends StatelessWidget {
           },
         ),
         title: Text(
-          'Personal Information',
+          'personal_information'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.w600,
           ),
@@ -65,7 +67,7 @@ class PersonalInformationScreen extends StatelessWidget {
                       height: screenWidth * 0.25,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white,
+                        color: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
@@ -89,11 +91,11 @@ class PersonalInformationScreen extends StatelessWidget {
                     GestureDetector(
                       onTap: () {
                         Get.snackbar(
-                          'Photo',
-                          'Change photo functionality will be implemented',
+                          'photo_snackbar_title'.tr,
+                          'photo_snackbar_message'.tr,
                           snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: const Color(0xFF2196F3),
-                          colorText: Colors.white,
+                          backgroundColor: themeController.isDarkModeActive ? Color(0xFF2D2D2D) : Color(0xFF2196F3),
+                          colorText: themeController.isDarkModeActive ? Colors.white : Colors.white,
                         );
                       },
                       child: Container(
@@ -102,18 +104,18 @@ class PersonalInformationScreen extends StatelessWidget {
                           vertical: screenHeight * 0.012,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
                           borderRadius: BorderRadius.circular(screenWidth * 0.06),
                           border: Border.all(
-                            color: Colors.grey.shade300,
+                            color: themeController.isDarkModeActive ? Color(0xFF3A3A3A) : Colors.grey.shade300,
                             width: 1,
                           ),
                         ),
                         child: Text(
-                          'Change Photo',
+                          'change_photo'.tr,
                           style: TextStyle(
                             fontSize: screenWidth * 0.035,
-                            color: Colors.black,
+                            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -127,38 +129,41 @@ class PersonalInformationScreen extends StatelessWidget {
 
               // Personal Information Section
               Text(
-                'Personal Information',
+                'personal_information'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.04,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
               ),
 
               SizedBox(height: screenHeight * 0.025),
 
               _buildInfoItem(
-                'Full name',
-                'Change profile image, name or password',
+                'full_name'.tr,
+                'full_name_subtitle'.tr,
                     () => Get.toNamed(AppRoutes.editName),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
 
               _buildInfoItem(
-                'Email Address',
+                'email_address'.tr,
                 'johndoe@example.com',
                     () => Get.to(() => ChangeEmailScreen()),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
 
               _buildInfoItem(
-                'Change Password',
+                'change_password'.tr,
                 '',
                     () => Get.to(() => PasswordChangeScreen()),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
 
               SizedBox(height: screenHeight * 0.06),
@@ -171,40 +176,46 @@ class PersonalInformationScreen extends StatelessWidget {
                   onPressed: () {
                     Get.dialog(
                       AlertDialog(
+                        backgroundColor: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         title: Text(
-                          'Delete Account',
+                          'delete_account_title'.tr,
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Colors.red,
                           ),
                         ),
-                        content: const Text(
-                          'Are you sure you want to delete your account? This action cannot be undone.',
+                        content: Text(
+                          'delete_account_message'.tr,
+                          style: TextStyle(
+                            color: themeController.isDarkModeActive ? Colors.white70 : Colors.black87,
+                          ),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Get.back(),
                             child: Text(
-                              'Cancel',
-                              style: TextStyle(color: Colors.grey.shade600),
+                              'cancel'.tr,
+                              style: TextStyle(
+                                color: themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600,
+                              ),
                             ),
                           ),
                           TextButton(
                             onPressed: () {
                               Get.back();
                               Get.snackbar(
-                                'Account Deleted',
-                                'Your account has been deleted successfully',
+                                'account_deleted'.tr,
+                                'account_deleted_message'.tr,
                                 snackPosition: SnackPosition.BOTTOM,
                                 backgroundColor: Colors.red,
                                 colorText: Colors.white,
                               );
                             },
-                            child: const Text(
-                              'Delete',
+                            child: Text(
+                              'delete'.tr,
                               style: TextStyle(
                                 color: Colors.red,
                                 fontWeight: FontWeight.w600,
@@ -223,7 +234,7 @@ class PersonalInformationScreen extends StatelessWidget {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Delete Account',
+                    'delete_account'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: screenWidth * 0.04,
@@ -247,6 +258,7 @@ class PersonalInformationScreen extends StatelessWidget {
       VoidCallback onTap,
       double screenWidth,
       double screenHeight,
+      bool isDarkMode,
       ) {
     return Container(
       margin: EdgeInsets.only(bottom: screenHeight * 0.02),
@@ -260,6 +272,10 @@ class PersonalInformationScreen extends StatelessWidget {
               horizontal: screenWidth * 0.02,
               vertical: screenHeight * 0.02,
             ),
+            decoration: BoxDecoration(
+              color: isDarkMode ? Color(0xFF1E1E1E) : Colors.transparent,
+              borderRadius: BorderRadius.circular(screenWidth * 0.02),
+            ),
             child: Row(
               children: [
                 Expanded(
@@ -271,7 +287,7 @@ class PersonalInformationScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: screenWidth * 0.042,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: isDarkMode ? Colors.white : Colors.black,
                         ),
                       ),
                       if (subtitle.isNotEmpty) ...[
@@ -280,7 +296,7 @@ class PersonalInformationScreen extends StatelessWidget {
                           subtitle,
                           style: TextStyle(
                             fontSize: screenWidth * 0.035,
-                            color: const Color(0xFF6B7280),
+                            color: isDarkMode ? Color(0xFF9CA3AF) : Color(0xFF6B7280),
                             fontWeight: FontWeight.w400,
                           ),
                         ),
@@ -291,7 +307,7 @@ class PersonalInformationScreen extends StatelessWidget {
                 Icon(
                   Icons.arrow_forward_ios,
                   size: screenWidth * 0.04,
-                  color: const Color(0xFF9CA3AF),
+                  color: isDarkMode ? Color(0xFF9CA3AF) : Color(0xFF9CA3AF),
                 ),
               ],
             ),

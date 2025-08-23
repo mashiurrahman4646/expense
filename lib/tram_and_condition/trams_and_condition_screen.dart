@@ -4,7 +4,6 @@ import 'package:your_expense/tram_and_condition/trams_condition_controller.dart'
 import '../Settings/appearance/ThemeController.dart';
 import '../Settings/language/language_controller.dart';
 
-
 import '../colors/app_colors.dart';
 import '../text_styles.dart';
 
@@ -23,6 +22,12 @@ class TermsAndConditionsScreen extends StatelessWidget {
 
       // Get the T&C texts based on selected language
       final termsList = termsController.termsTexts[selectedLanguage] ?? termsController.termsTexts['English']!;
+
+      // Get the intro text based on selected language
+      final introText = termsController.introTexts[selectedLanguage] ?? termsController.introTexts['English']!;
+
+      // Get the app bar title based on selected language
+      final appBarTitle = termsController.appBarTitles[selectedLanguage] ?? termsController.appBarTitles['English']!;
 
       final bodyTextStyle = TextStyle(
         fontFamily: 'Inter',
@@ -56,7 +61,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
           elevation: 0,
           centerTitle: true,
           title: Text(
-            'Terms & Conditions',
+            appBarTitle, // Now using translated title
             style: AppTextStyles.heading2.copyWith(color: isDark ? Colors.white : Colors.black),
           ),
         ),
@@ -66,7 +71,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Please read these Terms and Conditions carefully before using our mobile application. By accessing or using our app, you agree to be bound by these terms.',
+                introText,
                 style: bodyTextStyle,
                 textAlign: TextAlign.center,
               ),

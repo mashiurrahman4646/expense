@@ -1,4 +1,3 @@
-// lib/tram_and_condition/trams_and_condition_controller.dart
 import 'package:get/get.dart';
 
 class TermsAndConditionsController extends GetxController {
@@ -7,9 +6,37 @@ class TermsAndConditionsController extends GetxController {
   /// Holds the T&C text in different languages
   RxMap<String, List<Map<String, String>>> termsTexts = <String, List<Map<String, String>>>{}.obs;
 
+  /// Holds the introductory text in different languages
+  RxMap<String, String> introTexts = <String, String>{}.obs;
+
+  /// Holds the app bar title in different languages
+  RxMap<String, String> appBarTitles = <String, String>{}.obs;
+
   @override
   void onInit() {
     super.onInit();
+
+    // Initialize app bar titles for each language
+    appBarTitles.value = {
+      'English': 'Terms & Conditions',
+      'Español': 'Términos y Condiciones',
+      'Italiano': 'Termini e Condizioni',
+      'Português': 'Termos e Condições',
+      'Polski': 'Regulamin',
+      'Français': 'Termes et Conditions',
+      'Türkçe': 'Şartlar ve Koşullar',
+    };
+
+    // Initialize intro texts for each language
+    introTexts.value = {
+      'English': 'Please read these Terms and Conditions carefully before using our mobile application. By accessing or using our app, you agree to be bound by these terms.',
+      'Español': 'Por favor, lea estos Términos y Condiciones cuidadosamente antes de usar nuestra aplicación móvil. Al acceder o usar nuestra aplicación, usted acepta estar sujeto a estos términos.',
+      'Italiano': 'Si prega di leggere attentamente questi Termini e Condizioni prima di utilizzare la nostra applicazione mobile. Accedendo o utilizzando la nostra app, accetti di essere vincolato da questi termini.',
+      'Português': 'Por favor, leia estes Termos e Condições atentamente antes de usar nosso aplicativo móvil. Ao acessar ou usar nosso aplicativo, você concorda em ficar vinculado a esses termos.',
+      'Polski': 'Przed użyciem naszej aplikacji mobilnej prosimy o uważne zapoznanie się z niniejszym Regulaminem. Korzystając z naszej aplikacji, zgadzasz się być związany tymi warunkami.',
+      'Français': 'Veuillez lire attentivement ces Termes et Conditions avant d\'utiliser notre application mobile. En accédant ou en utilisant notre application, vous acceptez d\'être lié par ces conditions.',
+      'Türkçe': 'Mobil uygulamamızı kullanmadan önce lütfen bu Şartlar ve Koşulları dikkatlice okuyun. Uygulamamıza erişerek veya kullanarak, bu şartlarla bağlı olmayı kabul etmiş olursunuz.',
+    };
 
     // Initialize T&C for each language
     termsTexts.value = {
@@ -34,21 +61,21 @@ class TermsAndConditionsController extends GetxController {
         {'heading': '2. Account Utente', 'body': 'Quando crei un account con noi, devi fornire informazioni accurate, complete e aggiornate. Sei responsabile della protezione della password e di tutte le attività che avvengono sotto il tuo account. Ci riserviamo il diritto di sospendere o terminare account che violano i nostri termini.'},
         {'heading': '3. Politica sulla Privacy', 'body': 'L\'uso della nostra applicazione è anche disciplinato dalla nostra Politica sulla Privacy. Si prega di consultare la nostra Politica sulla Privacy, che regola anche l\'applicazione e informa gli utenti sulle nostre pratiche di raccolta dati. Ci impegniamo a proteggere le tue informazioni personali.'},
         {'heading': '4. Contenuto Utente', 'body': 'La nostra applicazione ti consente di pubblicare, collegare, memorizzare, condividere e rendere disponibili determinate informazioni, testi, grafica, video o altro materiale. Mantieni la proprietà di eventuali diritti di proprietà intellettuale che possiedi su quel contenuto, ma ci concedi una licenza per usarlo per il funzionamento del servizio.'},
-        {'heading': '5. Attività Proibite', 'body': 'Accetti di non impegnarti in nessuna delle seguenti attività proibite: violazione delle leggi, violazione della proprietà intellettuale, distribuzione di malware, spam o interferenza con il servizio. Possiamo indagare sulle violazioni e collaborare con le autorità.'},
+        {'heading': '5. Attività Proibite', 'body': 'Accetti di non impegnarti in nessuna delle seguenti attività proibite: violazione delle leggi, violazione della proprietà intellettuale, distribuzione di malware, spam ou interferenza con il servizio. Possiamo indagare sulle violazioni e collaborare con le autorità.'},
       ],
 
       'Português': [
         {'heading': '1. Aceitação dos Termos', 'body': 'Ao acessar e usar este aplicativo, você aceita e concorda em estar vinculado aos termos e disposições deste acordo. Isso inclui todas as políticas e diretrizes incorporadas por referência nestes Termos.'},
         {'heading': '2. Contas de Usuário', 'body': 'Ao criar uma conta conosco, você deve fornecer informações precisas, completas e atualizadas. Você é responsável por proteger a senha e por todas as atividades que ocorrem em sua conta. Reservamo-nos o direito de suspender ou encerrar contas que violem nossos termos.'},
         {'heading': '3. Política de Privacidade', 'body': 'O uso do nosso aplicativo também é regido pela nossa Política de Privacidade. Por favor, revise nossa Política de Privacidade, que também governa o aplicativo e informa os usuários sobre nossas práticas de coleta de dados. Estamos comprometidos em proteger suas informações pessoais.'},
-        {'heading': '4. Conteúdo do Usuário', 'body': 'Nosso aplicativo permite que você publique, vincule, armazene, compartilhe e disponibilize determinadas informações, textos, gráficos, vídeos ou outro material. Você mantém a propriedade de quaisquer direitos de propriedade intelectual que detenha sobre esse conteúdo, mas nos concede uma licença para usá-lo para a operação do serviço.'},
+        {'heading': '4. Conteúdo do Usuário', 'body': 'Nosso aplicativo permite que você publique, vincule, armazene, compartilhe e disponibilize determinadas informações, textos, gráficos, vídeos ou outro material. Você mantém a propriedade de quaisquer direitos de propriedade intelectual que detenha sobre esse conteúdo, mas nos concede uma licença para usá-lo para a operação del serviço.'},
         {'heading': '5. Atividades Proibidas', 'body': 'Você concorda em não se envolver em nenhuma das seguintes atividades proibidas: violar leis, infringir propriedade intelectual, distribuir malware, enviar spam ou interferir com o serviço. Podemos investigar violações e cooperar com as autoridades.'},
       ],
 
       'Polski': [
         {'heading': '1. Akceptacja Warunków', 'body': 'Korzystając z tej aplikacji, akceptujesz i zgadzasz się przestrzegać warunków i postanowień tej umowy. Obejmuje to wszystkie polityki i wytyczne włączone przez odniesienie w tych Warunkach.'},
         {'heading': '2. Konta Użytkowników', 'body': 'Tworząc konto u nas, musisz podać dokładne, kompletne i aktualne informacje. Jesteś odpowiedzialny za zabezpieczenie hasła i wszystkie działania związane z Twoim kontem. Zastrzegamy sobie prawo do zawieszenia lub zakończenia kont naruszających nasze warunki.'},
-        {'heading': '3. Polityka Prywatności', 'body': 'Korzystanie z naszej aplikacji jest również regulowane przez naszą Politykę Prywatności. Prosimy o zapoznanie się z naszą Polityką Prywatności, która reguluje aplikację i informuje użytkowników o naszych praktykach zbierania danych. Dbamy o ochronę Twoich danych osobowych.'},
+        {'heading': '3. Polityka Prywatności', 'body': 'Korzystanie z naszej aplikacji jest również regulowane przez naszą Politykę Prywatności. Prosimy o zapoznanie się z naszą Polityką Prywatności, która reguluje aplikację e informuje użytkowników o naszych praktykach zbierania danych. Dbamy o ochronę Twoich danych osobowych.'},
         {'heading': '4. Treści Użytkownika', 'body': 'Nasza aplikacja umożliwia publikowanie, linkowanie, przechowywanie, udostępnianie i udostępnianie określonych informacji, tekstów, grafik, filmów lub innych materiałów. Zachowujesz prawa własności intelektualnej do treści, ale udzielasz nam licencji na korzystanie z nich w celu działania usługi.'},
         {'heading': '5. Zabronione Działania', 'body': 'Zgadzasz się nie uczestniczyć w żadnych z następujących zabronionych działań: naruszanie prawa, naruszanie własności intelektualnej, dystrybucja złośliwego oprogramowania, spamowanie lub ingerencja w usługę. Możemy badać naruszenia i współpracować z władzami.'},
       ],

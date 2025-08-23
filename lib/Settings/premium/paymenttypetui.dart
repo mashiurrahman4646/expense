@@ -2,22 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:your_expense/Settings/premium/paymentsuccessscreen.dart';
 
+import '../appearance/ThemeController.dart';
+ // Import your ThemeController
 
 class PaymentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkModeActive
+          ? const Color(0xFF121212)
+          : const Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: themeController.isDarkModeActive
+            ? const Color(0xFF1E1E1E)
+            : const Color(0xFFF8F9FA),
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             size: screenWidth * 0.05,
           ),
           onPressed: () {
@@ -25,9 +32,9 @@ class PaymentScreen extends StatelessWidget {
           },
         ),
         title: Text(
-          'Complete Payment',
+          'complete_payment'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.w600,
           ),
@@ -44,11 +51,11 @@ class PaymentScreen extends StatelessWidget {
 
               // Header Section
               Text(
-                "You're just one step away from unlocking premium features",
+                "payment_header".tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.04,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
               ),
 
@@ -56,11 +63,11 @@ class PaymentScreen extends StatelessWidget {
 
               // Payment Methods Section
               Text(
-                'Choose Payment Method',
+                'choose_payment_method'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.04,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
               ),
 
@@ -69,12 +76,13 @@ class PaymentScreen extends StatelessWidget {
               // Card Payment Option
               _buildPaymentMethodCard(
                 context: context,
-                title: 'Card Payment',
-                description: 'Visa, Mastercard, Amex',
+                title: 'card_payment'.tr,
+                description: 'card_payment_desc'.tr,
                 iconPath: 'assets/icons/CardPayment.png',
                 screenWidth: screenWidth,
                 screenHeight: screenHeight,
                 isSelected: true,
+                isDarkMode: themeController.isDarkModeActive,
               ),
 
               SizedBox(height: screenHeight * 0.015),
@@ -82,12 +90,13 @@ class PaymentScreen extends StatelessWidget {
               // Mobile Wallet Option
               _buildPaymentMethodCard(
                 context: context,
-                title: 'Mobile Wallet',
-                description: 'Mcash, Pocket',
+                title: 'mobile_wallet'.tr,
+                description: 'mobile_wallet_desc'.tr,
                 iconPath: 'assets/icons/MobileWallet.png',
                 screenWidth: screenWidth,
                 screenHeight: screenHeight,
                 isSelected: false,
+                isDarkMode: themeController.isDarkModeActive,
               ),
 
               SizedBox(height: screenHeight * 0.015),
@@ -95,23 +104,24 @@ class PaymentScreen extends StatelessWidget {
               // Bank Transfer Option
               _buildPaymentMethodCard(
                 context: context,
-                title: 'Bank Transfer',
-                description: 'Manual payment verification',
+                title: 'bank_transfer'.tr,
+                description: 'bank_transfer_desc'.tr,
                 iconPath: 'assets/icons/BankTransfer.png',
                 screenWidth: screenWidth,
                 screenHeight: screenHeight,
                 isSelected: false,
+                isDarkMode: themeController.isDarkModeActive,
               ),
 
               SizedBox(height: screenHeight * 0.04),
 
               // Card Details Form
               Text(
-                'Card Number',
+                'card_number'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.035,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
               ),
 
@@ -119,19 +129,35 @@ class PaymentScreen extends StatelessWidget {
 
               TextField(
                 decoration: InputDecoration(
-                  hintText: '0000 0000 0000',
+                  hintText: 'card_number_hint'.tr,
+                  hintStyle: TextStyle(
+                    color: themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey[600],
+                  ),
+                  filled: themeController.isDarkModeActive,
+                  fillColor: themeController.isDarkModeActive ? const Color(0xFF2A2A2A) : Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderSide: BorderSide(
+                      color: themeController.isDarkModeActive ? Colors.grey.shade700 : Colors.grey.shade300,
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(screenWidth * 0.02),
                     borderSide: BorderSide(color: Colors.blue),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(screenWidth * 0.02),
+                    borderSide: BorderSide(
+                      color: themeController.isDarkModeActive ? Colors.grey.shade700 : Colors.grey.shade300,
+                    ),
+                  ),
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: screenWidth * 0.04,
                     vertical: screenHeight * 0.02,
                   ),
+                ),
+                style: TextStyle(
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -145,29 +171,45 @@ class PaymentScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Expiry Date',
+                          'expiry_date'.tr,
                           style: TextStyle(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.w500,
-                            color: Colors.black,
+                            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                           ),
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         TextField(
                           decoration: InputDecoration(
-                            hintText: 'MM/YY',
+                            hintText: 'expiry_date_hint'.tr,
+                            hintStyle: TextStyle(
+                              color: themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey[600],
+                            ),
+                            filled: themeController.isDarkModeActive,
+                            fillColor: themeController.isDarkModeActive ? const Color(0xFF2A2A2A) : Colors.white,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                              borderSide: BorderSide(color: Colors.grey.shade300),
+                              borderSide: BorderSide(
+                                color: themeController.isDarkModeActive ? Colors.grey.shade700 : Colors.grey.shade300,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(screenWidth * 0.02),
                               borderSide: BorderSide(color: Colors.blue),
                             ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(screenWidth * 0.02),
+                              borderSide: BorderSide(
+                                color: themeController.isDarkModeActive ? Colors.grey.shade700 : Colors.grey.shade300,
+                              ),
+                            ),
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: screenWidth * 0.04,
                               vertical: screenHeight * 0.02,
                             ),
+                          ),
+                          style: TextStyle(
+                            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                           ),
                           keyboardType: TextInputType.datetime,
                         ),
@@ -180,29 +222,45 @@ class PaymentScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'CVV',
+                          'cvv'.tr,
                           style: TextStyle(
                             fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.w500,
-                            color: Colors.black,
+                            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                           ),
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         TextField(
                           decoration: InputDecoration(
-                            hintText: '123',
+                            hintText: 'cvv_hint'.tr,
+                            hintStyle: TextStyle(
+                              color: themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey[600],
+                            ),
+                            filled: themeController.isDarkModeActive,
+                            fillColor: themeController.isDarkModeActive ? const Color(0xFF2A2A2A) : Colors.white,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                              borderSide: BorderSide(color: Colors.grey.shade300),
+                              borderSide: BorderSide(
+                                color: themeController.isDarkModeActive ? Colors.grey.shade700 : Colors.grey.shade300,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(screenWidth * 0.02),
                               borderSide: BorderSide(color: Colors.blue),
                             ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(screenWidth * 0.02),
+                              borderSide: BorderSide(
+                                color: themeController.isDarkModeActive ? Colors.grey.shade700 : Colors.grey.shade300,
+                              ),
+                            ),
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: screenWidth * 0.04,
                               vertical: screenHeight * 0.02,
                             ),
+                          ),
+                          style: TextStyle(
+                            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                           ),
                           keyboardType: TextInputType.number,
                           obscureText: true,
@@ -216,11 +274,11 @@ class PaymentScreen extends StatelessWidget {
               SizedBox(height: screenHeight * 0.02),
 
               Text(
-                'Name on Card',
+                'name_on_card'.tr,
                 style: TextStyle(
                   fontSize: screenWidth * 0.035,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
               ),
 
@@ -228,19 +286,35 @@ class PaymentScreen extends StatelessWidget {
 
               TextField(
                 decoration: InputDecoration(
-                  hintText: 'John Doe',
+                  hintText: 'name_on_card_hint'.tr,
+                  hintStyle: TextStyle(
+                    color: themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey[600],
+                  ),
+                  filled: themeController.isDarkModeActive,
+                  fillColor: themeController.isDarkModeActive ? const Color(0xFF2A2A2A) : Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderSide: BorderSide(
+                      color: themeController.isDarkModeActive ? Colors.grey.shade700 : Colors.grey.shade300,
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(screenWidth * 0.02),
                     borderSide: BorderSide(color: Colors.blue),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(screenWidth * 0.02),
+                    borderSide: BorderSide(
+                      color: themeController.isDarkModeActive ? Colors.grey.shade700 : Colors.grey.shade300,
+                    ),
+                  ),
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: screenWidth * 0.04,
                     vertical: screenHeight * 0.02,
                   ),
+                ),
+                style: TextStyle(
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
               ),
 
@@ -264,7 +338,7 @@ class PaymentScreen extends StatelessWidget {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Pay Now',
+                    'pay_now'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: screenWidth * 0.04,
@@ -279,7 +353,7 @@ class PaymentScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildPaymentMethodCard({
@@ -290,6 +364,7 @@ class PaymentScreen extends StatelessWidget {
     required double screenWidth,
     required double screenHeight,
     required bool isSelected,
+    required bool isDarkMode,
   }) {
     return GestureDetector(
       onTap: () {
@@ -298,10 +373,12 @@ class PaymentScreen extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.only(bottom: screenHeight * 0.015),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
           borderRadius: BorderRadius.circular(screenWidth * 0.03),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2196F3) : Colors.grey.shade300,
+            color: isSelected
+                ? const Color(0xFF2196F3)
+                : (isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300),
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -313,6 +390,7 @@ class PaymentScreen extends StatelessWidget {
                 iconPath,
                 width: screenWidth * 0.08,
                 height: screenWidth * 0.08,
+                color: isDarkMode ? Colors.white : null,
               ),
               SizedBox(width: screenWidth * 0.04),
               Expanded(
@@ -324,7 +402,7 @@ class PaymentScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: screenWidth * 0.04,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black,
+                        color: isDarkMode ? Colors.white : Colors.black,
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.005),
@@ -332,7 +410,7 @@ class PaymentScreen extends StatelessWidget {
                       description,
                       style: TextStyle(
                         fontSize: screenWidth * 0.035,
-                        color: const Color(0xFF6B7280),
+                        color: isDarkMode ? Colors.grey[400] : const Color(0xFF6B7280),
                         fontWeight: FontWeight.w400,
                       ),
                     ),

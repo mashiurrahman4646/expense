@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../appearance/ThemeController.dart';
+ // Import your ThemeController
+
 class AppUnlockScreen extends StatefulWidget {
   @override
   _AppUnlockScreenState createState() => _AppUnlockScreenState();
@@ -13,26 +16,31 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkModeActive
+          ? const Color(0xFF121212)
+          : Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: themeController.isDarkModeActive
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             size: screenWidth * 0.05,
           ),
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'App Unlock',
+          'app_unlock'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: screenWidth * 0.045,
             fontWeight: FontWeight.w600,
           ),
@@ -48,25 +56,27 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
 
               // PIN Code Option
               _buildUnlockOptionCard(
-                'PIN Code',
-                'Sign in with your 6-digit PIN',
+                'pin_code'.tr,
+                'pin_code_desc'.tr,
                 'assets/icons/lockis.png',
                 'pin',
                 const Color(0xFF2196F3),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
                 onTap: () => Get.toNamed('/setPin'),
               ),
 
               // Face ID Option - Updated to navigate to setup screen
               _buildUnlockOptionCard(
-                'Face ID',
-                'Sign in with Face ID',
+                'face_id'.tr,
+                'face_id_desc'.tr,
                 'assets/icons/face-id (1).png',
                 'faceid',
                 const Color(0xFF9C27B0),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
                 onTap: () {
                   setState(() {
                     selectedOption = 'faceid';
@@ -78,13 +88,14 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
 
               // None Option
               _buildUnlockOptionCard(
-                'None',
-                'Continue as guest',
+                'none_option'.tr,
+                'none_option_desc'.tr,
                 'assets/icons/user (1).png',
                 'none',
                 const Color(0xFF757575),
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
                 onTap: () {
                   setState(() {
                     selectedOption = 'none';
@@ -99,11 +110,11 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Security Settings',
+                  'security_settings'.tr,
                   style: TextStyle(
                     fontSize: screenWidth * 0.042,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                    color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                   ),
                 ),
               ),
@@ -111,8 +122,8 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
 
               // Enable FaceID Setting
               _buildSecuritySetting(
-                'Enable FaceID',
-                'Use your FaceID to log in faster and securely',
+                'enable_faceid'.tr,
+                'enable_faceid_desc'.tr,
                 'assets/icons/enabalfaceid.png',
                 enableFaceID,
                     (value) {
@@ -122,12 +133,13 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
                 },
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
 
               // FaceID for App Launch Setting
               _buildSecuritySetting(
-                'FaceID for App Launch',
-                'Require FaceID when opening the app',
+                'faceid_app_launch'.tr,
+                'faceid_app_launch_desc'.tr,
                 'assets/icons/rocket.png',
                 faceIDForAppLaunch,
                     (value) {
@@ -137,6 +149,7 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
                 },
                 screenWidth,
                 screenHeight,
+                themeController.isDarkModeActive,
               ),
 
               SizedBox(height: screenHeight * 0.03),
@@ -145,7 +158,9 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
               Container(
                 padding: EdgeInsets.all(screenWidth * 0.04),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF8F9FA),
+                  color: themeController.isDarkModeActive
+                      ? const Color(0xFF1E1E1E)
+                      : const Color(0xFFF8F9FA),
                   borderRadius: BorderRadius.circular(screenWidth * 0.03),
                 ),
                 child: Row(
@@ -153,16 +168,20 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
                   children: [
                     Icon(
                       Icons.info_outline,
-                      color: const Color(0xFF6B7280),
+                      color: themeController.isDarkModeActive
+                          ? Colors.grey[400]
+                          : const Color(0xFF6B7280),
                       size: screenWidth * 0.05,
                     ),
                     SizedBox(width: screenWidth * 0.03),
                     Expanded(
                       child: Text(
-                        'Your FaceID are securely stored on your device. We never upload or access them.',
+                        'security_info'.tr,
                         style: TextStyle(
                           fontSize: screenWidth * 0.035,
-                          color: const Color(0xFF6B7280),
+                          color: themeController.isDarkModeActive
+                              ? Colors.grey[400]
+                              : const Color(0xFF6B7280),
                           height: 1.4,
                         ),
                       ),
@@ -175,7 +194,7 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
           ),
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildUnlockOptionCard(
@@ -185,7 +204,8 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
       String value,
       Color iconColor,
       double screenWidth,
-      double screenHeight, {
+      double screenHeight,
+      bool isDarkMode, {
         VoidCallback? onTap,
       }) {
     bool isSelected = selectedOption == value;
@@ -207,7 +227,7 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
               vertical: screenHeight * 0.025,
             ),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8F9FA),
+              color: isDarkMode ? const Color(0xFF1E1E1E) : const Color(0xFFF8F9FA),
               borderRadius: BorderRadius.circular(screenWidth * 0.03),
               border: isSelected
                   ? Border.all(color: const Color(0xFF2196F3), width: 2)
@@ -220,7 +240,7 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
                   width: screenWidth * 0.12,
                   height: screenWidth * 0.12,
                   decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.1),
+                    color: iconColor.withOpacity(isDarkMode ? 0.2 : 0.1),
                     borderRadius: BorderRadius.circular(screenWidth * 0.025),
                   ),
                   child: Center(
@@ -244,7 +264,7 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
                         style: TextStyle(
                           fontSize: screenWidth * 0.042,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: isDarkMode ? Colors.white : Colors.black,
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.005),
@@ -252,7 +272,7 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
                         subtitle,
                         style: TextStyle(
                           fontSize: screenWidth * 0.035,
-                          color: const Color(0xFF6B7280),
+                          color: isDarkMode ? Colors.grey[400] : const Color(0xFF6B7280),
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -264,7 +284,7 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
                 Icon(
                   Icons.arrow_forward_ios,
                   size: screenWidth * 0.04,
-                  color: const Color(0xFF9CA3AF),
+                  color: isDarkMode ? Colors.grey[400] : const Color(0xFF9CA3AF),
                 ),
               ],
             ),
@@ -282,7 +302,7 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
       Function(bool) onChanged,
       double screenWidth,
       double screenHeight,
-      ) {
+      bool isDarkMode) {
     return Container(
       margin: EdgeInsets.only(bottom: screenHeight * 0.015),
       padding: EdgeInsets.symmetric(
@@ -296,7 +316,7 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
             width: screenWidth * 0.12,
             height: screenWidth * 0.12,
             decoration: BoxDecoration(
-              color: const Color(0xFFF8F9FA),
+              color: isDarkMode ? const Color(0xFF2A2A2A) : const Color(0xFFF8F9FA),
               borderRadius: BorderRadius.circular(screenWidth * 0.025),
             ),
             child: Center(
@@ -304,7 +324,7 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
                 iconPath,
                 width: screenWidth * 0.06,
                 height: screenWidth * 0.06,
-                color: const Color(0xFF6B7280),
+                color: isDarkMode ? Colors.grey[400] : const Color(0xFF6B7280),
               ),
             ),
           ),
@@ -320,7 +340,7 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
                   style: TextStyle(
                     fontSize: screenWidth * 0.042,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                    color: isDarkMode ? Colors.white : Colors.black,
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.005),
@@ -328,7 +348,7 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
                   subtitle,
                   style: TextStyle(
                     fontSize: screenWidth * 0.035,
-                    color: const Color(0xFF6B7280),
+                    color: isDarkMode ? Colors.grey[400] : const Color(0xFF6B7280),
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -342,8 +362,8 @@ class _AppUnlockScreenState extends State<AppUnlockScreen> {
             onChanged: onChanged,
             activeColor: const Color(0xFF2196F3),
             activeTrackColor: const Color(0xFF2196F3).withOpacity(0.3),
-            inactiveThumbColor: Colors.grey.shade400,
-            inactiveTrackColor: Colors.grey.shade300,
+            inactiveThumbColor: isDarkMode ? Colors.grey.shade600 : Colors.grey.shade400,
+            inactiveTrackColor: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade300,
           ),
         ],
       ),

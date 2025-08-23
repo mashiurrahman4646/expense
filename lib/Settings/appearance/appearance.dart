@@ -11,19 +11,27 @@ class AppearanceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkModeActive
+          ? const Color(0xFF121212)
+          : const Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: themeController.isDarkModeActive
+            ? const Color(0xFF1E1E1E)
+            : const Color(0xFFF8F9FA),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 18),
+          icon: Icon(
+              Icons.arrow_back_ios,
+              color: themeController.isDarkModeActive ? Colors.white : Colors.black,
+              size: 18
+          ),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Appearance',
+        title: Text(
+          'appearance'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -32,13 +40,13 @@ class AppearanceScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Obx(() => Column(
+        child: Column(
           children: [
             const SizedBox(height: 20),
 
             // Light Theme Card
             _buildThemeCard(
-              title: 'Light',
+              title: 'light_theme'.tr,
               icon: Icons.wb_sunny_outlined,
               isSelected: themeController.selectedTheme.value == 'Light' &&
                   !themeController.useSystemSettings.value,
@@ -46,13 +54,14 @@ class AppearanceScreen extends StatelessWidget {
               onTap: () {
                 themeController.saveTheme('Light', false);
               },
+              isDarkMode: themeController.isDarkModeActive,
             ),
 
             const SizedBox(height: 16),
 
             // Dark Theme Card
             _buildThemeCard(
-              title: 'Dark',
+              title: 'dark_theme'.tr,
               icon: Icons.nightlight_round,
               isSelected: themeController.selectedTheme.value == 'Dark' &&
                   !themeController.useSystemSettings.value,
@@ -60,6 +69,7 @@ class AppearanceScreen extends StatelessWidget {
               onTap: () {
                 themeController.saveTheme('Dark', false);
               },
+              isDarkMode: themeController.isDarkModeActive,
             ),
 
             const SizedBox(height: 24),
@@ -68,7 +78,7 @@ class AppearanceScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: themeController.isDarkModeActive ? const Color(0xFF1E1E1E) : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
@@ -84,12 +94,12 @@ class AppearanceScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Use system settings',
+                      Text(
+                        'use_system_settings'.tr,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                         ),
                       ),
                       Switch.adaptive(
@@ -103,11 +113,11 @@ class AppearanceScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Your theme will automatically match your system\npreferences',
+                  Text(
+                    'system_settings_desc'.tr,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color(0xFF8E8E93),
+                      color: themeController.isDarkModeActive ? Colors.grey[400] : const Color(0xFF8E8E93),
                       height: 1.4,
                     ),
                   ),
@@ -115,9 +125,9 @@ class AppearanceScreen extends StatelessWidget {
               ),
             ),
           ],
-        )),
+        ),
       ),
-    );
+    ));
   }
 
   Widget _buildThemeCard({
@@ -126,13 +136,14 @@ class AppearanceScreen extends StatelessWidget {
     required bool isSelected,
     required bool isLight,
     required VoidCallback onTap,
+    required bool isDarkMode,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: isSelected
               ? Border.all(color: const Color(0xFF007AFF), width: 2)
@@ -147,13 +158,20 @@ class AppearanceScreen extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: Colors.black),
+            Icon(
+                icon,
+                size: 20,
+                color: isDarkMode ? Colors.white : Colors.black
+            ),
             const SizedBox(width: 12),
-            Text(title,
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black)),
+            Text(
+              title,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: isDarkMode ? Colors.white : Colors.black
+              ),
+            ),
             const Spacer(),
             Container(
               width: 20,
@@ -163,11 +181,10 @@ class AppearanceScreen extends StatelessWidget {
                 border: Border.all(
                   color: isSelected
                       ? const Color(0xFF007AFF)
-                      : const Color(0xFFD1D1D6),
+                      : (isDarkMode ? const Color(0xFF555555) : const Color(0xFFD1D1D6)),
                   width: isSelected ? 6 : 2,
                 ),
-                color:
-                isSelected ? const Color(0xFF007AFF) : Colors.transparent,
+                color: isSelected ? const Color(0xFF007AFF) : Colors.transparent,
               ),
             ),
           ],

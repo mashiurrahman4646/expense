@@ -21,7 +21,7 @@ class _FaceAuthenticationScreenState extends State<FaceAuthenticationScreen>
   bool _isComplete = false;
   bool _isCameraInitialized = false;
   int _secondsRemaining = 30;
-  String _statusMessage = 'Initializing camera...';
+  String _statusMessage = 'initializing_camera'.tr;
 
   @override
   void initState() {
@@ -62,7 +62,7 @@ class _FaceAuthenticationScreenState extends State<FaceAuthenticationScreen>
 
       if (cameras.isEmpty) {
         setState(() {
-          _statusMessage = 'No camera found';
+          _statusMessage = 'no_camera_found'.tr;
         });
         return;
       }
@@ -87,13 +87,13 @@ class _FaceAuthenticationScreenState extends State<FaceAuthenticationScreen>
       if (mounted) {
         setState(() {
           _isCameraInitialized = true;
-          _statusMessage = 'Position your face in the circle';
+          _statusMessage = 'position_face'.tr;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _statusMessage = 'Camera initialization failed';
+          _statusMessage = 'camera_init_failed'.tr;
         });
       }
       print('Camera initialization error: $e');
@@ -104,7 +104,7 @@ class _FaceAuthenticationScreenState extends State<FaceAuthenticationScreen>
     if (!_isCameraInitialized) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Camera not ready. Please wait.'),
+          content: Text('camera_not_ready'.tr),
           backgroundColor: Colors.red,
         ),
       );
@@ -114,7 +114,7 @@ class _FaceAuthenticationScreenState extends State<FaceAuthenticationScreen>
     setState(() {
       _isScanning = true;
       _secondsRemaining = 30;
-      _statusMessage = 'Keep your face in the circle';
+      _statusMessage = 'keep_face_in_circle'.tr;
     });
 
     _progressController.forward();
@@ -175,7 +175,7 @@ class _FaceAuthenticationScreenState extends State<FaceAuthenticationScreen>
                 ),
                 SizedBox(height: 20),
                 Text(
-                  'Face ID Saved!',
+                  'faceid_saved'.tr,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -184,7 +184,7 @@ class _FaceAuthenticationScreenState extends State<FaceAuthenticationScreen>
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Your Face ID has been successfully saved.\nYou can now use it to unlock the app.',
+                  'faceid_saved_desc'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
@@ -207,7 +207,7 @@ class _FaceAuthenticationScreenState extends State<FaceAuthenticationScreen>
                       ),
                     ),
                     child: Text(
-                      'Continue',
+                      'continue_button'.tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -342,9 +342,9 @@ class _FaceAuthenticationScreenState extends State<FaceAuthenticationScreen>
                 children: [
                   Text(
                     _isScanning
-                        ? 'Keep your face in the circle'
+                        ? 'keep_face_in_circle'.tr
                         : _isCameraInitialized
-                        ? 'Position your face in the circle'
+                        ? 'position_face'.tr
                         : _statusMessage,
                     style: TextStyle(
                       color: Colors.white,
@@ -356,12 +356,12 @@ class _FaceAuthenticationScreenState extends State<FaceAuthenticationScreen>
                   SizedBox(height: 12),
                   if (_isScanning)
                     Text(
-                      'Scanning... $_secondsRemaining seconds remaining',
+                      '${'scanning'.tr} $_secondsRemaining ${'seconds_remaining'.tr}',
                       style: TextStyle(color: Colors.white70, fontSize: 14),
                     )
                   else if (!_isComplete && _isCameraInitialized)
                     Text(
-                      'Tap "Authenticate Using Face ID" to begin',
+                      'tap_to_begin'.tr,
                       style: TextStyle(color: Colors.white70, fontSize: 14),
                     ),
                 ],
@@ -393,7 +393,7 @@ class _FaceAuthenticationScreenState extends State<FaceAuthenticationScreen>
                           Icon(Icons.face, color: Colors.white, size: 24),
                           SizedBox(width: 8),
                           Text(
-                            'Authenticate Using Face ID',
+                            'authenticate_faceid'.tr,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,

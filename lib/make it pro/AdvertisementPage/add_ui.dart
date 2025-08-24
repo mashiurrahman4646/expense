@@ -2,10 +2,25 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+ // Import your ThemeController
 
+import '../../Settings/appearance/ThemeController.dart';
 import '../../add_exp/normaluser/normal_income_and_exp_screen.dart';
 import '../../add_exp/pro_user/expenseincomepro/proexpincome_controller.dart';
+import '../../routes/app_routes.dart';
 
+class AppColors {
+  static const Color text900 = Color(0xFF1E1E1E);
+  static const Color text50 = Color(0xFFFAFAFA);
+  static const Color primary = Colors.blueAccent;
+  static const Color grey200 = Color(0xFFEEEEEE);
+  static const Color grey500 = Color(0xFF9E9E9E);
+  static const Color green = Colors.green;
+}
+
+class AppStyles {
+  static const double defaultRadius = 12.0;
+}
 
 class AdvertisementPage extends StatefulWidget {
   final bool isFromExpense;
@@ -22,6 +37,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
   late Timer _timer;
   bool _isVideoPlaying = false;
   bool _isVideoComplete = false;
+  final themeController = Get.find<ThemeController>();
 
   @override
   void initState() {
@@ -69,44 +85,30 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
   void _unlockProFeatures() async {
     if (!mounted) return;
     await proController.unlockProFeatures(widget.isFromExpense);
+
+    // Navigate to the correct pro screen based on where the user came from
+    if (widget.isFromExpense) {
+      // Came from expense page, go to expense pro
+      Get.offNamed(
+        AppRoutes.proExpensesIncome,
+        arguments: {'defaultTab': 0}, // 0 for expense tab
+      );
+    } else {
+      // Came from income page, go to income pro
+      Get.offNamed(
+        AppRoutes.proExpensesIncome,
+        arguments: {'defaultTab': 1}, // 1 for income tab
+      );
+    }
+
+    // Show success message
     Get.snackbar(
-      'Pro Features Unlocked!',
-      'Both Expense and Income Pro features are now unlocked.',
+      'proUnlockedTitle'.tr,
+      'proUnlockedMessage'.tr,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: AppColors.green,
       colorText: AppColors.text50,
       duration: const Duration(seconds: 2),
-    );
-    Get.back(result: true);
-  }
-
-  void _showExitConfirmation() {
-    if (!mounted) return;
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Leave Ad?'),
-        content:
-        const Text('You need to watch the full ad to unlock pro features.'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              'Cancel',
-              style: GoogleFonts.inter(color: AppColors.grey500),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Get.back(); // Close dialog
-              Get.back(result: false); // Leave ad without unlock
-            },
-            child: Text(
-              'Leave Anyway',
-              style: GoogleFonts.inter(color: AppColors.text900),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -114,36 +116,30 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return WillPopScope(
+    return Obx(() => WillPopScope(
       onWillPop: () async {
-        if (_isVideoComplete) return true;
-        _showExitConfirmation();
+        // Prevent going back with device back button
         return false;
       },
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Watch Ad to Unlock Pro',
+            'watchAdTitle'.tr,
             style: GoogleFonts.poppins(
               fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: AppColors.text900,
+              color: themeController.isDarkModeActive ? Colors.white : AppColors.text900,
             ),
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              if (_isVideoComplete) {
-                Get.back(result: true);
-              } else {
-                _showExitConfirmation();
-              }
-            },
-          ),
-          backgroundColor: AppColors.text50,
+          // Removed the back button
+          automaticallyImplyLeading: false,
+          backgroundColor: themeController.isDarkModeActive ? const Color(0xFF1E1E1E) : AppColors.text50,
           elevation: 1,
+          iconTheme: IconThemeData(
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
+          ),
         ),
-        backgroundColor: AppColors.text50,
+        backgroundColor: themeController.isDarkModeActive ? const Color(0xFF121212) : AppColors.text50,
         body: SafeArea(
           child: Column(
             children: [
@@ -156,11 +152,11 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
                       children: [
                         SizedBox(height: size.height * 0.1),
                         Text(
-                          'Watch Ad to Unlock Pro Features',
+                          'watchAdSubtitle'.tr,
                           style: GoogleFonts.poppins(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.text900,
+                            color: themeController.isDarkModeActive ? Colors.white : AppColors.text900,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -171,51 +167,77 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
                             width: size.width * 0.8,
                             height: size.height * 0.3,
                             decoration: BoxDecoration(
-                              color: Colors.grey[300],
+                              color: themeController.isDarkModeActive ? const Color(0xFF2A2A2A) : Colors.grey[300],
                               image: const DecorationImage(
                                 image: AssetImage('assets/images/adv.png'),
                                 fit: BoxFit.cover,
                               ),
                               borderRadius: BorderRadius.circular(
-                                  AppStyles.defaultRadius ?? 12),
+                                  AppStyles.defaultRadius),
                             ),
                             child: Center(
                               child: _isVideoPlaying
-                                  ? Text(
-                                '$_remainingSeconds seconds remaining',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                  ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'secondsRemaining'.trParams({'seconds': _remainingSeconds.toString()}),
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 18,
+                                      color: themeController.isDarkModeActive ? Colors.white : Colors.black,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  CircularProgressIndicator(
+                                    value: _remainingSeconds / 30,
+                                    backgroundColor: themeController.isDarkModeActive ? Colors.grey[700] : Colors.grey[300],
+                                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                                  ),
+                                ],
                               )
-                                  : const Icon(
+                                  : Icon(
                                 Icons.play_circle_filled,
                                 size: 50,
-                                color: Colors.black,
+                                color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                               ),
                             ),
                           ),
                         ),
                         SizedBox(height: size.height * 0.02),
                         Text(
-                          'Watch Video to Unlock Pro Features (30s)',
+                          'watchAdDescription'.tr,
                           style: GoogleFonts.poppins(
                             fontSize: 16,
-                            color: AppColors.grey500,
+                            color: themeController.isDarkModeActive ? Colors.grey[400] : AppColors.grey500,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: size.height * 0.01),
                         Text(
-                          'After watching the ad, both Expense and Income Pro features will be unlocked',
+                          'proFeaturesUnlockMessage'.tr,
                           style: GoogleFonts.poppins(
                             fontSize: 14,
-                            color: AppColors.grey500,
+                            color: themeController.isDarkModeActive ? Colors.grey[400] : AppColors.grey500,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: size.height * 0.05),
+                        // Add a cancel button that goes back to the previous screen
+                        if (!_isVideoComplete)
+                          TextButton(
+                            onPressed: () {
+                              _timer.cancel();
+                              Get.back(result: false);
+                            },
+                            child: Text(
+                              'cancel'.tr,
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                color: themeController.isDarkModeActive ? Colors.grey[400] : AppColors.grey500,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -225,6 +247,6 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
           ),
         ),
       ),
-    );
+    ));
   }
 }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+ // Import your ThemeController
 
+import '../../Settings/appearance/ThemeController.dart';
+import '../../Settings/premium/paymentui.dart';
 import '../../make it pro/AdvertisementPage/add_ui.dart';
 import '../../routes/app_routes.dart';
 
@@ -22,20 +25,21 @@ class AppColors {
 }
 
 class AppStyles {
-  static final TextStyle sectionHeader = GoogleFonts.inter(
+  static TextStyle sectionHeader(bool isDarkMode) => GoogleFonts.inter(
     fontWeight: FontWeight.bold,
     fontSize: 16,
-    color: AppColors.text900,
+    color: isDarkMode ? Colors.white : AppColors.text900,
   );
 
-  static final TextStyle buttonText = GoogleFonts.inter(
+  static TextStyle buttonText(bool isDarkMode) => GoogleFonts.inter(
     fontSize: 12,
-    color: AppColors.text900,
+    color: isDarkMode ? Colors.white : AppColors.text900,
   );
 
-  static final TextStyle saveButtonText = GoogleFonts.inter(
+  static TextStyle saveButtonText(bool isDarkMode) => GoogleFonts.inter(
     fontSize: 18,
     fontWeight: FontWeight.bold,
+    color: isDarkMode ? Colors.white : Colors.black,
   );
 
   static const EdgeInsets defaultPadding = EdgeInsets.all(16.0);
@@ -45,19 +49,21 @@ class AppStyles {
 }
 
 class ReceiptButton extends StatelessWidget {
-  final IconData icon;
+  final String iconPath;
   final String label;
   final Color iconColor;
   final Color backgroundColor;
   final Color borderColor;
+  final bool isDarkMode;
 
   const ReceiptButton({
     super.key,
-    required this.icon,
+    required this.iconPath,
     required this.label,
     required this.iconColor,
     required this.backgroundColor,
     required this.borderColor,
+    required this.isDarkMode,
   });
 
   @override
@@ -73,27 +79,41 @@ class ReceiptButton extends StatelessWidget {
             shape: BoxShape.circle,
             border: Border.all(color: borderColor, width: 1.5),
           ),
-          child: Icon(icon, color: iconColor, size: 30),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Image.asset(
+              iconPath,
+              color: iconColor,
+              width: 30,
+              height: 30,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(Icons.error, color: isDarkMode ? Colors.white : Colors.red);
+              },
+            ),
+          ),
         ),
         const SizedBox(height: 8),
-        Text(label, style: AppStyles.buttonText),
+        Text(label.tr, style: AppStyles.buttonText(isDarkMode)),
       ],
     );
   }
 }
 
 class CategoryItem extends StatelessWidget {
-  final IconData icon;
+  final String iconPath;
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
+  final bool isDarkMode;
 
   const CategoryItem({
     super.key,
-    required this.icon,
+    required this.iconPath,
     required this.label,
     required this.isSelected,
     required this.onTap,
+    required this.isDarkMode,
   });
 
   @override
@@ -108,16 +128,22 @@ class CategoryItem extends StatelessWidget {
             Container(
               padding: AppStyles.iconPadding,
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary : AppColors.grey200,
+                color: isSelected ? AppColors.primary : (isDarkMode ? const Color(0xFF2A2A2A) : AppColors.grey200),
                 borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
               ),
-              child: Icon(
-                icon,
-                color: isSelected ? AppColors.text50 : AppColors.text900,
+              child: Image.asset(
+                iconPath,
+                color: isSelected ? AppColors.text50 : (isDarkMode ? Colors.white : AppColors.text900),
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(Icons.error, color: isDarkMode ? Colors.white : Colors.red);
+                },
               ),
             ),
             const SizedBox(height: 5),
-            Text(label, style: AppStyles.buttonText),
+            Text(label.tr, style: AppStyles.buttonText(isDarkMode)),
           ],
         ),
       ),
@@ -134,36 +160,37 @@ class AddTransactionScreen extends StatefulWidget {
 
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
   int _selectedIndex = 0;
+  final themeController = Get.find<ThemeController>();
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
+    return Obx(() => DefaultTabController(
       length: 2,
       initialIndex: _selectedIndex,
       child: Scaffold(
-        backgroundColor: AppColors.text50,
+        backgroundColor: themeController.isDarkModeActive ? const Color(0xFF121212) : AppColors.text50,
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back, color: themeController.isDarkModeActive ? Colors.white : Colors.black),
             onPressed: Get.back,
           ),
           title: Text(
-            _selectedIndex == 0 ? 'Add Expense' : 'Add Income',
+            _selectedIndex == 0 ? 'addExpense'.tr : 'addIncome'.tr,
             style: GoogleFonts.inter(
               fontWeight: FontWeight.bold,
               fontSize: 20,
-              color: AppColors.text900,
+              color: themeController.isDarkModeActive ? Colors.white : AppColors.text900,
             ),
           ),
           centerTitle: true,
-          backgroundColor: AppColors.text50,
+          backgroundColor: themeController.isDarkModeActive ? const Color(0xFF1E1E1E) : AppColors.text50,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(50),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Container(
                 decoration: BoxDecoration(
-                  color: AppColors.grey200,
+                  color: themeController.isDarkModeActive ? const Color(0xFF2A2A2A) : AppColors.grey200,
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: TabBar(
@@ -173,11 +200,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     color: AppColors.primary,
                   ),
                   labelColor: AppColors.text50,
-                  unselectedLabelColor: AppColors.text900,
+                  unselectedLabelColor: themeController.isDarkModeActive ? Colors.white : AppColors.text900,
                   onTap: (index) => setState(() => _selectedIndex = index),
-                  tabs: const [
-                    Tab(text: 'Expense'),
-                    Tab(text: 'Income'),
+                  tabs: [
+                    Tab(text: 'expense'.tr),
+                    Tab(text: 'income'.tr),
                   ],
                 ),
               ),
@@ -186,17 +213,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         ),
         body: TabBarView(
           children: [
-            const ExpensePage(),
-            const IncomePage(),
+            ExpensePage(isDarkMode: themeController.isDarkModeActive),
+            IncomePage(isDarkMode: themeController.isDarkModeActive),
           ],
         ),
       ),
-    );
+    ));
   }
 }
 
 class ExpensePage extends StatefulWidget {
-  const ExpensePage({super.key});
+  final bool isDarkMode;
+
+  const ExpensePage({super.key, required this.isDarkMode});
 
   @override
   State<ExpensePage> createState() => _ExpensePageState();
@@ -224,9 +253,9 @@ class _ExpensePageState extends State<ExpensePage> {
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text('Scan or upload receipt', style: AppStyles.sectionHeader),
+                Text('scanOrUploadReceipt'.tr, style: AppStyles.sectionHeader(widget.isDarkMode)),
                 const SizedBox(height: 10),
                 _buildReceiptButtons(isExpense: true),
                 const SizedBox(height: 20),
@@ -241,8 +270,6 @@ class _ExpensePageState extends State<ExpensePage> {
                 _buildDateTimeSection(),
                 const SizedBox(height: 20),
                 _buildUpgradeButtons(),
-                const SizedBox(height: 20),
-                _buildSaveButton(),
               ],
             ),
           ),
@@ -253,30 +280,32 @@ class _ExpensePageState extends State<ExpensePage> {
 
   Widget _buildReceiptButtons({bool isExpense = false}) {
     return Center(
-      child: Wrap(
-        spacing: 20,
-        runSpacing: 10,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ReceiptButton(
-            icon: Icons.camera_alt,
-            label: 'Camera',
+            iconPath: 'assets/icons/cameraoc.png',
+            label: 'camera'.tr,
             iconColor: AppColors.expenseButtonIcon,
             backgroundColor: AppColors.expenseButtonBackground,
             borderColor: Colors.black.withOpacity(0.3),
+            isDarkMode: widget.isDarkMode,
           ),
           ReceiptButton(
-            icon: Icons.qr_code_scanner,
-            label: 'Barcode',
+            iconPath: 'assets/icons/barcodescanneroc.png',
+            label: 'barcode'.tr,
             iconColor: AppColors.expenseButtonIcon,
             backgroundColor: AppColors.expenseButtonBackground,
             borderColor: Colors.black.withOpacity(0.3),
+            isDarkMode: widget.isDarkMode,
           ),
           ReceiptButton(
-            icon: Icons.photo_library,
-            label: 'Gallery',
+            iconPath: 'assets/icons/galleryoc.png',
+            label: 'gallery'.tr,
             iconColor: AppColors.expenseButtonIcon,
             backgroundColor: AppColors.expenseButtonBackground,
             borderColor: Colors.black.withOpacity(0.3),
+            isDarkMode: widget.isDarkMode,
           ),
         ],
       ),
@@ -287,7 +316,7 @@ class _ExpensePageState extends State<ExpensePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Select Category', style: AppStyles.sectionHeader),
+        Text('selectCategory'.tr, style: AppStyles.sectionHeader(widget.isDarkMode)),
         const SizedBox(height: 10),
         SizedBox(
           height: 100,
@@ -297,34 +326,39 @@ class _ExpensePageState extends State<ExpensePage> {
             children: [
               const SizedBox(width: 8),
               CategoryItem(
-                icon: Icons.fastfood,
-                label: 'Food',
+                iconPath: 'assets/icons/foodoc.png',
+                label: 'food'.tr,
                 isSelected: _selectedCategoryIndex == 0,
                 onTap: () => setState(() => _selectedCategoryIndex = 0),
+                isDarkMode: widget.isDarkMode,
               ),
               CategoryItem(
-                icon: Icons.directions_bus,
-                label: 'Transport',
+                iconPath: 'assets/icons/transportoc.png',
+                label: 'transport'.tr,
                 isSelected: _selectedCategoryIndex == 1,
                 onTap: () => setState(() => _selectedCategoryIndex = 1),
+                isDarkMode: widget.isDarkMode,
               ),
               CategoryItem(
-                icon: Icons.local_grocery_store,
-                label: 'Groceries',
+                iconPath: 'assets/icons/Groceriesoc.png',
+                label: 'groceries'.tr,
                 isSelected: _selectedCategoryIndex == 2,
                 onTap: () => setState(() => _selectedCategoryIndex = 2),
+                isDarkMode: widget.isDarkMode,
               ),
               CategoryItem(
-                icon: Icons.restaurant,
-                label: 'Eating Out',
+                iconPath: 'assets/icons/eatingoutoc.png',
+                label: 'eatingOut'.tr,
                 isSelected: _selectedCategoryIndex == 3,
                 onTap: () => setState(() => _selectedCategoryIndex = 3),
+                isDarkMode: widget.isDarkMode,
               ),
               CategoryItem(
-                icon: Icons.home,
-                label: 'Home',
+                iconPath: 'assets/icons/homeoc.png',
+                label: 'home'.tr,
                 isSelected: _selectedCategoryIndex == 4,
                 onTap: () => setState(() => _selectedCategoryIndex = 4),
+                isDarkMode: widget.isDarkMode,
               ),
               const SizedBox(width: 8),
             ],
@@ -338,7 +372,7 @@ class _ExpensePageState extends State<ExpensePage> {
     return Container(
       padding: AppStyles.defaultPadding,
       decoration: BoxDecoration(
-        color: AppColors.grey200,
+        color: widget.isDarkMode ? const Color(0xFF2A2A2A) : AppColors.grey200,
         borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
       ),
       child: Column(
@@ -346,12 +380,12 @@ class _ExpensePageState extends State<ExpensePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.add, color: AppColors.primary),
+              Icon(Icons.add, color: AppColors.primary),
               const SizedBox(width: 8),
               Text(
-                'Add Custom Category',
+                'addCustomCategory'.tr,
                 style: GoogleFonts.inter(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   color: AppColors.primary,
                 ),
               ),
@@ -361,13 +395,13 @@ class _ExpensePageState extends State<ExpensePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.info_outline, color: AppColors.grey500, size: 16),
+              Icon(Icons.info_outline, color: widget.isDarkMode ? Colors.grey[400] : AppColors.grey500, size: 16),
               const SizedBox(width: 5),
               Flexible(
                 child: Text(
-                  'This feature is only available for pro user only',
+                  'proFeatureOnly'.tr,
                   style: GoogleFonts.inter(
-                    color: AppColors.grey500,
+                    color: widget.isDarkMode ? Colors.grey[400] : AppColors.grey500,
                     fontSize: 12,
                   ),
                 ),
@@ -383,25 +417,28 @@ class _ExpensePageState extends State<ExpensePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Amount', style: AppStyles.sectionHeader),
+        Text('amount'.tr, style: AppStyles.sectionHeader(widget.isDarkMode)),
         const SizedBox(height: 10),
         TextField(
           decoration: InputDecoration(
-            hintText: '\$ Enter amount',
+            hintText: 'enterAmount'.tr,
+            hintStyle: GoogleFonts.inter(color: widget.isDarkMode ? Colors.grey[400] : AppColors.grey500),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
-              borderSide: const BorderSide(color: AppColors.grey200),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
-              borderSide: const BorderSide(color: AppColors.grey200),
+              borderSide: BorderSide(color: widget.isDarkMode ? const Color(0xFF444444) : AppColors.grey200),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
               borderSide: const BorderSide(color: AppColors.primary),
             ),
             contentPadding: AppStyles.buttonPadding,
+            filled: widget.isDarkMode,
+            fillColor: widget.isDarkMode ? const Color(0xFF2A2A2A) : Colors.transparent,
           ),
+          style: GoogleFonts.inter(color: widget.isDarkMode ? Colors.white : Colors.black),
         ),
       ],
     );
@@ -411,7 +448,7 @@ class _ExpensePageState extends State<ExpensePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Payment Method', style: AppStyles.sectionHeader),
+        Text('paymentMethod'.tr, style: AppStyles.sectionHeader(widget.isDarkMode)),
         const SizedBox(height: 10),
         SizedBox(
           height: 100,
@@ -421,28 +458,35 @@ class _ExpensePageState extends State<ExpensePage> {
             children: [
               const SizedBox(width: 8),
               CategoryItem(
-                icon: Icons.money,
-                label: 'Cash',
+                iconPath: 'assets/icons/cashoc.png',
+                label: 'cash'.tr,
                 isSelected: _selectedPaymentIndex == 0,
                 onTap: () => setState(() => _selectedPaymentIndex = 0),
+                isDarkMode: widget.isDarkMode,
               ),
+              const SizedBox(width: 20),
               CategoryItem(
-                icon: Icons.phone_android,
-                label: 'Mobile',
+                iconPath: 'assets/icons/mobileoc.png',
+                label: 'mobile'.tr,
                 isSelected: _selectedPaymentIndex == 1,
                 onTap: () => setState(() => _selectedPaymentIndex = 1),
+                isDarkMode: widget.isDarkMode,
               ),
+              const SizedBox(width: 20),
               CategoryItem(
-                icon: Icons.account_balance,
-                label: 'Bank',
+                iconPath: 'assets/icons/Group 9.png',
+                label: 'bank'.tr,
                 isSelected: _selectedPaymentIndex == 2,
                 onTap: () => setState(() => _selectedPaymentIndex = 2),
+                isDarkMode: widget.isDarkMode,
               ),
+              const SizedBox(width: 20),
               CategoryItem(
-                icon: Icons.credit_card,
-                label: 'Card',
+                iconPath: 'assets/icons/cardoc.png',
+                label: 'card'.tr,
                 isSelected: _selectedPaymentIndex == 3,
                 onTap: () => setState(() => _selectedPaymentIndex = 3),
+                isDarkMode: widget.isDarkMode,
               ),
               const SizedBox(width: 8),
             ],
@@ -453,67 +497,76 @@ class _ExpensePageState extends State<ExpensePage> {
   }
 
   Widget _buildDateTimeSection() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth > 600) {
-          return Row(
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _buildDateTimeContainer(
-                  text: 'Feb 15, 2024 - 14:30',
+              Text(
+                'default'.tr,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: widget.isDarkMode ? Colors.white : AppColors.text900,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: AppStyles.buttonPadding,
+                decoration: BoxDecoration(
                   color: AppColors.primary,
-                  textColor: AppColors.text50,
+                  borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildDateTimeContainer(
-                  text: 'Feb 15, 2024',
-                  color: AppColors.grey200,
-                  textColor: AppColors.text900,
+                child: Center(
+                  child: Text(
+                    'feb1520241430'.tr,
+                    style: GoogleFonts.inter(
+                      color: AppColors.text50,
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
               ),
             ],
-          );
-        } else {
-          return Column(
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          flex: 1,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDateTimeContainer(
-                text: 'Feb 15, 2024 - 14:30',
-                color: AppColors.primary,
-                textColor: AppColors.text50,
+              Text(
+                'setDateTime'.tr,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: widget.isDarkMode ? Colors.white : AppColors.text900,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-              const SizedBox(height: 16),
-              _buildDateTimeContainer(
-                text: 'Feb 15, 2024',
-                color: AppColors.grey200,
-                textColor: AppColors.text900,
+              const SizedBox(height: 8),
+              Container(
+                padding: AppStyles.buttonPadding,
+                decoration: BoxDecoration(
+                  color: widget.isDarkMode ? const Color(0xFF2A2A2A) : AppColors.grey200,
+                  borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
+                ),
+                child: Center(
+                  child: Text(
+                    'feb152024'.tr,
+                    style: GoogleFonts.inter(
+                      color: widget.isDarkMode ? Colors.white : AppColors.text900,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
               ),
             ],
-          );
-        }
-      },
-    );
-  }
-
-  Widget _buildDateTimeContainer({
-    required String text,
-    required Color color,
-    required Color textColor,
-  }) {
-    return Container(
-      padding: AppStyles.buttonPadding,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(text, style: GoogleFonts.inter(color: textColor)),
-          Icon(Icons.arrow_drop_down, color: textColor),
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -522,16 +575,16 @@ class _ExpensePageState extends State<ExpensePage> {
       children: [
         _buildUpgradeButton(
           icon: Icons.play_circle_outline,
-          text: 'Watch a short video to add for free',
+          text: 'watchVideoForFree'.tr,
           color: AppColors.primary.withOpacity(0.1),
           borderColor: AppColors.primary,
         ),
         const SizedBox(height: 10),
         _buildUpgradeButton(
           icon: Icons.check_circle_outline,
-          text: 'Upgrade to Pro to remove ads',
-          color: AppColors.grey200,
-          borderColor: AppColors.grey500,
+          text: 'upgradeToPro'.tr,
+          color: widget.isDarkMode ? const Color(0xFF2A2A2A) : AppColors.grey200,
+          borderColor: widget.isDarkMode ? Colors.grey[600]! : AppColors.grey500,
         ),
       ],
     );
@@ -545,7 +598,7 @@ class _ExpensePageState extends State<ExpensePage> {
   }) {
     return GestureDetector(
       onTap: () async {
-        if (text.contains('Watch a short video')) {
+        if (text.contains('watchVideoForFree'.tr)) {
           final result = await Get.to<bool>(
                 () => AdvertisementPage(isFromExpense: true),
             routeName: AppRoutes.advertisement,
@@ -557,6 +610,8 @@ class _ExpensePageState extends State<ExpensePage> {
               arguments: {'defaultTab': 0},
             );
           }
+        } else if (text.contains('upgradeToPro'.tr)) {
+          Get.to(() => PremiumPlansScreen());
         }
       },
       child: Container(
@@ -573,7 +628,7 @@ class _ExpensePageState extends State<ExpensePage> {
             Icon(icon,
                 color: borderColor == AppColors.primary
                     ? AppColors.primary
-                    : AppColors.text900),
+                    : (widget.isDarkMode ? Colors.white : AppColors.text900)),
             const SizedBox(width: 8),
             Flexible(
               child: Text(
@@ -581,7 +636,7 @@ class _ExpensePageState extends State<ExpensePage> {
                 style: GoogleFonts.inter(
                   color: borderColor == AppColors.primary
                       ? AppColors.primary
-                      : AppColors.text900,
+                      : (widget.isDarkMode ? Colors.white : AppColors.text900),
                 ),
               ),
             ),
@@ -590,28 +645,12 @@ class _ExpensePageState extends State<ExpensePage> {
       ),
     );
   }
-
-  Widget _buildSaveButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.text50,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
-          ),
-        ),
-        onPressed: () {},
-        child: Text('Save', style: AppStyles.saveButtonText),
-      ),
-    );
-  }
 }
 
 class IncomePage extends StatefulWidget {
-  const IncomePage({super.key});
+  final bool isDarkMode;
+
+  const IncomePage({super.key, required this.isDarkMode});
 
   @override
   State<IncomePage> createState() => _IncomePageState();
@@ -639,9 +678,9 @@ class _IncomePageState extends State<IncomePage> {
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text('Scan or upload receipt', style: AppStyles.sectionHeader),
+                Text('scanOrUploadReceipt'.tr, style: AppStyles.sectionHeader(widget.isDarkMode)),
                 const SizedBox(height: 10),
                 _buildReceiptButtons(),
                 const SizedBox(height: 20),
@@ -656,8 +695,6 @@ class _IncomePageState extends State<IncomePage> {
                 _buildDateTimeSection(),
                 const SizedBox(height: 20),
                 _buildUpgradeButtons(),
-                const SizedBox(height: 20),
-                _buildSaveButton(),
               ],
             ),
           ),
@@ -668,30 +705,32 @@ class _IncomePageState extends State<IncomePage> {
 
   Widget _buildReceiptButtons() {
     return Center(
-      child: Wrap(
-        spacing: 20,
-        runSpacing: 10,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ReceiptButton(
-            icon: Icons.camera_alt,
-            label: 'Camera',
+            iconPath: 'assets/icons/cameraoc.png',
+            label: 'camera'.tr,
             iconColor: AppColors.incomeButtonIcon,
             backgroundColor: AppColors.incomeButtonBackground,
             borderColor: Colors.black.withOpacity(0.3),
+            isDarkMode: widget.isDarkMode,
           ),
           ReceiptButton(
-            icon: Icons.qr_code_scanner,
-            label: 'Barcode',
+            iconPath: 'assets/icons/barcodescanneroc.png',
+            label: 'barcode'.tr,
             iconColor: AppColors.incomeButtonIcon,
             backgroundColor: AppColors.incomeButtonBackground,
             borderColor: Colors.black.withOpacity(0.3),
+            isDarkMode: widget.isDarkMode,
           ),
           ReceiptButton(
-            icon: Icons.photo_library,
-            label: 'Gallery',
+            iconPath: 'assets/icons/galleryoc.png',
+            label: 'gallery'.tr,
             iconColor: AppColors.incomeButtonIcon,
             backgroundColor: AppColors.incomeButtonBackground,
             borderColor: Colors.black.withOpacity(0.3),
+            isDarkMode: widget.isDarkMode,
           ),
         ],
       ),
@@ -702,7 +741,7 @@ class _IncomePageState extends State<IncomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Select Category', style: AppStyles.sectionHeader),
+        Text('selectCategory'.tr, style: AppStyles.sectionHeader(widget.isDarkMode)),
         const SizedBox(height: 10),
         SizedBox(
           height: 100,
@@ -712,34 +751,39 @@ class _IncomePageState extends State<IncomePage> {
             children: [
               const SizedBox(width: 8),
               CategoryItem(
-                icon: Icons.fastfood,
-                label: 'Food',
+                iconPath: 'assets/icons/foodoc.png',
+                label: 'food'.tr,
                 isSelected: _selectedCategoryIndex == 0,
                 onTap: () => setState(() => _selectedCategoryIndex = 0),
+                isDarkMode: widget.isDarkMode,
               ),
               CategoryItem(
-                icon: Icons.directions_bus,
-                label: 'Transport',
+                iconPath: 'assets/icons/transportoc.png',
+                label: 'transport'.tr,
                 isSelected: _selectedCategoryIndex == 1,
                 onTap: () => setState(() => _selectedCategoryIndex = 1),
+                isDarkMode: widget.isDarkMode,
               ),
               CategoryItem(
-                icon: Icons.local_grocery_store,
-                label: 'Groceries',
+                iconPath: 'assets/icons/Groceriesoc.png',
+                label: 'groceries'.tr,
                 isSelected: _selectedCategoryIndex == 2,
                 onTap: () => setState(() => _selectedCategoryIndex = 2),
+                isDarkMode: widget.isDarkMode,
               ),
               CategoryItem(
-                icon: Icons.restaurant,
-                label: 'Eating Out',
+                iconPath: 'assets/icons/eatingoutoc.png',
+                label: 'eatingOut'.tr,
                 isSelected: _selectedCategoryIndex == 3,
                 onTap: () => setState(() => _selectedCategoryIndex = 3),
+                isDarkMode: widget.isDarkMode,
               ),
               CategoryItem(
-                icon: Icons.home,
-                label: 'Home',
+                iconPath: 'assets/icons/homeoc.png',
+                label: 'home'.tr,
                 isSelected: _selectedCategoryIndex == 4,
                 onTap: () => setState(() => _selectedCategoryIndex = 4),
+                isDarkMode: widget.isDarkMode,
               ),
               const SizedBox(width: 8),
             ],
@@ -753,7 +797,7 @@ class _IncomePageState extends State<IncomePage> {
     return Container(
       padding: AppStyles.defaultPadding,
       decoration: BoxDecoration(
-        color: AppColors.grey200,
+        color: widget.isDarkMode ? const Color(0xFF2A2A2A) : AppColors.grey200,
         borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
       ),
       child: Column(
@@ -761,12 +805,12 @@ class _IncomePageState extends State<IncomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.add, color: AppColors.primary),
+              Icon(Icons.add, color: AppColors.primary),
               const SizedBox(width: 8),
               Text(
-                'Add Custom Category',
+                'addCustomCategory'.tr,
                 style: GoogleFonts.inter(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   color: AppColors.primary,
                 ),
               ),
@@ -776,13 +820,13 @@ class _IncomePageState extends State<IncomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.info_outline, color: AppColors.grey500, size: 16),
+              Icon(Icons.info_outline, color: widget.isDarkMode ? Colors.grey[400] : AppColors.grey500, size: 16),
               const SizedBox(width: 5),
               Flexible(
                 child: Text(
-                  'This feature is only available for pro user only',
+                  'proFeatureOnly'.tr,
                   style: GoogleFonts.inter(
-                    color: AppColors.grey500,
+                    color: widget.isDarkMode ? Colors.grey[400] : AppColors.grey500,
                     fontSize: 12,
                   ),
                 ),
@@ -798,25 +842,28 @@ class _IncomePageState extends State<IncomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Amount', style: AppStyles.sectionHeader),
+        Text('amount'.tr, style: AppStyles.sectionHeader(widget.isDarkMode)),
         const SizedBox(height: 10),
         TextField(
           decoration: InputDecoration(
-            hintText: '\$ Enter amount',
+            hintText: 'enterAmount'.tr,
+            hintStyle: GoogleFonts.inter(color: widget.isDarkMode ? Colors.grey[400] : AppColors.grey500),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
-              borderSide: const BorderSide(color: AppColors.grey200),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
-              borderSide: const BorderSide(color: AppColors.grey200),
+              borderSide: BorderSide(color: widget.isDarkMode ? const Color(0xFF444444) : AppColors.grey200),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
               borderSide: const BorderSide(color: AppColors.primary),
             ),
             contentPadding: AppStyles.buttonPadding,
+            filled: widget.isDarkMode,
+            fillColor: widget.isDarkMode ? const Color(0xFF2A2A2A) : Colors.transparent,
           ),
+          style: GoogleFonts.inter(color: widget.isDarkMode ? Colors.white : Colors.black),
         ),
       ],
     );
@@ -826,7 +873,7 @@ class _IncomePageState extends State<IncomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Payment Method', style: AppStyles.sectionHeader),
+        Text('paymentMethod'.tr, style: AppStyles.sectionHeader(widget.isDarkMode)),
         const SizedBox(height: 10),
         SizedBox(
           height: 100,
@@ -836,28 +883,35 @@ class _IncomePageState extends State<IncomePage> {
             children: [
               const SizedBox(width: 8),
               CategoryItem(
-                icon: Icons.money,
-                label: 'Cash',
+                iconPath: 'assets/icons/cashoc.png',
+                label: 'cash'.tr,
                 isSelected: _selectedPaymentIndex == 0,
                 onTap: () => setState(() => _selectedPaymentIndex = 0),
+                isDarkMode: widget.isDarkMode,
               ),
+              const SizedBox(width: 20),
               CategoryItem(
-                icon: Icons.phone_android,
-                label: 'Mobile',
+                iconPath: 'assets/icons/mobileoc.png',
+                label: 'mobile'.tr,
                 isSelected: _selectedPaymentIndex == 1,
                 onTap: () => setState(() => _selectedPaymentIndex = 1),
+                isDarkMode: widget.isDarkMode,
               ),
+              const SizedBox(width: 20),
               CategoryItem(
-                icon: Icons.account_balance,
-                label: 'Bank',
+                iconPath: 'assets/icons/bankoc.png',
+                label: 'bank'.tr,
                 isSelected: _selectedPaymentIndex == 2,
                 onTap: () => setState(() => _selectedPaymentIndex = 2),
+                isDarkMode: widget.isDarkMode,
               ),
+              const SizedBox(width: 20),
               CategoryItem(
-                icon: Icons.credit_card,
-                label: 'Card',
+                iconPath: 'assets/icons/cardoc.png',
+                label: 'card'.tr,
                 isSelected: _selectedPaymentIndex == 3,
                 onTap: () => setState(() => _selectedPaymentIndex = 3),
+                isDarkMode: widget.isDarkMode,
               ),
               const SizedBox(width: 8),
             ],
@@ -868,67 +922,76 @@ class _IncomePageState extends State<IncomePage> {
   }
 
   Widget _buildDateTimeSection() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth > 600) {
-          return Row(
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _buildDateTimeContainer(
-                  text: 'Feb 15, 2024 - 14:30',
+              Text(
+                'default'.tr,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: widget.isDarkMode ? Colors.white : AppColors.text900,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: AppStyles.buttonPadding,
+                decoration: BoxDecoration(
                   color: AppColors.primary,
-                  textColor: AppColors.text50,
+                  borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildDateTimeContainer(
-                  text: 'Feb 15, 2024',
-                  color: AppColors.grey200,
-                  textColor: AppColors.text900,
+                child: Center(
+                  child: Text(
+                    'feb1520241430'.tr,
+                    style: GoogleFonts.inter(
+                      color: AppColors.text50,
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
               ),
             ],
-          );
-        } else {
-          return Column(
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          flex: 1,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDateTimeContainer(
-                text: 'Feb 15, 2024 - 14:30',
-                color: AppColors.primary,
-                textColor: AppColors.text50,
+              Text(
+                'setDateTime'.tr,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: widget.isDarkMode ? Colors.white : AppColors.text900,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-              const SizedBox(height: 16),
-              _buildDateTimeContainer(
-                text: 'Feb 15, 2024',
-                color: AppColors.grey200,
-                textColor: AppColors.text900,
+              const SizedBox(height: 8),
+              Container(
+                padding: AppStyles.buttonPadding,
+                decoration: BoxDecoration(
+                  color: widget.isDarkMode ? const Color(0xFF2A2A2A) : AppColors.grey200,
+                  borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
+                ),
+                child: Center(
+                  child: Text(
+                    'feb152024'.tr,
+                    style: GoogleFonts.inter(
+                      color: widget.isDarkMode ? Colors.white : AppColors.text900,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
               ),
             ],
-          );
-        }
-      },
-    );
-  }
-
-  Widget _buildDateTimeContainer({
-    required String text,
-    required Color color,
-    required Color textColor,
-  }) {
-    return Container(
-      padding: AppStyles.buttonPadding,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(text, style: GoogleFonts.inter(color: textColor)),
-          Icon(Icons.arrow_drop_down, color: textColor),
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -937,16 +1000,16 @@ class _IncomePageState extends State<IncomePage> {
       children: [
         _buildUpgradeButton(
           icon: Icons.play_circle_outline,
-          text: 'Watch a short video to add for free',
+          text: 'watchVideoForFree'.tr,
           color: AppColors.primary.withOpacity(0.1),
           borderColor: AppColors.primary,
         ),
         const SizedBox(height: 10),
         _buildUpgradeButton(
           icon: Icons.check_circle_outline,
-          text: 'Upgrade to Pro to remove ads',
-          color: AppColors.grey200,
-          borderColor: AppColors.grey500,
+          text: 'upgradeToPro'.tr,
+          color: widget.isDarkMode ? const Color(0xFF2A2A2A) : AppColors.grey200,
+          borderColor: widget.isDarkMode ? Colors.grey[600]! : AppColors.grey500,
         ),
       ],
     );
@@ -960,7 +1023,7 @@ class _IncomePageState extends State<IncomePage> {
   }) {
     return GestureDetector(
       onTap: () async {
-        if (text.contains('Watch a short video')) {
+        if (text.contains('watchVideoForFree'.tr)) {
           final result = await Get.to<bool>(
                 () => AdvertisementPage(isFromExpense: false),
             routeName: AppRoutes.advertisement,
@@ -972,6 +1035,8 @@ class _IncomePageState extends State<IncomePage> {
               arguments: {'defaultTab': 1},
             );
           }
+        } else if (text.contains('upgradeToPro'.tr)) {
+          Get.to(() => PremiumPlansScreen());
         }
       },
       child: Container(
@@ -988,7 +1053,7 @@ class _IncomePageState extends State<IncomePage> {
             Icon(icon,
                 color: borderColor == AppColors.primary
                     ? AppColors.primary
-                    : AppColors.text900),
+                    : (widget.isDarkMode ? Colors.white : AppColors.text900)),
             const SizedBox(width: 8),
             Flexible(
               child: Text(
@@ -996,30 +1061,12 @@ class _IncomePageState extends State<IncomePage> {
                 style: GoogleFonts.inter(
                   color: borderColor == AppColors.primary
                       ? AppColors.primary
-                      : AppColors.text900,
+                      : (widget.isDarkMode ? Colors.white : AppColors.text900),
                 ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildSaveButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.text50,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
-          ),
-        ),
-        onPressed: () {},
-        child: Text('Save', style: AppStyles.saveButtonText),
       ),
     );
   }

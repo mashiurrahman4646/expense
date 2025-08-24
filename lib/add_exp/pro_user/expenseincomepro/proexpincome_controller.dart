@@ -24,26 +24,26 @@ class ProExpensesIncomeController extends GetxController {
 
   // Categories
   final expenseCategories = <Map<String, dynamic>>[
-    {'name': 'Food', 'icon': Icons.restaurant},
-    {'name': 'Transport', 'icon': Icons.directions_car},
-    {'name': 'Groceries', 'icon': Icons.shopping_cart},
-    {'name': 'Eating Out', 'icon': Icons.fastfood},
-    {'name': 'Home', 'icon': Icons.home},
+    {'name': 'food', 'icon': Icons.restaurant},
+    {'name': 'transport', 'icon': Icons.directions_car},
+    {'name': 'groceries', 'icon': Icons.shopping_cart},
+    {'name': 'eatingOut', 'icon': Icons.fastfood},
+    {'name': 'home', 'icon': Icons.home},
   ].obs;
 
   final incomeCategories = <Map<String, dynamic>>[
-    {'name': 'Salary', 'icon': Icons.account_balance_wallet},
-    {'name': 'Freelance', 'icon': Icons.work},
-    {'name': 'Donation', 'icon': Icons.volunteer_activism},
-    {'name': 'Overtime', 'icon': Icons.access_time},
-    {'name': 'Gift', 'icon': Icons.card_giftcard},
+    {'name': 'salary', 'icon': Icons.account_balance_wallet},
+    {'name': 'freelance', 'icon': Icons.work},
+    {'name': 'donation', 'icon': Icons.volunteer_activism},
+    {'name': 'overtime', 'icon': Icons.access_time},
+    {'name': 'gift', 'icon': Icons.card_giftcard},
   ].obs;
 
   final paymentMethods = <Map<String, dynamic>>[
-    {'name': 'Cash', 'icon': Icons.money},
-    {'name': 'Mobile', 'icon': Icons.phone_android},
-    {'name': 'Bank', 'icon': Icons.account_balance},
-    {'name': 'Card', 'icon': Icons.credit_card},
+    {'name': 'cash', 'icon': Icons.money},
+    {'name': 'mobile', 'icon': Icons.phone_android},
+    {'name': 'bank', 'icon': Icons.account_balance},
+    {'name': 'card', 'icon': Icons.credit_card},
   ].obs;
 
   @override
@@ -131,20 +131,20 @@ class ProExpensesIncomeController extends GetxController {
           break;
       }
     } catch (e) {
-      Get.snackbar('Error', 'Error to process receipt: $e');
+      Get.snackbar('error'.tr, '${'receiptError'.tr}: $e');
     }
   }
 
   Future<void> _captureFromCamera() async {
-    Get.snackbar('Info', 'Camera feature will be implemented');
+    Get.snackbar('info'.tr, 'cameraFeature'.tr);
   }
 
   Future<void> _scanReceipt() async {
-    Get.snackbar('Info', 'Scanner feature will be implemented');
+    Get.snackbar('info'.tr, 'scannerFeature'.tr);
   }
 
   Future<void> _pickFromGallery() async {
-    Get.snackbar('Info', 'Gallery picker feature will be implemented');
+    Get.snackbar('info'.tr, 'galleryFeature'.tr);
   }
 
   String getFormattedDateTime() {
@@ -199,16 +199,16 @@ class ProExpensesIncomeController extends GetxController {
       };
 
       Get.snackbar(
-        'Success',
-        'Transaction added successfully',
+        'success'.tr,
+        'transactionSuccess'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
 
       clearForm();
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Failed to add transaction: $e',
+        'error'.tr,
+        '${'transactionError'.tr}: $e',
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -218,22 +218,22 @@ class ProExpensesIncomeController extends GetxController {
 
   bool validateForm() {
     if (amountController.text.isEmpty) {
-      Get.snackbar('Error', 'Please enter amount');
+      Get.snackbar('error'.tr, 'enterAmountError'.tr);
       return false;
     }
 
     if (currentTab.value == 0 && selectedExpenseCategory.isEmpty) {
-      Get.snackbar('Error', 'Please select expense category');
+      Get.snackbar('error'.tr, 'selectExpenseCategoryError'.tr);
       return false;
     }
 
     if (currentTab.value == 1 && selectedIncomeCategory.isEmpty) {
-      Get.snackbar('Error', 'Please select income category');
+      Get.snackbar('error'.tr, 'selectIncomeCategoryError'.tr);
       return false;
     }
 
     if (selectedPaymentMethod.isEmpty) {
-      Get.snackbar('Error', 'Please select payment method');
+      Get.snackbar('error'.tr, 'selectPaymentMethodError'.tr);
       return false;
     }
 

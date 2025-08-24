@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../Settings/appearance/ThemeController.dart';
+ // Import your ThemeController
+
 // Controller for the Rate and Improve Screen
 class RateAndImproveController extends GetxController {
   // Observable variable for the star rating.
@@ -16,7 +19,6 @@ class RateAndImproveController extends GetxController {
   }
 
   // A method to handle the feedback submission.
-  // The feedback text field no longer has a controller, so it won't be submitted.
   void submitFeedback() {
     int rating = starRating.value;
 
@@ -25,8 +27,8 @@ class RateAndImproveController extends GetxController {
 
     // Show a success message and then navigate back.
     Get.snackbar(
-      'Thank You!',
-      'Your feedback has been submitted successfully.',
+      'thankYou'.tr,
+      'feedbackSubmitted'.tr,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.green.withOpacity(0.8),
       colorText: Colors.white,
@@ -44,24 +46,25 @@ class RateAndImproveScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Get the controller instance.
     final RateAndImproveController controller = Get.put(RateAndImproveController());
+    final themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkModeActive ? const Color(0xFF121212) : Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: themeController.isDarkModeActive ? const Color(0xFF1E1E1E) : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios, color: themeController.isDarkModeActive ? Colors.white : Colors.black),
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Rate & Help Us Improve',
+          'rateAndImproveTitle'.tr,
           style: TextStyle(
             fontSize: screenWidth * 0.05,
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
           ),
         ),
         centerTitle: true,
@@ -73,29 +76,29 @@ class RateAndImproveScreen extends StatelessWidget {
           children: [
             SizedBox(height: screenHeight * 0.03),
             Text(
-              'Let\'s save and grow together!',
+              'saveAndGrowTogether'.tr,
               style: TextStyle(
                 fontSize: screenWidth * 0.06,
                 fontWeight: FontWeight.w700,
-                color: Colors.black,
+                color: themeController.isDarkModeActive ? Colors.white : Colors.black,
               ),
             ),
             SizedBox(height: screenHeight * 0.01),
             Text(
-              'Share your thoughts on how we can improve\nthe app — we\'ll use your feedback to make\nthe experience more effective.',
+              'shareYourThoughts'.tr,
               style: TextStyle(
                 fontSize: screenWidth * 0.04,
-                color: Colors.grey.shade600,
+                color: themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey.shade600,
                 fontWeight: FontWeight.w400,
               ),
             ),
             SizedBox(height: screenHeight * 0.04),
             Text(
-              'How would you rate your experience?',
+              'rateExperience'.tr,
               style: TextStyle(
                 fontSize: screenWidth * 0.045,
                 fontWeight: FontWeight.w600,
-                color: Colors.black,
+                color: themeController.isDarkModeActive ? Colors.white : Colors.black,
               ),
             ),
             SizedBox(height: screenHeight * 0.03),
@@ -115,8 +118,8 @@ class RateAndImproveScreen extends StatelessWidget {
                           Color(0xFF2196F3), // Blue for selected stars.
                           BlendMode.srcIn,
                         )
-                            : const ColorFilter.mode(
-                          Colors.grey, // Gray for unselected stars.
+                            : ColorFilter.mode(
+                          themeController.isDarkModeActive ? Colors.grey[600]! : Colors.grey, // Appropriate color for unselected stars.
                           BlendMode.srcIn,
                         ),
                         child: Image.asset(
@@ -133,7 +136,7 @@ class RateAndImproveScreen extends StatelessWidget {
             SizedBox(height: screenHeight * 0.03),
             Container(
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: themeController.isDarkModeActive ? const Color(0xFF2A2A2A) : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(screenWidth * 0.03),
               ),
               padding: EdgeInsets.all(screenWidth * 0.04),
@@ -141,9 +144,12 @@ class RateAndImproveScreen extends StatelessWidget {
                 // The TextField no longer uses a controller.
                 maxLines: 5,
                 maxLength: 300,
+                style: TextStyle(
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black,
+                ),
                 decoration: InputDecoration(
-                  hintText: 'Write your feedback here...',
-                  hintStyle: TextStyle(color: Colors.grey.shade500),
+                  hintText: 'feedbackHint'.tr,
+                  hintStyle: TextStyle(color: themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey.shade500),
                   border: InputBorder.none,
                   counterText: "", // Hide the default counter.
                 ),
@@ -160,7 +166,7 @@ class RateAndImproveScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(screenWidth * 0.03)),
                 ),
                 child: Text(
-                  'Send Feedback',
+                  'sendFeedback'.tr,
                   style: TextStyle(fontSize: screenWidth * 0.04, color: Colors.white),
                 ),
               ),
@@ -168,6 +174,6 @@ class RateAndImproveScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }

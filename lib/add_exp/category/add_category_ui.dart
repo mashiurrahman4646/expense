@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+
+import '../../Settings/appearance/ThemeController.dart'; // Import your ThemeController
+
 class AddCategoryScreen extends StatefulWidget {
   final bool isExpense;
 
@@ -12,7 +15,8 @@ class AddCategoryScreen extends StatefulWidget {
 
 class _AddCategoryScreenState extends State<AddCategoryScreen> {
   final TextEditingController categoryController = TextEditingController();
-  String? selectedIconId; // Now tracking by unique ID instead of just icon name
+  String? selectedIconId;
+  final themeController = Get.find<ThemeController>();
 
   // Base icons list with unique IDs
   final List<Map<String, String>> baseIcons = [
@@ -30,19 +34,19 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkModeActive ? const Color(0xFF121212) : Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: themeController.isDarkModeActive ? const Color(0xFF1E1E1E) : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios, color: themeController.isDarkModeActive ? Colors.white : Colors.black, size: 20),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Add Category',
+        title: Text(
+          'addCategoryTitle'.tr,
           style: TextStyle(
-            color: Colors.black,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -57,12 +61,12 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
             const SizedBox(height: 20),
 
             // Category Name
-            const Text(
-              'Category Name',
+            Text(
+              'categoryName'.tr,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Colors.black87,
+                color: themeController.isDarkModeActive ? Colors.white : Colors.black87,
               ),
             ),
             const SizedBox(height: 12),
@@ -70,24 +74,24 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
             // Text Field
             Container(
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: themeController.isDarkModeActive ? const Color(0xFF2A2A2A) : Colors.grey[100],
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[300]!),
+                border: Border.all(color: themeController.isDarkModeActive ? Colors.grey[700]! : Colors.grey[300]!),
               ),
               child: TextField(
                 controller: categoryController,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: Colors.black87,
+                  color: themeController.isDarkModeActive ? Colors.white : Colors.black87,
                 ),
-                decoration: const InputDecoration(
-                  hintText: 'e.g., Pet Care, Subscriptions',
+                decoration: InputDecoration(
+                  hintText: 'categoryNameHint'.tr,
                   hintStyle: TextStyle(
-                    color: Colors.grey,
+                    color: themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey,
                     fontSize: 14,
                   ),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 ),
               ),
             ),
@@ -95,12 +99,12 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
             const SizedBox(height: 32),
 
             // Choose an Icon
-            const Text(
-              'Choose an Icon',
+            Text(
+              'chooseIcon'.tr,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Colors.black87,
+                color: themeController.isDarkModeActive ? Colors.white : Colors.black87,
               ),
             ),
             const SizedBox(height: 20),
@@ -112,7 +116,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: baseIcons.sublist(0, 5).map((icon) {
-                    return _buildIconButton(icon);
+                    return _buildIconButton(icon, themeController.isDarkModeActive);
                   }).toList(),
                 ),
                 const SizedBox(height: 16),
@@ -121,7 +125,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: baseIcons.sublist(5).map((icon) {
-                    return _buildIconButton(icon);
+                    return _buildIconButton(icon, themeController.isDarkModeActive);
                   }).toList(),
                 ),
               ],
@@ -154,9 +158,9 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'Add',
-                  style: TextStyle(
+                child: Text(
+                  'add'.tr,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
@@ -169,10 +173,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
           ],
         ),
       ),
-    );
+    ));
   }
 
-  Widget _buildIconButton(Map<String, String> icon) {
+  Widget _buildIconButton(Map<String, String> icon, bool isDarkMode) {
     bool isSelected = selectedIconId == icon['id'];
     return GestureDetector(
       onTap: () {
@@ -184,7 +188,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          color: isDarkMode ? const Color(0xFF2A2A2A) : Colors.grey[200],
           borderRadius: BorderRadius.circular(12),
           border: isSelected
               ? Border.all(color: Colors.blue, width: 2)
@@ -196,12 +200,12 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
             'assets/icons/${icon['path']}',
             width: 24,
             height: 24,
-            color: Colors.black54,
+            color: isDarkMode ? Colors.white : Colors.black54,
             errorBuilder: (context, error, stackTrace) {
               return Icon(
                 Icons.category,
                 size: 24,
-                color: Colors.black54,
+                color: isDarkMode ? Colors.white : Colors.black54,
               );
             },
           ),

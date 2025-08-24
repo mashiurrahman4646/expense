@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+ // Import your ThemeController
 
+import '../../../Settings/appearance/ThemeController.dart';
 import '../../../make it pro/AdvertisementPage/add_ui.dart';
 import 'proexpincome_controller.dart';
 
@@ -11,134 +13,132 @@ class ProExpensesIncomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ProExpensesIncomeController());
+    final themeController = Get.find<ThemeController>();
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 10,
-              left: 20,
-              right: 20,
-              bottom: 10,
-            ),
-            color: Colors.grey[50],
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-                  onPressed: () => Get.back(),
-                ),
-                Expanded(
-                  child: Obx(() => Container(
-                    height: 45,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => controller.switchToTab(0),
-                            child: Container(
-                              height: 45,
-                              decoration: BoxDecoration(
-                                color: controller.currentTab.value == 0
-                                    ? Colors.blue
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Expense',
-                                  style: TextStyle(
-                                    color: controller.currentTab.value == 0
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
+    return Obx(() => Scaffold(
+      backgroundColor: themeController.isDarkModeActive ? const Color(0xFF121212) : Colors.grey[50],
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: themeController.isDarkModeActive ? Colors.white : Colors.black),
+          onPressed: () => Get.back(),
+        ),
+        title: Obx(() => Text(
+          controller.currentTab.value == 0 ? 'addExpense'.tr : 'addIncome'.tr,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: themeController.isDarkModeActive ? Colors.white : Colors.black,
+          ),
+        )),
+        centerTitle: true,
+        backgroundColor: themeController.isDarkModeActive ? const Color(0xFF1E1E1E) : Colors.white,
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(50),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: themeController.isDarkModeActive ? const Color(0xFF2A2A2A) : Colors.grey[200],
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: Obx(() => Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => controller.switchToTab(0),
+                      child: Container(
+                        height: 45,
+                        decoration: BoxDecoration(
+                          color: controller.currentTab.value == 0
+                              ? Colors.blue
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'expense'.tr,
+                            style: TextStyle(
+                              color: controller.currentTab.value == 0
+                                  ? Colors.white
+                                  : (themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey[600]),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
                             ),
                           ),
                         ),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => controller.switchToTab(1),
-                            child: Container(
-                              height: 45,
-                              decoration: BoxDecoration(
-                                color: controller.currentTab.value == 1
-                                    ? Colors.blue
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Income',
-                                  style: TextStyle(
-                                    color: controller.currentTab.value == 1
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => controller.switchToTab(1),
+                      child: Container(
+                        height: 45,
+                        decoration: BoxDecoration(
+                          color: controller.currentTab.value == 1
+                              ? Colors.blue
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'income'.tr,
+                            style: TextStyle(
+                              color: controller.currentTab.value == 1
+                                  ? Colors.white
+                                  : (themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey[600]),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  )),
-                ),
-              ],
+                  ),
+                ],
+              )),
             ),
           ),
-          Expanded(
-            child: Obx(() {
-              if (controller.currentTab.value == 0) {
-                return controller.isExpenseProUnlocked.value
-                    ? _buildExpenseTab(controller)
-                    : _buildLockedState('Expense Pro', controller, true);
-              } else {
-                return controller.isIncomeProUnlocked.value
-                    ? _buildIncomeTab(controller)
-                    : _buildLockedState('Income Pro', controller, false);
-              }
-            }),
-          ),
-        ],
+        ),
       ),
-    );
+      body: Obx(() {
+        if (controller.currentTab.value == 0) {
+          return controller.isExpenseProUnlocked.value
+              ? _buildExpenseTab(controller, themeController.isDarkModeActive)
+              : _buildLockedState('expensePro'.tr, controller, true, themeController.isDarkModeActive);
+        } else {
+          return controller.isIncomeProUnlocked.value
+              ? _buildIncomeTab(controller, themeController.isDarkModeActive)
+              : _buildLockedState('incomePro'.tr, controller, false, themeController.isDarkModeActive);
+        }
+      }),
+    ));
   }
 
-  Widget _buildLockedState(String type, ProExpensesIncomeController controller, bool isExpense) {
+  Widget _buildLockedState(String type, ProExpensesIncomeController controller, bool isExpense, bool isDarkMode) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.lock_outline, size: 80, color: Colors.grey[400]),
+            Icon(Icons.lock_outline, size: 80, color: isDarkMode ? Colors.grey[600] : Colors.grey[400]),
             const SizedBox(height: 20),
             Text(
-              '$type Features',
+              '$type ${'features'.tr}',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
+                color: isDarkMode ? Colors.white : Colors.grey[800],
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              'Watch a short video to unlock',
+              'watchToUnlock'.tr,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey[600],
+                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
               ),
             ),
             const SizedBox(height: 30),
@@ -162,8 +162,8 @@ class ProExpensesIncomeScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(25),
                 ),
               ),
-              child: const Text(
-                'Watch Ad to Unlock',
+              child: Text(
+                'watchAdToUnlock'.tr,
                 style: TextStyle(fontSize: 16, color: Colors.white),
               ),
             ),
@@ -173,106 +173,138 @@ class ProExpensesIncomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildExpenseTab(ProExpensesIncomeController controller) {
+  Widget _buildExpenseTab(ProExpensesIncomeController controller, bool isDarkMode) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildReceiptSection(Colors.orange, controller),
-          const SizedBox(height: 30),
-          _buildCategorySection(controller.expenseCategories, true, controller),
-          const SizedBox(height: 30),
-          _buildAmountSection(controller),
+          _buildReceiptSection(true, isDarkMode),
           const SizedBox(height: 20),
-          _buildTextBoxSection(controller),
+          _buildCategorySection(controller.expenseCategories, true, controller, isDarkMode),
           const SizedBox(height: 20),
-          _buildPaymentMethodSection(controller),
-          const SizedBox(height: 30),
-          _buildDateTimeSection(controller),
-          const SizedBox(height: 40),
+          _buildAddCustomCategory(controller, isDarkMode),
+          const SizedBox(height: 20),
+          _buildAmountSection(controller, isDarkMode),
+          const SizedBox(height: 20),
+          _buildTextBoxSection(controller, isDarkMode),
+          const SizedBox(height: 20),
+          _buildPaymentMethodSection(controller, isDarkMode),
+          const SizedBox(height: 20),
+          _buildDateTimeSection(controller, isDarkMode),
+          const SizedBox(height: 20),
           _buildAddButton(controller),
         ],
       ),
     );
   }
 
-  Widget _buildIncomeTab(ProExpensesIncomeController controller) {
+  Widget _buildIncomeTab(ProExpensesIncomeController controller, bool isDarkMode) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildReceiptSection(Colors.green, controller),
-          const SizedBox(height: 30),
-          _buildCategorySection(controller.incomeCategories, false, controller),
-          const SizedBox(height: 30),
-          _buildAmountSection(controller),
+          _buildReceiptSection(false, isDarkMode),
           const SizedBox(height: 20),
-          _buildTextBoxSection(controller),
+          _buildCategorySection(controller.incomeCategories, false, controller, isDarkMode),
           const SizedBox(height: 20),
-          _buildPaymentMethodSection(controller),
-          const SizedBox(height: 30),
-          _buildDateTimeSection(controller),
-          const SizedBox(height: 40),
+          _buildAddCustomCategory(controller, isDarkMode),
+          const SizedBox(height: 20),
+          _buildAmountSection(controller, isDarkMode),
+          const SizedBox(height: 20),
+          _buildTextBoxSection(controller, isDarkMode),
+          const SizedBox(height: 20),
+          _buildPaymentMethodSection(controller, isDarkMode),
+          const SizedBox(height: 20),
+          _buildDateTimeSection(controller, isDarkMode),
+          const SizedBox(height: 20),
           _buildAddButton(controller),
         ],
       ),
     );
   }
 
-  Widget _buildReceiptSection(Color color, ProExpensesIncomeController controller) {
+  Widget _buildReceiptSection(bool isExpense, bool isDarkMode) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Text(
-          'Scan or upload receipt',
-          style: TextStyle(
+        Text(
+          'scanOrUploadReceipt'.tr,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.bold,
             fontSize: 16,
-            color: Colors.grey,
-            fontWeight: FontWeight.w500,
+            color: isDarkMode ? Colors.white : Colors.black,
           ),
         ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildReceiptOption(
-              Icons.camera_alt,
-              color,
-                  () => controller.handleReceiptAction('camera'),
-            ),
-            _buildReceiptOption(
-              Icons.qr_code_scanner,
-              color,
-                  () => controller.handleReceiptAction('scanner'),
-            ),
-            _buildReceiptOption(
-              Icons.image,
-              color,
-                  () => controller.handleReceiptAction('gallery'),
-            ),
-          ],
+        const SizedBox(height: 10),
+        Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildReceiptOption(
+                'assets/icons/cameraoc.png',
+                'camera'.tr,
+                isExpense ? Colors.yellow : Colors.green,
+                isDarkMode,
+              ),
+              _buildReceiptOption(
+                'assets/icons/barcodescanneroc.png',
+                'barcode'.tr,
+                isExpense ? Colors.yellow : Colors.green,
+                isDarkMode,
+              ),
+              _buildReceiptOption(
+                'assets/icons/galleryoc.png',
+                'gallery'.tr,
+                isExpense ? Colors.yellow : Colors.green,
+                isDarkMode,
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildReceiptOption(IconData icon, Color color, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(30),
+  Widget _buildReceiptOption(String iconPath, String label, Color backgroundColor, bool isDarkMode) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            shape: BoxShape.circle,
+            border: Border.all(color: isDarkMode ? Colors.grey[600]! : Colors.black.withOpacity(0.3), width: 1.5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Image.asset(
+              iconPath,
+              color: Colors.black,
+              width: 30,
+              height: 30,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                IconData fallbackIcon = Icons.camera_alt;
+                if (iconPath.contains('barcode')) fallbackIcon = Icons.qr_code_scanner;
+                if (iconPath.contains('gallery')) fallbackIcon = Icons.image;
+                return Icon(fallbackIcon, color: Colors.black, size: 30);
+              },
+            ),
+          ),
         ),
-        child: Icon(
-          icon,
-          color: Colors.black54,
-          size: 28,
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -280,31 +312,30 @@ class ProExpensesIncomeScreen extends StatelessWidget {
       RxList<Map<String, dynamic>> categories,
       bool isExpense,
       ProExpensesIncomeController controller,
+      bool isDarkMode,
       ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Select Category',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
+        Text(
+          'selectCategory'.tr,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: isDarkMode ? Colors.white : Colors.black,
           ),
         ),
-        const SizedBox(height: 15),
-        Obx(() => Wrap(
-          spacing: 12,
-          runSpacing: 15,
-          children: [
-            // Display existing categories
-            ...categories.map((category) {
-              String categoryName = category['name'];
-              bool isSelected = isExpense
-                  ? controller.selectedExpenseCategory.value == categoryName
-                  : controller.selectedIncomeCategory.value == categoryName;
+        const SizedBox(height: 10),
+        Obx(() => Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: categories.map((category) {
+            String categoryName = category['name'];
+            bool isSelected = isExpense
+                ? controller.selectedExpenseCategory.value == categoryName
+                : controller.selectedIncomeCategory.value == categoryName;
 
-              return GestureDetector(
+            return Expanded(
+              child: GestureDetector(
                 onTap: () {
                   if (isExpense) {
                     controller.selectExpenseCategory(categoryName);
@@ -313,249 +344,49 @@ class ProExpensesIncomeScreen extends StatelessWidget {
                   }
                 },
                 child: Container(
-                  width: 68,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 50,
-                        height: 50,
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.blue : Colors.grey[200],
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: isSelected ? [
-                            BoxShadow(
-                              color: Colors.blue.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ] : [],
+                          color: isSelected ? Colors.blue : (isDarkMode ? const Color(0xFF2A2A2A) : Colors.grey[200]),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: category['iconPath'] != null
-                            ? Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Image.asset(
-                            category['iconPath'],
-                            width: 26,
-                            height: 26,
-                            color: isSelected ? Colors.white : Colors.black54,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Icon(
-                                category['icon'] ?? Icons.category,
-                                color: isSelected ? Colors.white : Colors.black54,
-                                size: 24,
-                              );
-                            },
-                          ),
+                            ? Image.asset(
+                          category['iconPath'],
+                          width: 24,
+                          height: 24,
+                          color: isSelected ? Colors.white : (isDarkMode ? Colors.white : Colors.black),
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              category['icon'] ?? Icons.category,
+                              color: isSelected ? Colors.white : (isDarkMode ? Colors.white : Colors.black),
+                              size: 24,
+                            );
+                          },
                         )
                             : Icon(
                           category['icon'] ?? Icons.category,
-                          color: isSelected ? Colors.white : Colors.black54,
+                          color: isSelected ? Colors.white : (isDarkMode ? Colors.white : Colors.black),
                           size: 24,
                         ),
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        categoryName,
-                        style: TextStyle(
+                        categoryName.tr,
+                        style: GoogleFonts.inter(
                           fontSize: 12,
-                          color: isSelected ? Colors.blue : Colors.black54,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                          color: isDarkMode ? Colors.white : Colors.black,
                         ),
                         textAlign: TextAlign.center,
-                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-              );
-            }).toList(),
-            // Add Category Button
-            GestureDetector(
-              onTap: () => _navigateToAddCategory(controller, isExpense),
-              child: Container(
-                width: 68,
-                child: Column(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(
-                          color: Colors.grey[400]!,
-                          width: 1.5,
-                          style: BorderStyle.solid,
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.grey,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    const Text(
-                      'Add',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.normal,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        )),
-      ],
-    );
-  }
-
-  Widget _buildAmountSection(ProExpensesIncomeController controller) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Amount',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[300]!),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                blurRadius: 5,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: TextField(
-            controller: controller.amountController,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-            decoration: const InputDecoration(
-              hintText: '\$ Enter amount',
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              hintStyle: TextStyle(color: Colors.grey),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTextBoxSection(ProExpensesIncomeController controller) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Text box',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[300]!),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                blurRadius: 5,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: TextField(
-            controller: controller.descriptionController,
-            style: const TextStyle(
-              fontSize: 16,
-            ),
-            decoration: const InputDecoration(
-              hintText: '(Optional)',
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              hintStyle: TextStyle(color: Colors.grey),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPaymentMethodSection(ProExpensesIncomeController controller) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Payment Method',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 15),
-        Obx(() => Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: controller.paymentMethods.map((method) {
-            String methodName = method['name'];
-            bool isSelected = controller.selectedPaymentMethod.value == methodName;
-
-            return GestureDetector(
-              onTap: () => controller.selectPaymentMethod(methodName),
-              child: Column(
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.blue : Colors.grey[200],
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: isSelected ? [
-                        BoxShadow(
-                          color: Colors.blue.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ] : [],
-                    ),
-                    child: Icon(
-                      method['icon'],
-                      color: isSelected ? Colors.white : Colors.black54,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    methodName,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isSelected ? Colors.blue : Colors.black54,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                    ),
-                  ),
-                ],
               ),
             );
           }).toList(),
@@ -564,88 +395,265 @@ class ProExpensesIncomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDateTimeSection(ProExpensesIncomeController controller) {
+  Widget _buildAddCustomCategory(ProExpensesIncomeController controller, bool isDarkMode) {
+    return GestureDetector(
+      onTap: () {
+        Get.toNamed('/addCategory');
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDarkMode ? const Color(0xFF2A2A2A) : Colors.grey[200],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.add, color: Colors.blue),
+                const SizedBox(width: 8),
+                Text(
+                  'addCustomCategory'.tr,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAmountSection(ProExpensesIncomeController controller, bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'amount'.tr,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+        ),
+        const SizedBox(height: 10),
+        TextField(
+          controller: controller.amountController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+          decoration: InputDecoration(
+            hintText: 'enterAmount'.tr,
+            hintStyle: TextStyle(color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: isDarkMode ? Colors.grey[700]! : Colors.grey),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.blue),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            filled: isDarkMode,
+            fillColor: isDarkMode ? const Color(0xFF2A2A2A) : Colors.transparent,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextBoxSection(ProExpensesIncomeController controller, bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'textBox'.tr,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+        ),
+        const SizedBox(height: 10),
+        TextField(
+          controller: controller.descriptionController,
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+          decoration: InputDecoration(
+            hintText: 'optional'.tr,
+            hintStyle: TextStyle(color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: isDarkMode ? Colors.grey[700]! : Colors.grey),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.blue),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            filled: isDarkMode,
+            fillColor: isDarkMode ? const Color(0xFF2A2A2A) : Colors.transparent,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPaymentMethodSection(ProExpensesIncomeController controller, bool isDarkMode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'paymentMethod'.tr,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Obx(() => Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: controller.paymentMethods.map((method) {
+            String methodName = method['name'];
+            bool isSelected = controller.selectedPaymentMethod.value == methodName;
+
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => controller.selectPaymentMethod(methodName),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.blue : (isDarkMode ? const Color(0xFF2A2A2A) : Colors.grey[200]),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: method['iconPath'] != null
+                            ? Image.asset(
+                          method['iconPath'],
+                          width: 24,
+                          height: 24,
+                          color: isSelected ? Colors.white : (isDarkMode ? Colors.white : Colors.black),
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              method['icon'],
+                              color: isSelected ? Colors.white : (isDarkMode ? Colors.white : Colors.black),
+                              size: 24,
+                            );
+                          },
+                        )
+                            : Icon(
+                          method['icon'],
+                          color: isSelected ? Colors.white : (isDarkMode ? Colors.white : Colors.black),
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        methodName.tr,
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        )),
+      ],
+    );
+  }
+
+  Widget _buildDateTimeSection(ProExpensesIncomeController controller, bool isDarkMode) {
     return Row(
       children: [
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Default',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+              Text(
+                'default'.tr,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 10),
-              Obx(() => Container(
+              const SizedBox(height: 8),
+              Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: Colors.blue,
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.blue.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Text(
+                    'feb1520241430'.tr,
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 12,
                     ),
-                  ],
-                ),
-                child: Text(
-                  controller.getFormattedDateTime(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              )),
+              ),
             ],
           ),
         ),
-        const SizedBox(width: 15),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Set Date & Time',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+              Text(
+                'setDateTime'.tr,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               GestureDetector(
                 onTap: () => _selectDateTime(controller),
-                child: Obx(() => Container(
+                child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(color: Colors.grey[300]!),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
+                    color: isDarkMode ? const Color(0xFF2A2A2A) : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'feb152024'.tr,
+                      style: GoogleFonts.inter(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: 12,
                       ),
-                    ],
-                  ),
-                  child: Text(
-                    controller.getFormattedDate(),
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                )),
+                ),
               ),
             ],
           ),
@@ -665,7 +673,6 @@ class ProExpensesIncomeScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          elevation: 3,
         ),
         child: controller.isLoading.value
             ? const SizedBox(
@@ -676,11 +683,11 @@ class ProExpensesIncomeScreen extends StatelessWidget {
             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
           ),
         )
-            : const Text(
-          'Add',
-          style: TextStyle(
+            : Text(
+          'add'.tr,
+          style: GoogleFonts.inter(
             fontSize: 18,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
@@ -694,72 +701,18 @@ class ProExpensesIncomeScreen extends StatelessWidget {
       initialDate: controller.selectedDate.value,
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Colors.blue,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
 
     if (pickedDate != null) {
       final TimeOfDay? pickedTime = await showTimePicker(
         context: Get.context!,
         initialTime: controller.selectedTime.value,
-        builder: (context, child) {
-          return Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
-                primary: Colors.blue,
-                onPrimary: Colors.white,
-                surface: Colors.white,
-                onSurface: Colors.black,
-              ),
-            ),
-            child: child!,
-          );
-        },
       );
 
       if (pickedTime != null) {
         controller.selectDate(pickedDate);
         controller.selectTime(pickedTime);
       }
-    }
-  }
-
-  void _navigateToAddCategory(ProExpensesIncomeController controller, bool isExpense) async {
-    final result = await Get.toNamed('/addCategory', arguments: {'isExpense': isExpense});
-
-    if (result != null && result is Map<String, dynamic>) {
-      // Create the category map with the icon path
-      final category = {
-        'name': result['name'],
-        'icon': Icons.category, // Default fallback icon
-        'iconPath': result['iconPath'],
-      };
-
-      // Add to the appropriate category list
-      if (isExpense) {
-        controller.expenseCategories.add(category);
-      } else {
-        controller.incomeCategories.add(category);
-      }
-
-      Get.snackbar(
-        'Success',
-        'Category added successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
     }
   }
 }

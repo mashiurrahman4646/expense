@@ -1,36 +1,69 @@
-// lib/verification/verification_controller.dart
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/services.dart';
+import 'verification_api_service.dart';
 
 class VerificationController extends GetxController {
-  // OTP controllers for each input field
+  final VerificationApiService verificationApiService = Get.find();
+  final String? email = Get.arguments?['email'];
+
   List<TextEditingController> otpControllers = List.generate(
-    6,
+    4,
         (index) => TextEditingController(),
   );
 
-  // Observable for verify button state
   var isVerifyEnabled = false.obs;
+  var canResend = true.obs;
+  var resendCountdown = 60.obs; // 60 seconds countdown
 
   @override
   void onInit() {
     super.onInit();
-    // Add listeners to all OTP controllers
+
+    if (email == null || email!.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'No email provided. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red[100],
+        colorText: Colors.red[900],
+        margin: const EdgeInsets.all(12),
+      );
+      Future.delayed(Duration(seconds: 1), () => Get.back());
+    }
+
     for (int i = 0; i < otpControllers.length; i++) {
       otpControllers[i].addListener(() {
         checkVerifyButtonState();
       });
     }
+
+    // Start resend countdown
+    startResendCountdown();
+  }
+
+  void startResendCountdown() {
+    canResend.value = false;
+    resendCountdown.value = 60;
+
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      if (resendCountdown.value > 0) {
+        resendCountdown.value--;
+      } else {
+        canResend.value = true;
+        timer.cancel();
+      }
+    });
   }
 
   void onOtpChanged(int index, String value) {
     if (value.isNotEmpty) {
-      // Move to next field if current field is filled and not the last field
-      if (index < 5) {
+      if (index < 3) {
         FocusScope.of(Get.context!).nextFocus();
       }
     } else {
-      // Move to previous field if current field is empty and not the first field
       if (index > 0) {
         FocusScope.of(Get.context!).previousFocus();
       }
@@ -39,7 +72,6 @@ class VerificationController extends GetxController {
   }
 
   void checkVerifyButtonState() {
-    // Check if all OTP fields are filled
     bool allFilled = otpControllers.every((controller) => controller.text.isNotEmpty);
     isVerifyEnabled.value = allFilled;
   }
@@ -48,11 +80,23 @@ class VerificationController extends GetxController {
     return otpControllers.map((controller) => controller.text).join();
   }
 
-  void verifyOtp() {
-    String otpCode = getOtpCode();
+  Future<void> verifyOtp() async {
+    if (email == null || email!.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'No email provided. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red[100],
+        colorText: Colors.red[900],
+        margin: const EdgeInsets.all(12),
+      );
+      return;
+    }
 
-    if (otpCode.length == 6) {
-      // Show loading
+    String otpCode = getOtpCode();
+    print('🔐 Verifying OTP: $otpCode for email: $email');
+
+    if (otpCode.length == 4) {
       Get.dialog(
         Center(
           child: CircularProgressIndicator(
@@ -62,27 +106,80 @@ class VerificationController extends GetxController {
         barrierDismissible: false,
       );
 
-      // Simulate API call
-      Future.delayed(Duration(seconds: 2), () {
-        Get.back(); // Close loading dialog
+      try {
+        int otpNumber;
+        try {
+          otpNumber = int.parse(otpCode);
+          print('🔄 Converted OTP to number: $otpNumber');
+        } catch (e) {
+          Get.back();
+          Get.snackbar(
+            'Invalid Code',
+            'Please enter a valid numeric code.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red[100],
+            colorText: Colors.red[900],
+            margin: const EdgeInsets.all(12),
+          );
+          return;
+        }
 
-        // For demo purposes, accept any 6-digit code
+        final response = await verificationApiService.verifyEmail(email!, otpNumber);
+
+        print('📨 API Response: ${response.success} - ${response.message}');
+
+        Get.back();
+
+        if (response.success) {
+          print('✅ Verification successful, navigating to face verification');
+          Get.snackbar(
+            'Success',
+            'Email verified successfully!',
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.green[100],
+            colorText: Colors.green[900],
+            margin: const EdgeInsets.all(12),
+          );
+
+          await Future.delayed(Duration(milliseconds: 500));
+          Get.offNamed('/faceVerification');
+        } else {
+          String errorMessage = response.message;
+          if (response.errorMessages != null && response.errorMessages!.isNotEmpty) {
+            errorMessage = response.errorMessages!.first.message;
+          }
+
+          Get.snackbar(
+            'Error',
+            errorMessage,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red[100],
+            colorText: Colors.red[900],
+            margin: const EdgeInsets.all(12),
+          );
+        }
+      } catch (e) {
+        Get.back();
+        print('❌ Verification error: $e');
+
+        String errorMessage = 'Failed to verify OTP';
+        if (e.toString().contains('Expected number')) {
+          errorMessage = 'Server expects numeric OTP code';
+        }
+
         Get.snackbar(
-          'Success',
-          'Email verified successfully!',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.green[100],
-          colorText: Colors.green[900],
+          'Error',
+          '$errorMessage: $e',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red[100],
+          colorText: Colors.red[900],
           margin: const EdgeInsets.all(12),
         );
-
-        // Navigate to face verification after successful email verification
-        Get.offNamed('/faceVerification');
-      });
+      }
     } else {
       Get.snackbar(
         'Invalid Code',
-        'Please enter a valid 6-digit verification code.',
+        'Please enter a valid 4-digit verification code.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red[100],
         colorText: Colors.red[900],
@@ -91,29 +188,92 @@ class VerificationController extends GetxController {
     }
   }
 
-  void resendCode() {
-    // Clear current OTP
-    for (var controller in otpControllers) {
-      controller.clear();
+  Future<void> resendCode() async {
+    if (!canResend.value) return;
+
+    if (email == null || email!.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'No email provided. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red[100],
+        colorText: Colors.red[900],
+        margin: const EdgeInsets.all(12),
+      );
+      return;
     }
 
-    // Show success message
-    Get.snackbar(
-      'Code Sent',
-      'A new verification code has been sent to your email.',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.blue[100],
-      colorText: Colors.blue[900],
-      margin: const EdgeInsets.all(12),
+    Get.dialog(
+      Center(
+        child: CircularProgressIndicator(
+          color: const Color(0xFF4A90E2),
+        ),
+      ),
+      barrierDismissible: false,
     );
 
-    // Reset verify button state
-    checkVerifyButtonState();
+    try {
+      final response = await verificationApiService.resendOtp(email!);
+
+      Get.back();
+
+      if (response.success) {
+        for (var controller in otpControllers) {
+          controller.clear();
+        }
+
+        Get.snackbar(
+          'Code Sent',
+          response.message,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.blue[100],
+          colorText: Colors.blue[900],
+          margin: const EdgeInsets.all(12),
+        );
+
+        checkVerifyButtonState();
+        startResendCountdown(); // Restart countdown
+      } else {
+        String errorMessage = response.message;
+        if (response.errorMessages != null && response.errorMessages!.isNotEmpty) {
+          errorMessage = response.errorMessages!.first.message;
+        }
+
+        Get.snackbar(
+          'Error',
+          errorMessage,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red[100],
+          colorText: Colors.red[900],
+          margin: const EdgeInsets.all(12),
+        );
+
+        canResend.value = true; // Allow resend on error
+      }
+    } catch (e) {
+      Get.back();
+      print('❌ Resend OTP error: $e');
+
+      String errorMessage = 'Failed to resend OTP';
+      if (e.toString().contains('Expected number')) {
+        errorMessage = 'Server configuration error';
+      }
+
+      Get.snackbar(
+        'Error',
+        '$errorMessage: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red[100],
+        colorText: Colors.red[900],
+        margin: const EdgeInsets.all(12),
+      );
+
+      canResend.value = true; // Allow resend on error
+    }
   }
 
   @override
   void onClose() {
-    // Dispose all controllers
     for (var controller in otpControllers) {
       controller.dispose();
     }

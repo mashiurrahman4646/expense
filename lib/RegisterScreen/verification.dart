@@ -5,6 +5,7 @@ import '../Settings/appearance/ThemeController.dart';
 import '../Settings/language/language_controller.dart';
 import '../colors/app_colors.dart';
 import '../text_styles.dart';
+import 'package:flutter/services.dart';
 
 class EmailVerificationScreen extends StatelessWidget {
   final VerificationController controller = Get.put(VerificationController());
@@ -42,7 +43,20 @@ class EmailVerificationScreen extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: controller.email == null || controller.email!.isEmpty
+            ? Center(
+          child: Text(
+            'No email provided. Please try again.',
+            style: TextStyle(
+              fontSize: isSmallScreen ? 16 : 18,
+              fontWeight: FontWeight.w600,
+              color: themeController.isDarkMode.value ? Colors.white : Colors.black,
+              fontFamily: 'Inter',
+            ),
+            textAlign: TextAlign.center,
+          ),
+        )
+            : SingleChildScrollView(
           padding: EdgeInsets.symmetric(
             horizontal: isSmallScreen ? 16.0 : 24.0,
             vertical: isSmallScreen ? 16.0 : 24.0,
@@ -78,7 +92,7 @@ class EmailVerificationScreen extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24),
                   child: Text(
-                    'code_sent'.tr,
+                    'code_sent'.trParams({'email': controller.email!}),
                     style: TextStyle(
                       fontSize: isSmallScreen ? 13 : 14,
                       fontWeight: FontWeight.w400,
@@ -96,7 +110,7 @@ class EmailVerificationScreen extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 8 : 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(6, (index) {
+                    children: List.generate(4, (index) {
                       final fieldSize = isSmallScreen ? 40.0 : isLargeScreen ? 55.0 : 45.0;
                       return Container(
                         width: fieldSize,
@@ -114,6 +128,7 @@ class EmailVerificationScreen extends StatelessWidget {
                           controller: controller.otpControllers[index],
                           textAlign: TextAlign.center,
                           keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           maxLength: 1,
                           style: TextStyle(
                             fontSize: isSmallScreen ? 16 : 18,
@@ -143,11 +158,7 @@ class EmailVerificationScreen extends StatelessWidget {
                     width: double.infinity,
                     height: isSmallScreen ? 45 : 50,
                     child: Obx(() => ElevatedButton(
-                      onPressed: controller.isVerifyEnabled.value
-                          ? () {
-                        controller.verifyOtp();
-                      }
-                          : null,
+                      onPressed: controller.isVerifyEnabled.value ? controller.verifyOtp : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: controller.isVerifyEnabled.value
                             ? AppColors.primary500
@@ -182,7 +193,7 @@ class EmailVerificationScreen extends StatelessWidget {
                 // Resend code section
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24),
-                  child: Row(
+                  child: Obx(() => Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Flexible(
@@ -197,10 +208,9 @@ class EmailVerificationScreen extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: isSmallScreen ? 4 : 8),
-                      GestureDetector(
-                        onTap: () {
-                          controller.resendCode();
-                        },
+                      controller.canResend.value
+                          ? GestureDetector(
+                        onTap: controller.resendCode,
                         child: Text(
                           'resend'.tr,
                           style: TextStyle(
@@ -210,9 +220,18 @@ class EmailVerificationScreen extends StatelessWidget {
                             fontFamily: 'Inter',
                           ),
                         ),
+                      )
+                          : Text(
+                        'resend_in'.trParams({'seconds': controller.resendCountdown.value.toString()}),
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 13 : 14,
+                          fontWeight: FontWeight.w600,
+                          color: themeController.isDarkMode.value ? Color(0xFF919191) : Colors.grey[500],
+                          fontFamily: 'Inter',
+                        ),
                       ),
                     ],
-                  ),
+                  )),
                 ),
 
                 SizedBox(height: isSmallScreen ? 20 : 40),

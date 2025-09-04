@@ -1,13 +1,16 @@
+// screens/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:your_expense/routes/app_routes.dart';
 import 'package:your_expense/text_styles.dart';
- // Import your ThemeController
+
 import '../../Settings/appearance/ThemeController.dart';
 import '../../colors/app_colors.dart';
+import '../login_controller/login_controller.dart';
 
 class LoginScreen extends StatelessWidget {
   final RxBool isPasswordVisible = false.obs;
+  final LoginController loginController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +34,6 @@ class LoginScreen extends StatelessWidget {
                   'assets/images/fileimage.png',
                   width: 80,
                   height: 80,
-
                 ),
               ),
               const SizedBox(height: 32),
@@ -51,12 +53,40 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
 
+              // Error message
+              Obx(() => loginController.errorMessage.isNotEmpty
+                  ? Container(
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.red[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.error, color: Colors.red[800], size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        loginController.errorMessage.value,
+                        style: TextStyle(
+                          color: Colors.red[800],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+                  : const SizedBox.shrink()),
+
               // Email Field
               Text('email'.tr, style: AppTextStyles.inputLabel.copyWith(
                 color: themeController.isDarkModeActive ? Colors.white : Colors.black,
               )),
               const SizedBox(height: 8),
               TextField(
+                controller: loginController.emailController,
                 decoration: InputDecoration(
                   hintText: 'enterEmail'.tr,
                   hintStyle: AppTextStyles.inputHint.copyWith(
@@ -77,6 +107,7 @@ class LoginScreen extends StatelessWidget {
                 style: AppTextStyles.inputText.copyWith(
                   color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
+                keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 20),
 
@@ -86,6 +117,7 @@ class LoginScreen extends StatelessWidget {
               )),
               const SizedBox(height: 8),
               Obx(() => TextField(
+                controller: loginController.passwordController,
                 obscureText: !isPasswordVisible.value,
                 decoration: InputDecoration(
                   hintText: 'enterPassword'.tr,
@@ -140,9 +172,11 @@ class LoginScreen extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Get.offNamed(AppRoutes.mainHome); // Navigate to MainHomeScreen
+                    child: Obx(() => ElevatedButton(
+                      onPressed: loginController.isLoading.value
+                          ? null
+                          : () {
+                        loginController.login();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary500,
@@ -151,8 +185,17 @@ class LoginScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text('login'.tr, style: AppTextStyles.buttonLarge),
-                    ),
+                      child: loginController.isLoading.value
+                          ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                          : Text('login'.tr, style: AppTextStyles.buttonLarge),
+                    )),
                   ),
                   const SizedBox(width: 12),
                   Container(
@@ -173,7 +216,6 @@ class LoginScreen extends StatelessWidget {
                         'assets/icons/face.png',
                         width: 24,
                         height: 24,
-
                       ),
                     ),
                   ),
@@ -185,7 +227,7 @@ class LoginScreen extends StatelessWidget {
               Center(
                 child: TextButton(
                   onPressed: () {
-                    Get.offNamed(AppRoutes.mainHome); // Navigate to MainHomeScreen
+                    loginController.loginAsGuest();
                   },
                   child: Text(
                     'loginAsGuest'.tr,
@@ -232,7 +274,6 @@ class LoginScreen extends StatelessWidget {
                         'assets/icons/ic_baseline-facebook.png',
                         width: 24,
                         height: 24,
-
                       ),
                     ),
                   ),
@@ -256,7 +297,6 @@ class LoginScreen extends StatelessWidget {
                         'assets/icons/devicon_google.png',
                         width: 24,
                         height: 24,
-
                       ),
                     ),
                   ),

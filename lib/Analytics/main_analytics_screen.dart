@@ -564,7 +564,7 @@ class BarChartPainter extends CustomPainter {
 
     paintCircle.color = const Color(0xFF4CAF50);
     canvas.drawCircle(Offset(incomeStart, lineY), 4, paintCircle);
-    canvas.drawCircle(Offset(incomeEnd, lineY), 4, paintCircle);
+    canvas.drawCircle(Offset(incomeEnd, lineY), 4, paintCircle); 
 
     final labelTextStyle = TextStyle(
       color: textColor,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'package:get/get_core/src/get_main.dart';
 import 'package:your_expense/RegisterScreen/reg_controller.dart';
 import '../Settings/appearance/ThemeController.dart';
 import '../Settings/language/language_controller.dart';
@@ -7,12 +9,10 @@ import '../colors/app_colors.dart';
 import '../login/login_ui/login_screen.dart';
 import '../text_styles.dart';
 import '../tram_and_condition/trams_and_condition_screen.dart';
- // Import your language controller
 
 class RegistrationScreen extends StatelessWidget {
   final RegistrationController controller = Get.put(RegistrationController());
   final ThemeController themeController = Get.find<ThemeController>();
-
 
   @override
   Widget build(BuildContext context) {
@@ -86,11 +86,11 @@ class RegistrationScreen extends StatelessWidget {
               ),
             )),
             const SizedBox(height: 16),
-            SizedBox(
+            Obx(() => SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: controller.isLoading.value ? null : () async {
                   if (!controller.isTermsAccepted.value) {
                     Get.snackbar(
                       'terms_required'.tr,
@@ -103,12 +103,16 @@ class RegistrationScreen extends StatelessWidget {
                     return;
                   }
 
-                  if (controller.validateForm()) {
-                    Get.toNamed('/emailVerification');
+                  final success = await controller.registerUser();
+                  if (success) {
+                    // Pass the email to the verification screen
+                    Get.toNamed('/emailVerification', arguments: {'email': controller.emailController.text.trim()});
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary500,
+                  backgroundColor: controller.isLoading.value
+                      ? Colors.grey
+                      : AppColors.primary500,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -116,12 +120,17 @@ class RegistrationScreen extends StatelessWidget {
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
-                child: Text(
+                child: controller.isLoading.value
+                    ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  strokeWidth: 2,
+                )
+                    : Text(
                   'continue'.tr,
                   style: AppTextStyles.buttonLarge,
                 ),
               ),
-            ),
+            )),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -137,7 +146,7 @@ class RegistrationScreen extends StatelessWidget {
                   child: Text(
                     "login".tr,
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.primary500,
                     ),
                   ),

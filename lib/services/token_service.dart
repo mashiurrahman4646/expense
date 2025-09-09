@@ -1,59 +1,33 @@
-// services/token_service.dart
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TokenService extends GetxService {
-  final RxString token = ''.obs;
-  final RxBool hasToken = false.obs;
+  static TokenService get to => Get.find();
+  SharedPreferences? _prefs;
 
   Future<TokenService> init() async {
-    await loadToken();
+    _prefs = await SharedPreferences.getInstance();
+    // Store the provided token
+    await saveToken(
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4Nzk4NzQ2Njc2YmUxZTU3ZjYzZTBlOSIsInJvbGUiOiJVU0VSIiwiZW1haWwiOiJzcmFib25zaGFraGF3YXRAZ21haWwuY29tIiwiaWF0IjoxNzU2ODQ5NDU4LCJleHAiOjE3NTgxNDU0NTh9.fmoY2PVVbK4E2geT3E_IE4W5KdcVSbQB1QQeeYz6xuU');
+    print('TokenService initialized');
     return this;
   }
 
-  Future<void> loadToken() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final storedToken = prefs.getString('auth_token');
-
-      if (storedToken != null && storedToken.isNotEmpty) {
-        token.value = storedToken;
-        hasToken.value = true;
-      }
-    } catch (e) {
-      print('Error loading token: $e');
-    }
+  Future<void> saveToken(String token) async {
+    await _prefs?.setString('auth_token', token);
   }
 
-  Future<void> setToken(String newToken) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', newToken);
-      token.value = newToken;
-      hasToken.value = true;
-    } catch (e) {
-      print('Error saving token: $e');
-      rethrow;
-    }
-  }
-
-  Future<void> clearToken() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('auth_token');
-      token.value = '';
-      hasToken.value = false;
-    } catch (e) {
-      print('Error clearing token: $e');
-      rethrow;
-    }
-  }
-
-  String getToken() {
-    return token.value;
+  String? getToken() {
+    return _prefs?.getString('auth_token');
   }
 
   bool isTokenValid() {
-    return hasToken.value && token.value.isNotEmpty;
+    final token = getToken();
+    return token != null && token.isNotEmpty;
+  }
+
+  Future<void> clearToken() async {
+    await _prefs?.remove('auth_token');
   }
 }

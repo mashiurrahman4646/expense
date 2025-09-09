@@ -186,7 +186,7 @@ class AppRoutes {
     GetPage(name: notification, page: () => NotificationScreen()),
     GetPage(name: monthlyBudget, page: () => MonthlyBudgetScreen()),
     GetPage(name: monthlyBudgetNonPro, page: () => const MonthlyBudgetNonPro()),
-    GetPage(name: shareExperience, page: () => const RateAndImproveScreen()),
+    GetPage(name: shareExperience, page: () =>  RateAndImproveScreen()),
     GetPage(name: allTransactions, page: () => const AllTransactionsScreen()),
 
     // Analytics Routes

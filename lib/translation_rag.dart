@@ -4,6 +4,15 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
     'en_US': {
+
+      // In your translation files
+      'monthly_budget': 'Monthly Budget',
+      'current_monthly_budget': 'Current Monthly Budget',
+      'set_your_budget': 'Set Your Budget',
+      'enter_amount': 'Enter amount',
+      'confirm': 'Confirm',
+      'distribute_budget_by_category': 'Distribute your budget by category',
+      'upgrade_to_premium_to_unlock': 'upgrade to Premium to unlock this feature',
       //rate and help
       'rateAndImproveTitle': 'Rate & Help Us Improve',
       'saveAndGrowTogether': 'Let\'s save and grow together!',

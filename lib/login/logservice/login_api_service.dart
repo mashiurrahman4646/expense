@@ -10,6 +10,7 @@ import 'dart:convert';
 import '../login_controller/error_response_model.dart';
 import '../login_controller/login_request_model.dart';
 
+
 class LoginService extends GetxService {
   final ApiBaseService _apiService = Get.find();
   final ConfigService _config = Get.find();
@@ -42,9 +43,10 @@ class LoginService extends GetxService {
     try {
       final loginRequest = LoginRequestModel(email: email, password: password);
 
+      // Use the centralized login endpoint from ConfigService
       final response = await _apiService.request(
         'POST',
-        '${_config.baseUrl}/auth/login',
+        _config.loginEndpoint,
         body: loginRequest.toJson(),
         requiresAuth: false,
       );
@@ -63,8 +65,8 @@ class LoginService extends GetxService {
           role: payload['role']?.toString() ?? '',
         );
 
-        // Store token using TokenService
-        await _tokenService.setToken(jwtToken);
+        // Store token using TokenService - FIXED THIS LINE
+        await _tokenService.saveToken(jwtToken);
 
         // Store user info
         await _storeUserData(user);
@@ -173,7 +175,10 @@ class LoginService extends GetxService {
     if (!_tokenService.isTokenValid()) return true;
 
     try {
-      final payload = _decodeJwtPayload(_tokenService.getToken());
+      final token = _tokenService.getToken();
+      if (token == null) return true;
+
+      final payload = _decodeJwtPayload(token);
       final expiration = payload['exp'] as int;
       final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
       return expiration <= currentTime;

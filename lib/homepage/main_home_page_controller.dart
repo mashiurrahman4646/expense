@@ -1,47 +1,39 @@
 import 'package:get/get.dart';
+import 'package:your_expense/homepage/service/budget_service.dart';
+import 'package:your_expense/homepage/service/transaction_service.dart';
+
 import '../routes/app_routes.dart';
+import '../services/token_service.dart';
+import 'model/transaction.dart';
 
 class HomeController extends GetxController {
+  final TransactionService _transactionService = Get.find();
+  final BudgetService _budgetService = Get.find();
+
   var selectedNavIndex = 0.obs;
   var starRating = 0.obs;
 
-  var availableBalance = 15000.obs;
-  var income = 700.obs;
-  var expense = 500.obs;
-  var savings = 100.obs;
+  var availableBalance = 0.0.obs;
+  var income = 0.0.obs;
+  var expense = 0.0.obs;
+  var savings = 0.0.obs;
 
-  var monthlyBudget = 15000.obs;
-  var spentAmount = 1400.obs;
-  var spentPercentage = 75.obs;
-  var leftAmount = 1000.obs;
-  var leftPercentage = 15.obs;
+  var monthlyBudget = 0.0.obs;
+  var spentAmount = 0.0.obs;
+  var spentPercentage = 0.0.obs;
+  var leftAmount = 0.0.obs;
+  var leftPercentage = 0.0.obs;
 
-  var recentTransactions = <Map<String, dynamic>>[
-    {
-      'title': 'salary deposit'.tr,
-      'time': 'today time'.trParams({'hour': '04', 'minute': '12'}),
-      'amount': '3,500.00',
-      'isIncome': true
-    },
-    {
-      'title': 'food'.tr,
-      'time': 'today time'.trParams({'hour': '04', 'minute': '12'}),
-      'amount': '150.00',
-      'isIncome': false
-    },
-    {
-      'title': 'shopping'.tr,
-      'time': 'today time'.trParams({'hour': '04', 'minute': '12'}),
-      'amount': '200.00',
-      'isIncome': false
-    },
-    {
-      'title': 'transport'.tr,
-      'time': 'today time'.trParams({'hour': '04', 'minute': '12'}),
-      'amount': '50.00',
-      'isIncome': false
-    },
-  ].obs;
+  var recentTransactions = <Transaction>[].obs;
+  var isLoading = false.obs;
+
+  @override
+  void onInit() async {
+    super.onInit();
+    selectedNavIndex.value = 0;
+    await fetchBudgetData();
+    await fetchRecentTransactions();
+  }
 
   String getCurrentMonth() {
     final now = DateTime.now();
@@ -60,6 +52,61 @@ class HomeController extends GetxController {
       'december'.tr,
     ];
     return months[now.month - 1];
+  }
+
+  Future<void> fetchRecentTransactions() async {
+    try {
+      isLoading.value = true;
+      final transactions = await _transactionService.fetchRecentTransactions();
+      recentTransactions.assignAll(transactions);
+
+      // Calculate total income and expense from transactions
+      double totalIncome = 0;
+      double totalExpense = 0;
+
+      for (var transaction in transactions) {
+        if (transaction.isIncome) {
+          totalIncome += transaction.numericAmount;
+        } else {
+          totalExpense += transaction.numericAmount;
+        }
+      }
+
+      income.value = totalIncome;
+      expense.value = totalExpense;
+      availableBalance.value = totalIncome - totalExpense;
+
+    } catch (e) {
+      print('Error in fetchRecentTransactions: $e');
+      // Error is already handled in TransactionService with Get.snackbar
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchBudgetData() async {
+    try {
+      isLoading.value = true;
+      final budget = await _budgetService.fetchBudgetData();
+
+      // Update budget-related values
+      monthlyBudget.value = budget.totalBudget;
+      spentAmount.value = budget.totalExpense;
+      spentPercentage.value = budget.totalPercentageUsed;
+      leftAmount.value = budget.totalRemaining;
+      leftPercentage.value = budget.totalPercentageLeft;
+
+      // Update income and expense from budget data
+      income.value = budget.totalIncome;
+      expense.value = budget.totalExpense;
+      availableBalance.value = budget.totalIncome - budget.totalExpense;
+
+    } catch (e) {
+      print('Error in fetchBudgetData: $e');
+      // Error is already handled in BudgetService with Get.snackbar
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   // Navigation methods
@@ -88,7 +135,7 @@ class HomeController extends GetxController {
   }
 
   void viewAllTransactions() {
-    Get.toNamed(AppRoutes.allTransactions);
+    Get.toNamed(AppRoutes.allTransactions, arguments: recentTransactions.toList());
   }
 
   void setStarRating(int rating) {
@@ -118,13 +165,12 @@ class HomeController extends GetxController {
     }
   }
 
-  // Add this method to reset navigation index
   void logout() {
-    selectedNavIndex.value = 0; // Reset to home index
+    selectedNavIndex.value = 0;
+    Get.find<TokenService>().clearToken();
     Get.offAllNamed(AppRoutes.login);
   }
 
-  // Add this method to manually set navigation index
   void setNavIndex(int index) {
     selectedNavIndex.value = index;
   }
@@ -135,25 +181,20 @@ class HomeController extends GetxController {
     final minute = now.minute.toString().padLeft(2, '0');
     final period = now.hour >= 12 ? 'pm'.tr : 'am'.tr;
 
-    recentTransactions.insert(0, {
-      'title': title,
-      'time': 'today_time'.trParams({
+    recentTransactions.insert(0, Transaction(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      title: title,
+      type: isIncome ? 'income' : 'expense',
+      amount: amount,
+      time: 'today_time'.trParams({
         'hour': hour,
         'minute': minute,
         'period': period
       }),
-      'amount': amount,
-      'isIncome': isIncome,
-    });
+    ));
 
     if (recentTransactions.length > 4) {
       recentTransactions.removeLast();
     }
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-    selectedNavIndex.value = 0;
   }
 }

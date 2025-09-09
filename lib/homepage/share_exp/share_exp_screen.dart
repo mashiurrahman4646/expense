@@ -1,46 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../Settings/appearance/ThemeController.dart';
- // Import your ThemeController
-
-// Controller for the Rate and Improve Screen
-class RateAndImproveController extends GetxController {
-  // Observable variable for the star rating.
-  var starRating = 0.obs;
-
-  // Method to update the star rating with "un-rate" functionality.
-  void setStarRating(int rating) {
-    if (starRating.value == rating) {
-      starRating.value = 0; // Un-rate the star if it's already selected.
-    } else {
-      starRating.value = rating;
-    }
-  }
-
-  // A method to handle the feedback submission.
-  void submitFeedback() {
-    int rating = starRating.value;
-
-    // You would typically send the data to a backend here.
-    print('Rating: $rating stars');
-
-    // Show a success message and then navigate back.
-    Get.snackbar(
-      'thankYou'.tr,
-      'feedbackSubmitted'.tr,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green.withOpacity(0.8),
-      colorText: Colors.white,
-    );
-    Future.delayed(const Duration(seconds: 2), () {
-      Get.back();
-    });
-  }
-}
+import 'package:your_expense/Settings/appearance/ThemeController.dart';
+import 'package:your_expense/homepage/share_exp/share_exp_controller.dart';
 
 class RateAndImproveScreen extends StatelessWidget {
-  const RateAndImproveScreen({Key? key}) : super(key: key);
+  RateAndImproveScreen({Key? key}) : super(key: key);
+  final TextEditingController _commentController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +25,7 @@ class RateAndImproveScreen extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'rateAndImproveTitle'.tr,
+          'Rate and Improve',
           style: TextStyle(
             fontSize: screenWidth * 0.05,
             fontWeight: FontWeight.w600,
@@ -76,7 +41,7 @@ class RateAndImproveScreen extends StatelessWidget {
           children: [
             SizedBox(height: screenHeight * 0.03),
             Text(
-              'saveAndGrowTogether'.tr,
+              'Save and Grow Together',
               style: TextStyle(
                 fontSize: screenWidth * 0.06,
                 fontWeight: FontWeight.w700,
@@ -85,7 +50,7 @@ class RateAndImproveScreen extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.01),
             Text(
-              'shareYourThoughts'.tr,
+              'Share your thoughts to help us improve',
               style: TextStyle(
                 fontSize: screenWidth * 0.04,
                 color: themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey.shade600,
@@ -94,7 +59,7 @@ class RateAndImproveScreen extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.04),
             Text(
-              'rateExperience'.tr,
+              'Rate your experience',
               style: TextStyle(
                 fontSize: screenWidth * 0.045,
                 fontWeight: FontWeight.w600,
@@ -134,6 +99,15 @@ class RateAndImproveScreen extends StatelessWidget {
               );
             }),
             SizedBox(height: screenHeight * 0.03),
+            Text(
+              'Share your feedback (optional)',
+              style: TextStyle(
+                fontSize: screenWidth * 0.04,
+                fontWeight: FontWeight.w600,
+                color: themeController.isDarkModeActive ? Colors.white : Colors.black,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.01),
             Container(
               decoration: BoxDecoration(
                 color: themeController.isDarkModeActive ? const Color(0xFF2A2A2A) : Colors.grey.shade100,
@@ -141,14 +115,14 @@ class RateAndImproveScreen extends StatelessWidget {
               ),
               padding: EdgeInsets.all(screenWidth * 0.04),
               child: TextField(
-                // The TextField no longer uses a controller.
+                controller: controller.commentController,
                 maxLines: 5,
                 maxLength: 300,
                 style: TextStyle(
                   color: themeController.isDarkModeActive ? Colors.white : Colors.black,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'feedbackHint'.tr,
+                  hintText: 'Tell us what you think...',
                   hintStyle: TextStyle(color: themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey.shade500),
                   border: InputBorder.none,
                   counterText: "", // Hide the default counter.
@@ -156,21 +130,23 @@ class RateAndImproveScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.03),
-            SizedBox(
+            Obx(() => SizedBox(
               width: double.infinity,
               height: screenHeight * 0.06,
               child: ElevatedButton(
-                onPressed: () => controller.submitFeedback(),
+                onPressed: controller.isLoading.value ? null : () => controller.submitFeedback(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2196F3),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(screenWidth * 0.03)),
                 ),
-                child: Text(
-                  'sendFeedback'.tr,
+                child: controller.isLoading.value
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text(
+                  'Send Feedback',
                   style: TextStyle(fontSize: screenWidth * 0.04, color: Colors.white),
                 ),
               ),
-            ),
+            )),
           ],
         ),
       ),

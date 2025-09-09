@@ -1,4 +1,3 @@
-// services/api_base_service.dart
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -75,7 +74,6 @@ class ApiBaseService extends GetxService {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return response.body.isNotEmpty ? json.decode(response.body) : {};
       } else {
-        // Pass the response body as the error message for better error handling
         throw HttpException(response.statusCode, response.body);
       }
     } catch (e) {

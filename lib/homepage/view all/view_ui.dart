@@ -1,20 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:your_expense/homepage/view%20all/view_controller.dart';
 import '../../Settings/appearance/ThemeController.dart';
-
-
-class AllTransactionsController extends GetxController {
-  final List<Map<String, dynamic>> allTransactions = [
-    {'title': 'Salary Deposit', 'time': 'Today, 13:45 PM', 'amount': '3,500.00', 'isIncome': true},
-    {'title': 'Salary Deposit', 'time': 'Today, 13:45 PM', 'amount': '3,500.00', 'isIncome': true},
-    {'title': 'Salary Deposit', 'time': 'Today, 13:45 PM', 'amount': '3,500.00', 'isIncome': true},
-    {'title': 'Salary Deposit', 'time': 'Today, 13:45 PM', 'amount': '3,500.00', 'isIncome': true},
-    {'title': 'Food', 'time': 'Today, 13:45 PM', 'amount': '3,500.00', 'isIncome': false},
-    {'title': 'Shopping', 'time': 'Today, 13:45 PM', 'amount': '3,500.00', 'isIncome': false},
-    {'title': 'Transport', 'time': 'Today, 13:45 PM', 'amount': '3,500.00', 'isIncome': false},
-    {'title': 'Transport', 'time': 'Today, 13:45 PM', 'amount': '3,500.00', 'isIncome': false},
-  ].obs;
-}
 
 class AllTransactionsScreen extends StatelessWidget {
   const AllTransactionsScreen({Key? key}) : super(key: key);
@@ -69,15 +56,14 @@ class AllTransactionsScreen extends StatelessWidget {
               SizedBox(height: screenWidth * 0.04),
               // Transaction list
               Obx(() => Column(
-                children: controller.allTransactions.asMap().entries.map((entry) {
-                  var transaction = entry.value;
+                children: controller.allTransactions.map((transaction) {
                   return Padding(
                     padding: EdgeInsets.only(bottom: screenWidth * 0.03),
                     child: _buildTransactionItem(
-                      transaction['title'] as String,
-                      transaction['time'] as String,
-                      transaction['amount'] as String,
-                      transaction['isIncome'] as bool,
+                      transaction.title,
+                      transaction.time,
+                      transaction.amount,
+                      transaction.isIncome,
                       screenWidth,
                       themeController.isDarkMode.value,
                     ),
@@ -146,7 +132,7 @@ class AllTransactionsScreen extends StatelessWidget {
               ),
             ),
             Text(
-              '${isIncome ? '+' : '-'}\$$amount',
+              '\$$amount',
               style: TextStyle(
                 color: isIncome ? const Color(0xFF4CAF50) : const Color(0xFFF57C00),
                 fontWeight: FontWeight.w600,

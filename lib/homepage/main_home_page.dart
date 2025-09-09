@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../Settings/appearance/ThemeController.dart';
 import '../reuseablenav/reuseablenavui.dart';
 import '../routes/app_routes.dart';
+import 'MonthlyBudgetPage.dart';
 import 'main_home_page_controller.dart';
-
+// Import the new page
 
 class MainHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.put(HomeController());
+    final HomeController controller = Get.find<HomeController>();
     final ThemeController themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
@@ -172,7 +172,7 @@ class MainHomeScreen extends StatelessWidget {
                       SizedBox(height: screenHeight * 0.02),
                       Center(
                         child: Obx(() => Text(
-                          '\$${controller.availableBalance.value}',
+                          '\$${controller.availableBalance.value.toStringAsFixed(2)}',
                           style: TextStyle(
                             fontSize: screenWidth * 0.1,
                             fontWeight: FontWeight.w700,
@@ -181,15 +181,44 @@ class MainHomeScreen extends StatelessWidget {
                         )),
                       ),
                       SizedBox(height: screenHeight * 0.03),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(child: Obx(() => _buildStatCard('income'.tr, '\$${controller.income.value}', Icons.arrow_upward, Colors.green, screenWidth))),
-                          SizedBox(width: screenWidth * 0.04),
-                          Expanded(child: Obx(() => _buildStatCard('expense'.tr, '\$${controller.expense.value}', Icons.arrow_downward, Colors.orange, screenWidth))),
-                          SizedBox(width: screenWidth * 0.04),
-                          Expanded(child: Obx(() => _buildStatCard('savings'.tr, '\$${controller.savings.value}', Icons.add, Colors.white, screenWidth))),
-                        ],
+                      // Fixed the stat cards layout to prevent overflow
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          return Obx(() => Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: _buildStatCard(
+                                    'income'.tr,
+                                    '\$${controller.income.value.toStringAsFixed(2)}',
+                                    Icons.arrow_upward,
+                                    Colors.green,
+                                    screenWidth
+                                ),
+                              ),
+                              SizedBox(width: screenWidth * 0.04),
+                              Expanded(
+                                child: _buildStatCard(
+                                    'expense'.tr,
+                                    '\$${controller.expense.value.toStringAsFixed(2)}',
+                                    Icons.arrow_downward,
+                                    Colors.orange,
+                                    screenWidth
+                                ),
+                              ),
+                              SizedBox(width: screenWidth * 0.04),
+                              Expanded(
+                                child: _buildStatCard(
+                                    'savings'.tr,
+                                    '\$${(controller.income.value - controller.expense.value).toStringAsFixed(2)}',
+                                    Icons.add,
+                                    Colors.white,
+                                    screenWidth
+                                ),
+                              ),
+                            ],
+                          ));
+                        },
                       ),
                     ],
                   ),
@@ -210,25 +239,28 @@ class MainHomeScreen extends StatelessWidget {
                         children: [
                           Text('monthly_budget'.tr, style: TextStyle(fontSize: screenWidth * 0.045, fontWeight: FontWeight.w600, color: textColor)),
                           GestureDetector(
-                            onTap: () => controller.navigateToMonthlyBudgetnonpro(),
+                            onTap: () => Get.to(() => MonthlyBudgetPage()), // Simple navigation
                             child: Text('edit'.tr, style: TextStyle(color: primaryColor, fontSize: screenWidth * 0.035)),
                           ),
                         ],
                       ),
                       SizedBox(height: screenHeight * 0.02),
-                      Row(
-                        children: [
-                          Obx(() => Text(
-                            '\$${controller.monthlyBudget.value}',
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.06,
-                              fontWeight: FontWeight.w700,
-                              color: primaryColor,
-                            ),
-                          )),
-                          SizedBox(width: screenWidth * 0.02),
-                          Icon(Icons.arrow_forward_ios, size: screenWidth * 0.04, color: iconColor),
-                        ],
+                      GestureDetector(
+                        onTap: () => Get.to(() => MonthlyBudgetPage()), // Simple navigation
+                        child: Row(
+                          children: [
+                            Obx(() => Text(
+                              '\$${controller.monthlyBudget.value.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.06,
+                                fontWeight: FontWeight.w700,
+                                color: primaryColor,
+                              ),
+                            )),
+                            SizedBox(width: screenWidth * 0.02),
+                            Icon(Icons.arrow_forward_ios, size: screenWidth * 0.04, color: iconColor),
+                          ],
+                        ),
                       ),
                       SizedBox(height: screenHeight * 0.01),
                       Text(
@@ -246,7 +278,7 @@ class MainHomeScreen extends StatelessWidget {
                         child: Stack(
                           children: [
                             Container(
-                              width: screenWidth * 0.8 * (controller.spentPercentage.value / 100),
+                              width: screenWidth * 0.8 * (controller.spentPercentage.value.clamp(0, 100) / 100),
                               height: screenHeight * 0.01,
                               decoration: BoxDecoration(
                                 color: primaryColor,
@@ -261,11 +293,11 @@ class MainHomeScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Obx(() => Text(
-                            '${'spent'.tr} \$${controller.spentAmount.value}/${controller.spentPercentage.value.toStringAsFixed(0)}%',
+                            '${'spent'.tr} \$${controller.spentAmount.value.toStringAsFixed(2)}/${controller.spentPercentage.value.clamp(0, 100).toStringAsFixed(0)}%',
                             style: TextStyle(color: secondaryTextColor, fontWeight: FontWeight.w500, fontSize: screenWidth * 0.035),
                           )),
                           Obx(() => Text(
-                            '${'left'.tr} \$${controller.leftAmount.value}/${controller.leftPercentage.value.toStringAsFixed(0)}%',
+                            '${'left'.tr} \$${controller.leftAmount.value.clamp(0, double.infinity).toStringAsFixed(2)}/${controller.leftPercentage.value.clamp(0, 100).toStringAsFixed(0)}%',
                             style: TextStyle(color: secondaryTextColor, fontWeight: FontWeight.w500, fontSize: screenWidth * 0.035),
                           )),
                         ],
@@ -347,22 +379,24 @@ class MainHomeScreen extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: screenHeight * 0.02),
-                Obx(() => Column(
-                  children: controller.recentTransactions.asMap().entries.map((entry) {
-                    var transaction = entry.value;
+                Obx(() => controller.isLoading.value
+                    ? Center(child: CircularProgressIndicator())
+                    : Column(
+                  children: controller.recentTransactions.take(4).map((transaction) {
                     return Padding(
                       padding: EdgeInsets.only(bottom: screenHeight * 0.015),
                       child: _buildTransactionItem(
-                        transaction['title'] as String,
-                        transaction['time'] as String,
-                        transaction['amount'] as String,
-                        transaction['isIncome'] as bool,
+                        transaction.title,
+                        transaction.time,
+                        transaction.amount,
+                        transaction.isIncome,
                         screenWidth,
                         themeController.isDarkModeActive,
                       ),
                     );
                   }).toList(),
-                )),
+                ),
+                ),
                 SizedBox(height: screenHeight * 0.03),
               ],
             ),
@@ -387,21 +421,29 @@ class MainHomeScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: screenWidth * 0.03,
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
+          // Fixed text overflow with FittedBox
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: screenWidth * 0.03,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
           SizedBox(height: screenWidth * 0.01),
-          Text(
-            amount,
-            style: TextStyle(
-              fontSize: screenWidth * 0.045,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
+          // Fixed amount text with FittedBox
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              amount,
+              style: TextStyle(
+                fontSize: screenWidth * 0.045,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
           ),
           SizedBox(height: screenWidth * 0.01),
@@ -414,12 +456,16 @@ class MainHomeScreen extends StatelessWidget {
                 color: color,
               ),
               SizedBox(width: screenWidth * 0.01),
-              Text(
-                '+15%',
-                style: TextStyle(
-                  color: color,
-                  fontSize: screenWidth * 0.035,
-                  fontWeight: FontWeight.w600,
+              // Fixed percentage text with FittedBox
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  '+15%',
+                  style: TextStyle(
+                    color: color,
+                    fontSize: screenWidth * 0.035,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -461,20 +507,26 @@ class MainHomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(
-                    fontSize: screenWidth * 0.04,
-                    fontWeight: FontWeight.w600,
-                    color: isDarkMode ? Colors.white : Colors.black,
-                  )),
-                  Text(time, style: TextStyle(
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.04,
+                      fontWeight: FontWeight.w600,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  Text(
+                    time,
+                    style: TextStyle(
                       color: isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600,
-                      fontSize: screenWidth * 0.035
-                  )),
+                      fontSize: screenWidth * 0.035,
+                    ),
+                  ),
                 ],
               ),
             ),
             Text(
-              '${isIncome ? '+' : '-'}\$$amount',
+              '\$$amount',
               style: TextStyle(
                 color: isIncome ? const Color(0xFF4CAF50) : const Color(0xFFF57C00),
                 fontWeight: FontWeight.w600,

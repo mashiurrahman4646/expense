@@ -1,6 +1,7 @@
 // controllers/login_controller.dart
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../routes/app_routes.dart';
 import '../logservice/login_api_service.dart';
@@ -10,6 +11,8 @@ class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final LoginService loginService = Get.find();
+  SharedPreferences? _prefs;
+
 
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
@@ -32,10 +35,16 @@ class LoginController extends GetxController {
         return;
       }
 
-      final success = await loginService.login(email, password);
+      final response = await loginService.login(email, password);
 
-      if (success) {
+      if (response['success'] == true) {
+        print("=====================================================${response['data']}");
+        String data = response['data'];
+        await _prefs?.setString('auth_token', data);
+
         Get.offNamed(AppRoutes.mainHome);
+      } else {
+        print("Login failed: ${response['message']}");
       }
     } catch (e) {
       // Display user-friendly error messages

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../reuseablenav/reuseablenavui.dart';
 import '../routes/app_routes.dart';
 import '../homepage/main_home_page_controller.dart';
@@ -14,6 +15,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late final HomeController homeController;
   late final ThemeController themeController;
   bool _hasSetNavIndex = false;
+  SharedPreferences? _prefs;
+
 
   @override
   void initState() {
@@ -213,14 +216,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           actions: [
                             TextButton(
-                              onPressed: () => Get.back(),
+                              onPressed: () {
+
+                                Get.back();
+                                   } ,
                               child: Text(
                                 'cancel'.tr,
                                 style: TextStyle(color: Colors.grey.shade600),
                               ),
                             ),
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                await _prefs?.remove('auth_token');
                                 Get.back();
                                 homeController.logout();
                               },

@@ -1,102 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../Settings/appearance/ThemeController.dart';
+import 'package:your_expense/Settings/appearance/ThemeController.dart';
+
+import 'expense_controller.dart';
+import 'expense_model.dart';
 
 class ExpenseListScreen extends StatelessWidget {
+  final ExpenseController _expenseController = Get.find();
+  final ThemeController _themeController = Get.find();
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final themeController = Get.find<ThemeController>();
 
     // Define colors based on theme
-    final backgroundColor = themeController.isDarkModeActive ? Color(0xFF121212) : Colors.white;
-    final cardColor = themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white;
-    final textColor = themeController.isDarkModeActive ? Colors.white : Colors.black;
-    final secondaryTextColor = themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
-    final iconColor = themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
-    final shadowColor = themeController.isDarkModeActive ? Colors.black.withOpacity(0.3) : Colors.grey.withOpacity(0.1);
-
-    // Sample expense data
-    final List<ExpenseItem> expenses = [
-      ExpenseItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      ExpenseItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      ExpenseItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      ExpenseItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      ExpenseItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      ExpenseItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      ExpenseItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      ExpenseItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-    ];
+    final backgroundColor = _themeController.isDarkModeActive ? Color(0xFF121212) : Colors.white;
+    final cardColor = _themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white;
+    final textColor = _themeController.isDarkModeActive ? Colors.white : Colors.black;
+    final secondaryTextColor = _themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
+    final iconColor = _themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
+    final shadowColor = _themeController.isDarkModeActive ? Colors.black.withOpacity(0.3) : Colors.grey.withOpacity(0.1);
 
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: _buildAppBar(screenWidth, textColor, backgroundColor),
-      body: ListView.builder(
-        padding: EdgeInsets.all(screenWidth * 0.04),
-        itemCount: expenses.length,
-        itemBuilder: (context, index) {
-          return _buildExpenseItem(
-              expenses[index],
-              screenWidth,
-              screenHeight,
-              cardColor,
-              textColor,
-              secondaryTextColor,
-              iconColor,
-              shadowColor,
-              themeController // Pass themeController as parameter
-          );
+      body: Obx(() {
+        if (_expenseController.isLoading.value && _expenseController.expenses.isEmpty) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (_expenseController.errorMessage.value.isNotEmpty) {
+          return _buildErrorWidget(_expenseController.errorMessage.value, textColor, secondaryTextColor);
+        }
+
+        if (_expenseController.expenses.isEmpty) {
+          return _buildEmptyState(iconColor, textColor, secondaryTextColor);
+        }
+
+        return RefreshIndicator(
+          onRefresh: () => _expenseController.loadExpenses(),
+          child: ListView.builder(
+            padding: EdgeInsets.all(screenWidth * 0.04),
+            itemCount: _expenseController.expenses.length,
+            itemBuilder: (context, index) {
+              final expense = _expenseController.expenses[index];
+              return _buildExpenseItem(
+                expense,
+                screenWidth,
+                screenHeight,
+                cardColor,
+                textColor,
+                secondaryTextColor,
+                iconColor,
+                shadowColor,
+              );
+            },
+          ),
+        );
+      }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to add expense screen
+          // Get.to(() => AddExpenseScreen());
         },
+        child: Icon(Icons.add),
       ),
     );
   }
@@ -105,13 +74,9 @@ class ExpenseListScreen extends StatelessWidget {
     return AppBar(
       backgroundColor: backgroundColor,
       elevation: 0,
-      leading: GestureDetector(
-        onTap: () => Get.back(),
-        child: Icon(
-          Icons.arrow_back_ios,
-          color: textColor,
-          size: screenWidth * 0.05,
-        ),
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back_ios, color: textColor, size: screenWidth * 0.05),
+        onPressed: () => Get.back(),
       ),
       title: Text(
         'Expense List',
@@ -122,6 +87,12 @@ class ExpenseListScreen extends StatelessWidget {
         ),
       ),
       centerTitle: true,
+      actions: [
+        IconButton(
+          icon: Icon(Icons.refresh, color: textColor),
+          onPressed: () => _expenseController.loadExpenses(),
+        ),
+      ],
     );
   }
 
@@ -134,7 +105,6 @@ class ExpenseListScreen extends StatelessWidget {
       Color secondaryTextColor,
       Color iconColor,
       Color shadowColor,
-      ThemeController themeController // Add themeController parameter
       ) {
     return Container(
       margin: EdgeInsets.only(bottom: screenHeight * 0.015),
@@ -158,22 +128,14 @@ class ExpenseListScreen extends StatelessWidget {
             width: screenWidth * 0.12,
             height: screenWidth * 0.12,
             decoration: BoxDecoration(
-              color: themeController.isDarkModeActive ? Color(0xFF2D2D2D) : Colors.grey.shade100,
+              color: _themeController.isDarkModeActive ? Color(0xFF2D2D2D) : Colors.grey.shade100,
               borderRadius: BorderRadius.circular(screenWidth * 0.02),
             ),
             child: Center(
-              child: Image.asset(
-                expense.icon,
-                width: screenWidth * 0.06,
-                height: screenWidth * 0.06,
+              child: Icon(
+                Icons.receipt,
+                size: screenWidth * 0.06,
                 color: iconColor,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(
-                    Icons.fastfood,
-                    size: screenWidth * 0.06,
-                    color: iconColor,
-                  );
-                },
               ),
             ),
           ),
@@ -186,7 +148,7 @@ class ExpenseListScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  expense.title,
+                  'Expense', // You can map category IDs to names later
                   style: TextStyle(
                     fontSize: screenWidth * 0.04,
                     fontWeight: FontWeight.w600,
@@ -195,11 +157,13 @@ class ExpenseListScreen extends StatelessWidget {
                 ),
                 SizedBox(height: screenHeight * 0.005),
                 Text(
-                  expense.description,
+                  expense.note.isNotEmpty ? expense.note : 'No description',
                   style: TextStyle(
                     fontSize: screenWidth * 0.032,
                     color: secondaryTextColor,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: screenHeight * 0.008),
                 Row(
@@ -211,7 +175,7 @@ class ExpenseListScreen extends StatelessWidget {
                     ),
                     SizedBox(width: screenWidth * 0.01),
                     Text(
-                      expense.date,
+                      expense.formattedDate,
                       style: TextStyle(
                         fontSize: screenWidth * 0.03,
                         color: secondaryTextColor,
@@ -228,7 +192,7 @@ class ExpenseListScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                expense.amount,
+                expense.formattedAmount,
                 style: TextStyle(
                   fontSize: screenWidth * 0.04,
                   fontWeight: FontWeight.w600,
@@ -236,27 +200,12 @@ class ExpenseListScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: screenHeight * 0.01),
-              GestureDetector(
-                onTap: () {
+              IconButton(
+                icon: Icon(Icons.edit, size: screenWidth * 0.05, color: iconColor),
+                onPressed: () {
                   // Handle edit action
-                  print('Edit expense: ${expense.title}');
+                  print('Edit expense: ${expense.id}');
                 },
-                child: Container(
-                  padding: EdgeInsets.all(screenWidth * 0.02),
-                  child: Image.asset(
-                    'assets/icons/edit-00.png',
-                    width: screenWidth * 0.05,
-                    height: screenWidth * 0.05,
-                    color: iconColor,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        Icons.edit,
-                        size: screenWidth * 0.05,
-                        color: iconColor,
-                      );
-                    },
-                  ),
-                ),
               ),
             ],
           ),
@@ -264,20 +213,54 @@ class ExpenseListScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-class ExpenseItem {
-  final String title;
-  final String description;
-  final String amount;
-  final String date;
-  final String icon;
+  Widget _buildErrorWidget(String error, Color textColor, Color secondaryTextColor) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 50, color: Colors.red),
+            SizedBox(height: 16),
+            Text(
+              'Failed to load expenses',
+              style: TextStyle(color: textColor, fontSize: 16),
+            ),
+            SizedBox(height: 8),
+            Text(
+              error,
+              style: TextStyle(color: secondaryTextColor, fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => _expenseController.loadExpenses(),
+              child: Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-  ExpenseItem({
-    required this.title,
-    required this.description,
-    required this.amount,
-    required this.date,
-    required this.icon,
-  });
+  Widget _buildEmptyState(Color iconColor, Color textColor, Color secondaryTextColor) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.receipt_long, size: 50, color: iconColor),
+          SizedBox(height: 16),
+          Text(
+            'No expenses found',
+            style: TextStyle(color: textColor, fontSize: 16),
+          ),
+          Text(
+            'Start adding expenses to see them here',
+            style: TextStyle(color: secondaryTextColor, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
 }

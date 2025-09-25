@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../Settings/appearance/ThemeController.dart';
+import 'model_and _controller_of_monthlybudgetpage/monthly_budget_controller.dart';
 
 class MonthlyBudgetPage extends StatelessWidget {
-  final TextEditingController _budgetController = TextEditingController();
-
   MonthlyBudgetPage({super.key});
+
+  final TextEditingController _textEditingController = TextEditingController();
+  final MonthlyBudgetController _monthlyBudgetController = Get.find();
+  final ThemeController _themeController = Get.find();
 
   @override
   Widget build(BuildContext context) {
-    final ThemeController themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
     // Define colors based on theme
-    final backgroundColor = themeController.isDarkModeActive ? const Color(0xFF121212) : Colors.white;
-    final cardColor = themeController.isDarkModeActive ? const Color(0xFF1E1E1E) : const Color(0xFFF8F9FA);
-    final textColor = themeController.isDarkModeActive ? Colors.white : Colors.black;
-    final secondaryTextColor = themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
+    final backgroundColor = _themeController.isDarkModeActive ? const Color(0xFF121212) : Colors.white;
+    final cardColor = _themeController.isDarkModeActive ? const Color(0xFF1E1E1E) : const Color(0xFFF8F9FA);
+    final textColor = _themeController.isDarkModeActive ? Colors.white : Colors.black;
+    final secondaryTextColor = _themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
     final primaryColor = const Color(0xFF2196F3);
+    final errorColor = Colors.red;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -38,12 +41,42 @@ class MonthlyBudgetPage extends StatelessWidget {
           ),
         ),
       ),
-      body: Padding(
+      body: Obx(() => _monthlyBudgetController.isLoading.value
+          ? Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+        ),
+      )
+          : Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: screenHeight * 0.03),
+
+            // Error message
+            if (_monthlyBudgetController.errorMessage.value.isNotEmpty)
+              Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(screenWidth * 0.04),
+                    decoration: BoxDecoration(
+                      color: errorColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                    ),
+                    child: Text(
+                      _monthlyBudgetController.errorMessage.value,
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.035,
+                        color: errorColor,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.02),
+                ],
+              ),
+
             // Current Monthly Budget Section
             Text(
               'Current Monthly Budget',
@@ -61,17 +94,31 @@ class MonthlyBudgetPage extends StatelessWidget {
                 color: cardColor,
                 borderRadius: BorderRadius.circular(screenWidth * 0.04),
               ),
-
-              child: Text(
-                '\$00000',
-                style: TextStyle(
-                  fontSize: screenWidth * 0.08,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _monthlyBudgetController.formatCurrency(
+                        _monthlyBudgetController.currentBudget.value['totalBudget'] ?? 0.0),
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.08,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.01),
+                  Text(
+                    'Month: ${_monthlyBudgetController.currentBudget.value['month'] ?? _monthlyBudgetController.getCurrentMonth()}',
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.03,
+                      color: secondaryTextColor,
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: screenHeight * 0.04),
+
             // Set Your Budget Section
             Text(
               'Set Your Budget',
@@ -81,6 +128,7 @@ class MonthlyBudgetPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.015),
+
             Container(
               width: double.infinity,
               padding: EdgeInsets.symmetric(
@@ -95,7 +143,7 @@ class MonthlyBudgetPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextField(
-                    controller: _budgetController,
+                    controller: _textEditingController,
                     decoration: InputDecoration(
                       hintText: 'Enter amount',
                       border: InputBorder.none,
@@ -105,18 +153,40 @@ class MonthlyBudgetPage extends StatelessWidget {
                       fontSize: screenWidth * 0.045,
                       color: textColor,
                     ),
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
                   ),
                   SizedBox(height: screenHeight * 0.02),
                   SizedBox(
                     width: double.infinity,
                     height: screenHeight * 0.06,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Handle budget confirmation
-                        if (_budgetController.text.isNotEmpty) {
-                          // Save the budget
-                          Get.back();
+                      onPressed: _monthlyBudgetController.isSettingBudget.value
+                          ? null
+                          : () async {
+                        // Clear previous errors
+                        _monthlyBudgetController.errorMessage.value = '';
+
+                        if (_textEditingController.text.isEmpty) {
+                          _monthlyBudgetController.errorMessage.value = 'Please enter a budget amount';
+                          return;
+                        }
+
+                        final budgetAmount = double.tryParse(_textEditingController.text);
+                        if (budgetAmount == null || budgetAmount <= 0) {
+                          _monthlyBudgetController.errorMessage.value = 'Please enter a valid budget amount';
+                          return;
+                        }
+
+                        final success = await _monthlyBudgetController.setMonthlyBudget(budgetAmount);
+                        if (success) {
+                          _textEditingController.clear(); // Clear the input field
+                          Get.snackbar(
+                            'Success',
+                            'Monthly budget set successfully',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.green,
+                            colorText: Colors.white,
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -125,7 +195,11 @@ class MonthlyBudgetPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(screenWidth * 0.03),
                         ),
                       ),
-                      child: Text(
+                      child: _monthlyBudgetController.isSettingBudget.value
+                          ? CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      )
+                          : Text(
                         'Confirm',
                         style: TextStyle(
                           fontSize: screenWidth * 0.04,
@@ -138,6 +212,7 @@ class MonthlyBudgetPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.03),
+
             // Premium Feature Notice
             Container(
               width: double.infinity,
@@ -177,7 +252,7 @@ class MonthlyBudgetPage extends StatelessWidget {
             ),
           ],
         ),
-      ),
+      )),
     );
   }
 }

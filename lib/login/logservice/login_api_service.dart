@@ -39,7 +39,7 @@ class LoginService extends GetxService {
     }
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       final loginRequest = LoginRequestModel(email: email, password: password);
 
@@ -75,7 +75,7 @@ class LoginService extends GetxService {
         currentUser.value = user;
         isLoggedIn.value = true;
 
-        return true;
+        return response  ;
       } else {
         throw Exception(loginResponse.message);
       }

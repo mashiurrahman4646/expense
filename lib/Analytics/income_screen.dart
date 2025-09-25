@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../Settings/appearance/ThemeController.dart';
+import 'package:your_expense/Settings/appearance/ThemeController.dart';
+import 'income_controller.dart';
+import 'income_model.dart';
 
 class IncomeListScreen extends StatelessWidget {
+  final IncomeController _incomeController = Get.find();
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -17,87 +20,65 @@ class IncomeListScreen extends StatelessWidget {
     final secondaryTextColor = themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
     final iconColor = themeController.isDarkModeActive ? Colors.grey.shade400 : Colors.grey.shade600;
     final shadowColor = themeController.isDarkModeActive ? Colors.black.withOpacity(0.3) : Colors.grey.withOpacity(0.1);
-
-    // Sample income data
-    final List<IncomeItem> incomes = [
-      IncomeItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      IncomeItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      IncomeItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      IncomeItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      IncomeItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      IncomeItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      IncomeItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-      IncomeItem(
-        title: 'Food',
-        description: 'Bought fruits from the market',
-        amount: '\$20.20',
-        date: '06/06/25, 09:00 PM',
-        icon: 'assets/icons/soft-drink-00.png',
-      ),
-    ];
+    final errorColor = themeController.isDarkModeActive ? Colors.red.shade300 : Colors.red;
 
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: _buildAppBar(screenWidth, textColor, backgroundColor),
-      body: ListView.builder(
-        padding: EdgeInsets.all(screenWidth * 0.04),
-        itemCount: incomes.length,
-        itemBuilder: (context, index) {
-          return _buildIncomeItem(
-              incomes[index],
-              screenWidth,
-              screenHeight,
-              cardColor,
-              textColor,
-              secondaryTextColor,
-              iconColor,
-              shadowColor,
-              themeController
+      body: Obx(() {
+        if (_incomeController.isLoading.value && _incomeController.incomes.isEmpty) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (_incomeController.errorMessage.value.isNotEmpty && _incomeController.incomes.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 48, color: errorColor),
+                SizedBox(height: 16),
+                Text(
+                  _incomeController.errorMessage.value,
+                  style: TextStyle(color: errorColor, fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _incomeController.refreshIncomes,
+                  child: Text('Retry'),
+                ),
+              ],
+            ),
           );
-        },
-      ),
+        }
+
+        return RefreshIndicator(
+          onRefresh: _incomeController.refreshIncomes,
+          child: ListView.builder(
+            padding: EdgeInsets.all(screenWidth * 0.04),
+            itemCount: _incomeController.incomes.length + (_incomeController.hasMore.value ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index == _incomeController.incomes.length) {
+                return _buildLoadMoreItem(screenHeight, _incomeController);
+              }
+
+              final income = _incomeController.incomes[index];
+              return _buildIncomeItem(
+                income,
+                screenWidth,
+                screenHeight,
+                cardColor,
+                textColor,
+                secondaryTextColor,
+                iconColor,
+                shadowColor,
+                themeController,
+                _incomeController,
+              );
+            },
+          ),
+        );
+      }),
     );
   }
 
@@ -126,7 +107,7 @@ class IncomeListScreen extends StatelessWidget {
   }
 
   Widget _buildIncomeItem(
-      IncomeItem income,
+      Income income,
       double screenWidth,
       double screenHeight,
       Color cardColor,
@@ -134,7 +115,8 @@ class IncomeListScreen extends StatelessWidget {
       Color secondaryTextColor,
       Color iconColor,
       Color shadowColor,
-      ThemeController themeController
+      ThemeController themeController,
+      IncomeController incomeController,
       ) {
     return Container(
       margin: EdgeInsets.only(bottom: screenHeight * 0.015),
@@ -162,19 +144,7 @@ class IncomeListScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(screenWidth * 0.02),
             ),
             child: Center(
-              child: Image.asset(
-                income.icon,
-                width: screenWidth * 0.06,
-                height: screenWidth * 0.06,
-                color: iconColor,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(
-                    Icons.fastfood,
-                    size: screenWidth * 0.06,
-                    color: iconColor,
-                  );
-                },
-              ),
+              child: _getIncomeIcon(income.source, screenWidth, iconColor),
             ),
           ),
 
@@ -186,7 +156,7 @@ class IncomeListScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  income.title,
+                  income.source,
                   style: TextStyle(
                     fontSize: screenWidth * 0.04,
                     fontWeight: FontWeight.w600,
@@ -195,7 +165,7 @@ class IncomeListScreen extends StatelessWidget {
                 ),
                 SizedBox(height: screenHeight * 0.005),
                 Text(
-                  income.description,
+                  'Income',
                   style: TextStyle(
                     fontSize: screenWidth * 0.032,
                     color: secondaryTextColor,
@@ -211,7 +181,7 @@ class IncomeListScreen extends StatelessWidget {
                     ),
                     SizedBox(width: screenWidth * 0.01),
                     Text(
-                      income.date,
+                      income.formattedDate,
                       style: TextStyle(
                         fontSize: screenWidth * 0.03,
                         color: secondaryTextColor,
@@ -228,33 +198,24 @@ class IncomeListScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                income.amount,
+                income.formattedAmount,
                 style: TextStyle(
                   fontSize: screenWidth * 0.04,
                   fontWeight: FontWeight.w600,
-                  color: textColor,
+                  color: Colors.green,
                 ),
               ),
               SizedBox(height: screenHeight * 0.01),
               GestureDetector(
                 onTap: () {
-                  // Handle edit action
-                  print('Edit income: ${income.title}');
+                  _showEditIncomeDialog(income, incomeController);
                 },
                 child: Container(
                   padding: EdgeInsets.all(screenWidth * 0.02),
-                  child: Image.asset(
-                    'assets/icons/edit-00.png',
-                    width: screenWidth * 0.05,
-                    height: screenWidth * 0.05,
+                  child: Icon(
+                    Icons.edit,
+                    size: screenWidth * 0.05,
                     color: iconColor,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        Icons.edit,
-                        size: screenWidth * 0.05,
-                        color: iconColor,
-                      );
-                    },
                   ),
                 ),
               ),
@@ -264,20 +225,63 @@ class IncomeListScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-class IncomeItem {
-  final String title;
-  final String description;
-  final String amount;
-  final String date;
-  final String icon;
+  Widget _buildLoadMoreItem(double screenHeight, IncomeController incomeController) {
+    return Obx(() {
+      if (incomeController.isLoading.value) {
+        return Container(
+          padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
 
-  IncomeItem({
-    required this.title,
-    required this.description,
-    required this.amount,
-    required this.date,
-    required this.icon,
-  });
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
+        child: Center(
+          child: ElevatedButton(
+            onPressed: incomeController.loadMoreIncomes,
+            child: Text('Load More'),
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _getIncomeIcon(String source, double screenWidth, Color iconColor) {
+    final iconMap = {
+      'salary': Icons.work,
+      'rent': Icons.home,
+      'business': Icons.business,
+      'gift': Icons.card_giftcard,
+    };
+
+    final icon = iconMap[source.toLowerCase()] ?? Icons.attach_money;
+
+    return Icon(
+      icon,
+      size: screenWidth * 0.06,
+      color: iconColor,
+    );
+  }
+
+  void _showEditIncomeDialog(Income income, IncomeController incomeController) {
+    Get.defaultDialog(
+      title: 'Edit Income',
+      content: Text('Edit functionality to be implemented'),
+      actions: [
+        TextButton(
+          onPressed: () => Get.back(),
+          child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            Get.back();
+          },
+          child: Text('Save'),
+        ),
+      ],
+    );
+  }
 }

@@ -13,9 +13,13 @@ class ReviewService extends GetxService {
 
   Future<Map<String, dynamic>> submitReview(int rating, String comment) async {
     try {
+      // Use the correct endpoint from config service
+      final String endpoint = _configService.reviewEndpoint;
+      print('Submitting review to: $endpoint');
+
       final response = await _apiService.request(
         'POST',
-        '${_configService.baseUrl}/reviews',
+        endpoint,
         body: {
           'rating': rating,
           'comment': comment,
@@ -23,23 +27,52 @@ class ReviewService extends GetxService {
         requiresAuth: true,
       );
 
+      print('Review submission response: $response');
+
       return response;
     } catch (e) {
+      print('Review submission error: $e');
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> getReviews() async {
+  Future<Map<String, dynamic>> getReviews({String status = 'all'}) async {
     try {
+      // Use the correct endpoint from config service
+      final String endpoint = _configService.reviewEndpoint;
+      print('Fetching reviews from: $endpoint');
+
       final response = await _apiService.request(
         'GET',
-        '${_configService.baseUrl}/reviews',
+        endpoint,
+        queryParams: {'status': status},
         requiresAuth: true,
       );
 
       return response;
     } catch (e) {
+      print('Get reviews error: $e');
       rethrow;
+    }
+  }
+
+  Future<bool> testReviewEndpoint() async {
+    try {
+      // Use the correct endpoint from config service
+      final String endpoint = _configService.reviewEndpoint;
+      print('Testing endpoint: $endpoint');
+
+      final response = await _apiService.request(
+        'GET',
+        endpoint,
+        requiresAuth: true,
+      );
+
+      print('Review endpoint test successful: $response');
+      return true;
+    } catch (e) {
+      print('Review endpoint test failed: $e');
+      return false;
     }
   }
 }

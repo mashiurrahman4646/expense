@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:your_expense/homepage/service/budget_service.dart';
 import 'package:your_expense/homepage/service/transaction_service.dart';
+import 'package:intl/intl.dart';
 
 import '../routes/app_routes.dart';
 import '../services/token_service.dart';
@@ -54,6 +55,11 @@ class HomeController extends GetxController {
     return months[now.month - 1];
   }
 
+  // Helper method to get current month in API format (YYYY-MM)
+  String getCurrentMonthForApi() {
+    return DateFormat('yyyy-MM').format(DateTime.now());
+  }
+
   Future<void> fetchRecentTransactions() async {
     try {
       isLoading.value = true;
@@ -87,7 +93,13 @@ class HomeController extends GetxController {
   Future<void> fetchBudgetData() async {
     try {
       isLoading.value = true;
-      final budget = await _budgetService.fetchBudgetData();
+
+      // Get current month in API format (YYYY-MM)
+      final currentMonth = getCurrentMonthForApi();
+
+      // Fetch budget data using the new endpoint with month parameter
+      final budget = await _budgetService.fetchMonthlyBudgetData(month: currentMonth);
+      print(budget);
 
       // Update budget-related values
       monthlyBudget.value = budget.totalBudget;

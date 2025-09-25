@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../Settings/appearance/ThemeController.dart';
-import '../reuseablenav/reuseablenavui.dart';
-import '../routes/app_routes.dart';
-import 'MonthlyBudgetPage.dart';
-import 'main_home_page_controller.dart';
-// Import the new page
+import 'package:your_expense/Settings/appearance/ThemeController.dart';
+import 'package:your_expense/reuseablenav/reuseablenavui.dart';
+import 'package:your_expense/routes/app_routes.dart';
+import 'package:your_expense/homepage/MonthlyBudgetPage.dart';
+import 'package:your_expense/homepage/edit/MonthlyBudgetNonPro/MonthlyBudgetNonPro.dart';
+import 'package:your_expense/homepage/main_home_page_controller.dart';
 
 class MainHomeScreen extends StatelessWidget {
   @override
@@ -239,7 +239,7 @@ class MainHomeScreen extends StatelessWidget {
                         children: [
                           Text('monthly_budget'.tr, style: TextStyle(fontSize: screenWidth * 0.045, fontWeight: FontWeight.w600, color: textColor)),
                           GestureDetector(
-                            onTap: () => Get.to(() => MonthlyBudgetPage()), // Simple navigation
+                            onTap: () => Get.to(() => MonthlyBudgetNonPro()), // Simple navigation
                             child: Text('edit'.tr, style: TextStyle(color: primaryColor, fontSize: screenWidth * 0.035)),
                           ),
                         ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
- // Import your ThemeController
+// Import your ThemeController
 
 import '../../Settings/appearance/ThemeController.dart';
 import '../../Settings/premium/paymentui.dart';
@@ -586,6 +586,8 @@ class _ExpensePageState extends State<ExpensePage> {
           color: widget.isDarkMode ? const Color(0xFF2A2A2A) : AppColors.grey200,
           borderColor: widget.isDarkMode ? Colors.grey[600]! : AppColors.grey500,
         ),
+        const SizedBox(height: 10),
+        _buildAddButton(), // New Add button added here
       ],
     );
   }
@@ -638,6 +640,45 @@ class _ExpensePageState extends State<ExpensePage> {
                       ? AppColors.primary
                       : (widget.isDarkMode ? Colors.white : AppColors.text900),
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // New Add button method
+  Widget _buildAddButton() {
+    return GestureDetector(
+      onTap: () {
+        // Add your functionality for the "Add" button here
+        // For example: Save the transaction, navigate to another screen, etc.
+        print('Add button pressed - Expense');
+
+        // Example: Save transaction and go back
+        // _saveTransaction();
+        // Get.back();
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: AppColors.green.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
+          border: Border.all(color: AppColors.green),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.add, color: AppColors.green),
+            const SizedBox(width: 8),
+            Text(
+              'add'.tr, // Make sure you have this translation key
+              style: GoogleFonts.inter(
+                color: AppColors.green,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
           ],
@@ -1011,6 +1052,8 @@ class _IncomePageState extends State<IncomePage> {
           color: widget.isDarkMode ? const Color(0xFF2A2A2A) : AppColors.grey200,
           borderColor: widget.isDarkMode ? Colors.grey[600]! : AppColors.grey500,
         ),
+        const SizedBox(height: 10),
+        _buildAddButton(), // New Add button added here
       ],
     );
   }
@@ -1063,6 +1106,45 @@ class _IncomePageState extends State<IncomePage> {
                       ? AppColors.primary
                       : (widget.isDarkMode ? Colors.white : AppColors.text900),
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // New Add button method
+  Widget _buildAddButton() {
+    return GestureDetector(
+      onTap: () {
+        // Add your functionality for the "Add" button here
+        // For example: Save the transaction, navigate to another screen, etc.
+        print('Add button pressed - Income');
+
+        // Example: Save transaction and go back
+        // _saveTransaction();
+        // Get.back();
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: AppColors.green.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(AppStyles.defaultRadius),
+          border: Border.all(color: AppColors.green),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.add, color: AppColors.green),
+            const SizedBox(width: 8),
+            Text(
+              'add'.tr, // Make sure you have this translation key
+              style: GoogleFonts.inter(
+                color: AppColors.green,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
           ],

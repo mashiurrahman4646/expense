@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:your_expense/RegisterScreen/registration_api_service.dart';
 import 'dart:convert';
@@ -10,6 +11,8 @@ class RegistrationController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  SharedPreferences? _prefs;
+
 
   var isTermsAccepted = false.obs;
   var isLoading = false.obs;
@@ -41,6 +44,12 @@ class RegistrationController extends GetxController {
       if (response['success'] == true) {
         showSuccessSnackbar('Success'.tr, 'Registration successful'.tr);
         print(response['data']);
+
+        // in Data variable we store token as named data
+        String data= response['data'];
+        await _prefs?.setString('auth_token', data);
+
+
         return true;
       } else {
         handleApiError(response);

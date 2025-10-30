@@ -13,7 +13,7 @@ class TokenService extends GetxService {
       isInitialized.value = true;
       print('✅ TokenService initialized');
       print('📋 Token exists: ${getToken() != null}');
-      print('📋  Token valid: ${isTokenValid()}');
+      print('📋 Token valid: ${isTokenValid()}');
       if (getToken() != null) {
         print('📋 User ID: ${getUserId()}');
       }
@@ -27,11 +27,9 @@ class TokenService extends GetxService {
   Future<void> saveToken(String token) async {
     try {
       await _prefs?.setString('auth_token', token);
-      print("✅ Token saved successfully");
-      print("📋 Token length: ${token.length}");
-      print("📋 Token preview: ${token.substring(0, 20)}...");
-
-      // Debug the token immediately after saving
+      print('✅ Token saved successfully');
+      print('📋 Token length: ${token.length}');
+      print('📋 Token preview: ${token.substring(0, min(token.length, 20))}...');
       debugToken();
     } catch (e) {
       print('❌ Error saving token: $e');
@@ -46,6 +44,7 @@ class TokenService extends GetxService {
         print('📋 No token found in storage');
         return null;
       }
+      print('📋 Retrieved token: ${token.substring(0, min(token.length, 20))}...');
       return token;
     } catch (e) {
       print('❌ Error retrieving token: $e');
@@ -61,25 +60,22 @@ class TokenService extends GetxService {
         return false;
       }
 
-      // Basic JWT format check
       final parts = token.split('.');
       if (parts.length != 3) {
         print('❌ Invalid JWT format: ${parts.length} parts instead of 3');
         return false;
       }
 
-      // Decode payload
       final payload = _decodePayload(parts[1]);
       if (payload.isEmpty) {
         print('❌ Failed to decode payload');
         return false;
       }
 
-      // Check expiration
       final exp = payload['exp'];
       if (exp == null) {
-        print('❌ No expiration time in token');
-        return true; // If no exp, assume valid
+        print('📋 No expiration time in token');
+        return true;
       }
 
       final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
@@ -98,10 +94,7 @@ class TokenService extends GetxService {
 
   Map<String, dynamic> _decodePayload(String payload) {
     try {
-      // Handle URL-safe base64 decoding
       String normalizedPayload = payload.replaceAll('-', '+').replaceAll('_', '/');
-
-      // Add padding if needed
       switch (normalizedPayload.length % 4) {
         case 2:
           normalizedPayload += '==';
@@ -115,7 +108,6 @@ class TokenService extends GetxService {
       final String decodedString = utf8.decode(decoded);
 
       print('📋 Decoded payload: $decodedString');
-
       return json.decode(decodedString);
     } catch (e) {
       print('❌ Payload decoding error: $e');
@@ -143,7 +135,6 @@ class TokenService extends GetxService {
       final payload = getTokenPayload();
       if (payload == null) return null;
 
-      // Try different possible user ID fields
       return payload['id']?.toString() ??
           payload['userId']?.toString() ??
           payload['sub']?.toString() ??
@@ -157,13 +148,12 @@ class TokenService extends GetxService {
   Future<void> clearToken() async {
     try {
       await _prefs?.remove('auth_token');
-      print("✅ Token cleared successfully");
+      print('✅ Token cleared successfully');
     } catch (e) {
       print('❌ Error clearing token: $e');
     }
   }
 
-  // Additional debug method
   void debugToken() {
     final token = getToken();
     print('=== 🔍 TOKEN DEBUG ===');
@@ -180,12 +170,8 @@ class TokenService extends GetxService {
     print('=====================');
   }
 
-  // Check if user is authenticated
-  bool get isAuthenticated {
-    return isTokenValid();
-  }
+  bool get isAuthenticated => isTokenValid();
 
-  // Get token expiration date
   DateTime? getTokenExpiration() {
     try {
       final payload = getTokenPayload();
@@ -200,7 +186,6 @@ class TokenService extends GetxService {
     }
   }
 
-  // Get token issued at date
   DateTime? getTokenIssuedAt() {
     try {
       final payload = getTokenPayload();
@@ -215,7 +200,6 @@ class TokenService extends GetxService {
     }
   }
 
-  // Check if token will expire soon (within 5 minutes)
   bool isTokenExpiringSoon() {
     try {
       final expiration = getTokenExpiration();
@@ -223,11 +207,12 @@ class TokenService extends GetxService {
 
       final now = DateTime.now();
       final fiveMinutesFromNow = now.add(Duration(minutes: 5));
-
       return expiration.isBefore(fiveMinutesFromNow);
     } catch (e) {
       print('❌ Error checking token expiration: $e');
       return false;
     }
   }
+
+  int min(int a, int b) => a < b ? a : b;
 }

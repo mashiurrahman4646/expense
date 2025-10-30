@@ -1,19 +1,14 @@
-
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_disposable.dart';
 import 'package:http/http.dart' as http;
 import 'package:your_expense/services/token_service.dart';
 import 'dart:convert';
-import 'config_service.dart';
 
 class ApiBaseService extends GetxService {
-  final ConfigService _config = Get.find();
   final TokenService _tokenService = Get.find();
   final http.Client _client = http.Client();
 
   Future<ApiBaseService> init() async {
-    print('ApiBaseService initialized');
+    print('✅ ApiBaseService initialized');
     return this;
   }
 
@@ -26,7 +21,6 @@ class ApiBaseService extends GetxService {
         bool requiresAuth = true,
       }) async {
     try {
-      // Add detailed token debugging
       print('=== 🔐 TOKEN STATUS ===');
       print('Token exists: ${_tokenService.getToken() != null}');
       print('Token valid: ${_tokenService.isTokenValid()}');
@@ -38,7 +32,6 @@ class ApiBaseService extends GetxService {
         throw Exception('Authentication required. Please login again.');
       }
 
-      // Add query parameters to URL
       Uri uri = Uri.parse(endpoint);
       if (queryParams != null) {
         uri = uri.replace(queryParameters: queryParams.map((key, value) =>
@@ -48,14 +41,12 @@ class ApiBaseService extends GetxService {
       print('URL: $uri');
       print('=== End URL ===');
 
-      // Prepare headers
       final requestHeaders = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         ...?headers,
       };
 
-      // Add authorization header if required and token is available
       if (requiresAuth && _tokenService.isTokenValid()) {
         requestHeaders['Authorization'] = 'Bearer ${_tokenService.getToken()}';
         print('🔐 Added auth token to request');
@@ -65,13 +56,12 @@ class ApiBaseService extends GetxService {
         print('⚠️ Token valid: ${_tokenService.isTokenValid()}');
       }
 
-      // Add detailed logging
       print('''
 === 🚀 API Request Details ===
-Service: ${runtimeType}
+Service: $runtimeType
 Method: $method
 URL: $uri
-Headers: ${requestHeaders.keys.toList()} (values hidden for security)
+Headers: ${requestHeaders.keys.toList()}
 Body: ${body != null ? json.encode(body) : 'None'}
 Requires Auth: $requiresAuth
 Token Valid: ${_tokenService.isTokenValid()}
@@ -99,12 +89,25 @@ User ID: ${_tokenService.getUserId()}
             body: body != null ? json.encode(body) : null,
           );
           break;
+        case 'PATCH':
+          response = await _client.patch(
+            uri,
+            headers: requestHeaders,
+            body: body != null ? json.encode(body) : null,
+          );
+          break;
         case 'DELETE':
           response = await _client.delete(uri, headers: requestHeaders);
           break;
         default:
           throw Exception('Unsupported HTTP method: $method');
       }
+
+      print('=== 📤 Raw Response ===');
+      print('Status: ${response.statusCode}');
+      print('Headers: ${response.headers}');
+      print('Body Preview: ${_truncateString(response.body, 500)}');
+      print('=======================');
 
       _logResponse(method, endpoint, response);
 
@@ -129,8 +132,8 @@ User ID: ${_tokenService.getUserId()}
 
         if (response.statusCode == 401) {
           print('🔐 Unauthorized - Token might be invalid or expired');
-          await _tokenService.clearToken();
-          throw Exception('Session expired. Please login again.');
+          // Do NOT clear token automatically; surface error and let UI handle re-login
+          throw Exception('Unauthorized. Please login if your session expired.');
         }
 
         throw HttpException(response.statusCode, response.body);
@@ -144,7 +147,7 @@ User ID: ${_tokenService.getUserId()}
   void _logResponse(String method, String endpoint, http.Response response) {
     print('''
 === 📨 API Response ===
-Service: ${runtimeType}
+Service: $runtimeType
 Method: $method
 URL: $endpoint
 Status: ${response.statusCode} ${_getStatusMessage(response.statusCode)}
@@ -177,11 +180,12 @@ Response Headers: ${response.headers.keys.toList()}
   void _logError(String method, String endpoint, dynamic error) {
     print('''
 !!! 💥 API Error !!!
-Service: ${runtimeType}
+Service: $runtimeType
 Method: $method
 URL: $endpoint
 Error: $error
 Error Type: ${error.runtimeType}
+Stack Trace: ${StackTrace.current}
 !!! End Error !!!
 ''');
 
@@ -193,6 +197,12 @@ Error Type: ${error.runtimeType}
     if (error is HttpException) {
       print('📊 HTTP Status: ${error.statusCode}');
       print('💬 HTTP Message: ${error.message}');
+      try {
+        final decodedError = json.decode(error.message);
+        print('🔍 Decoded Error Response: $decodedError');
+      } catch (_) {
+        print('📝 Raw Error Body: ${error.message}');
+      }
     }
   }
 

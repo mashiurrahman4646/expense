@@ -57,7 +57,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
           elevation: 0,
           centerTitle: true,
           title: Text(
-            'Terms & Conditions',
+            'terms_title'.tr,
             style: AppTextStyles.heading2.copyWith(
               color: isDark ? AppColors.darkText : AppColors.text900,
             ),
@@ -65,13 +65,13 @@ class TermsAndConditionsScreen extends StatelessWidget {
         ),
         body: Obx(() {
           if (termsController.isLoading.value) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(),
                   SizedBox(height: 16),
-                  Text('Loading terms and conditions...'),
+                  Text('loading_terms'.tr),
                 ],
               ),
             );
@@ -89,7 +89,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Error loading terms',
+                    'error_loading_terms'.tr,
                     style: headingTextStyle,
                   ),
                   const SizedBox(height: 8),
@@ -104,7 +104,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: termsController.refreshTerms,
-                    child: const Text('Retry'),
+                    child: Text('retry'.tr),
                   ),
                 ],
               ),
@@ -125,7 +125,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
               children: [
                 // Main title
                 Text(
-                  'Terms & Conditions',
+                  'terms_title'.tr,
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w700,
@@ -138,7 +138,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
 
                 // Fixed introductory text
                 Text(
-                  'Please read these Terms and Conditions carefully before using our mobile application. By accessing or using our app, you agree to be bound by these terms.',
+                  'terms_intro'.tr,
                   style: bodyTextStyle,
                   textAlign: TextAlign.left,
                 ),
@@ -153,7 +153,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
                   ),
                 ] else ...[
                   Text(
-                    'No terms and conditions available.',
+                    'no_terms_available'.tr,
                     style: bodyTextStyle,
                     textAlign: TextAlign.center,
                   ),
@@ -167,7 +167,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Version: ${latestTerms.version}',
+                    '${'version_label'.tr} ${latestTerms.version}',
                     style: bodyTextStyle.copyWith(
                       fontSize: 12,
                       color: isDark ? AppColors.darkText600 : AppColors.text600,
@@ -175,7 +175,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Effective Date: ${_formatDate(latestTerms.effectiveDate)}',
+                    '${'effective_date_label'.tr} ${_formatDate(latestTerms.effectiveDate)}',
                     style: bodyTextStyle.copyWith(
                       fontSize: 12,
                       color: isDark ? AppColors.darkText600 : AppColors.text600,

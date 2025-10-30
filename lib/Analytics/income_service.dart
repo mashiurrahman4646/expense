@@ -41,13 +41,16 @@ class IncomeService extends GetxService {
   Future<Income> createIncome({
     required String source,
     required double amount,
-    required DateTime date,
+    DateTime? date,
+    String? month,
   }) async {
     try {
+      final effectiveDate = date ?? DateTime.now();
       final body = {
         'source': source,
         'amount': amount,
-        'date': date.toIso8601String(),
+        if (month != null && month.isNotEmpty) 'month': month,
+        if (month == null || month.isEmpty) 'date': effectiveDate.toIso8601String(),
       };
 
       final response = await _apiService.request(
@@ -103,4 +106,4 @@ class IncomeService extends GetxService {
       rethrow;
     }
   }
-} 
+}

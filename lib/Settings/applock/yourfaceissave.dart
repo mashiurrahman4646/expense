@@ -3,6 +3,10 @@ import 'package:get/get.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
 
+
+import '../../services/face_id_service.dart';
+import '../../services/token_service.dart';
+
 class FaceAuthenticationScreen extends StatefulWidget {
   @override
   _FaceAuthenticationScreenState createState() => _FaceAuthenticationScreenState();
@@ -117,30 +121,40 @@ class _FaceAuthenticationScreenState extends State<FaceAuthenticationScreen>
       _statusMessage = 'keep_face_in_circle'.tr;
     });
 
-    _progressController.forward();
+    _progressController
+      ..reset()
+      ..forward();
 
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (mounted) {
-        setState(() {
-          _secondsRemaining--;
-        });
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      setState(() {
+        _secondsRemaining--;
+      });
 
-        if (_secondsRemaining <= 0) {
-          _completeScan();
-        }
+      if (_secondsRemaining <= 0) {
+        _completeScan();
       }
     });
   }
 
-  void _completeScan() {
+  Future<void> _completeScan() async {
     _timer?.cancel();
     _progressController.stop();
     _pulseController.stop();
 
     setState(() {
       _isScanning = false;
-      _isComplete = true;
+      _statusMessage = 'faceid_saved'.tr;
     });
+
+    try {
+      final faceService = Get.find<FaceIdService>();
+      await faceService.enableForCurrentUser();
+    } catch (e) {
+      // Log and continue to show success UI
+      print('Error enabling Face ID: $e');
+    }
 
     _showSuccessDialog();
   }

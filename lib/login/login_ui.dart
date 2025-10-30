@@ -6,11 +6,14 @@ import 'package:your_expense/text_styles.dart';
 
 import '../../Settings/appearance/ThemeController.dart';
 import '../../colors/app_colors.dart';
-import '../login_controller/login_controller.dart';
+import 'login_controller.dart';
+
 
 class LoginScreen extends StatelessWidget {
   final RxBool isPasswordVisible = false.obs;
   final LoginController loginController = Get.find();
+
+  LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +57,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 40),
 
               // Error message
-              Obx(() => loginController.errorMessage.isNotEmpty
+              Obx(() => loginController.errorMessage.value.isNotEmpty
                   ? Container(
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 16),

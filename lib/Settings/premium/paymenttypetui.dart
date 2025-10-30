@@ -6,6 +6,8 @@ import '../appearance/ThemeController.dart';
  // Import your ThemeController
 
 class PaymentScreen extends StatelessWidget {
+  const PaymentScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();

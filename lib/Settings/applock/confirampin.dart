@@ -6,6 +6,8 @@ import '../appearance/ThemeController.dart';
 // Import your ThemeController
 
 class ConfirmPinScreen extends StatefulWidget {
+  const ConfirmPinScreen({super.key});
+
   @override
   _ConfirmPinScreenState createState() => _ConfirmPinScreenState();
 }

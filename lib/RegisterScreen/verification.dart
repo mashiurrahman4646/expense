@@ -8,9 +8,16 @@ import '../text_styles.dart';
 import 'package:flutter/services.dart';
 
 class EmailVerificationScreen extends StatelessWidget {
-  final VerificationController controller = Get.put(VerificationController());
-  final ThemeController themeController = Get.find<ThemeController>();
-  final LanguageController languageController = Get.find<LanguageController>();
+  VerificationController get controller {
+    if (Get.isRegistered<VerificationController>()) {
+      return Get.find<VerificationController>();
+    }
+    return Get.put(VerificationController());
+  }
+  ThemeController get themeController => Get.find<ThemeController>();
+  LanguageController get languageController => Get.find<LanguageController>();
+
+  EmailVerificationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

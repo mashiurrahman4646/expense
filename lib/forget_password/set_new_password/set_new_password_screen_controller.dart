@@ -4,6 +4,8 @@ import '../../Settings/appearance/ThemeController.dart';
 
 
 class SetNewPasswordScreen extends StatefulWidget {
+  const SetNewPasswordScreen({super.key});
+
   @override
   _SetNewPasswordScreenState createState() => _SetNewPasswordScreenState();
 }

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../Settings/appearance/ThemeController.dart';
 import '../colors/app_colors.dart';
 import '../text_styles.dart';
+import '../routes/app_routes.dart';
 
 
 class FaceVerificationScreen extends StatelessWidget {
@@ -96,7 +97,7 @@ class FaceVerificationScreen extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  Get.offAllNamed('/mainHome');
+                  Get.offAllNamed(AppRoutes.mainHome);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: themeController.isDarkModeActive ? AppColors.darkCardBackground : Colors.white,
@@ -273,7 +274,7 @@ class FaceVerificationScreen extends StatelessWidget {
       );
 
       Future.delayed(Duration(seconds: 1), () {
-        Get.offAllNamed('/signupVerification');
+        Get.offAllNamed(AppRoutes.signupVerification);
       });
     });
   }

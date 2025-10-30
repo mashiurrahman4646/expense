@@ -5,6 +5,8 @@ import 'appearance/ThemeController.dart';
  // Import your ThemeController
 
 class CurrencyExchangeScreen extends StatelessWidget {
+  const CurrencyExchangeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
@@ -12,7 +14,7 @@ class CurrencyExchangeScreen extends StatelessWidget {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     // Controller to manage selected currency
-    final _controller = Get.put(CurrencyController());
+    final controller = Get.put(CurrencyController());
 
     return Obx(() => Scaffold(
       backgroundColor: themeController.isDarkModeActive
@@ -61,7 +63,7 @@ class CurrencyExchangeScreen extends StatelessWidget {
             ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              itemCount: _controller.currencies.length,
+              itemCount: controller.currencies.length,
               itemBuilder: (context, index) {
                 return Container(
                   decoration: BoxDecoration(
@@ -78,7 +80,7 @@ class CurrencyExchangeScreen extends StatelessWidget {
                     contentPadding: EdgeInsets.zero,
                     dense: true,
                     title: Text(
-                      _controller.currencies[index].name.tr,
+                      controller.currencies[index].name.tr,
                       style: TextStyle(
                         fontSize: screenWidth * 0.04,
                         fontWeight: FontWeight.w500,
@@ -86,7 +88,7 @@ class CurrencyExchangeScreen extends StatelessWidget {
                       ),
                     ),
                     subtitle: Text(
-                      _controller.currencies[index].code,
+                      controller.currencies[index].code,
                       style: TextStyle(
                         fontSize: screenWidth * 0.035,
                         color: themeController.isDarkModeActive ? Colors.grey[400] : Colors.grey[600],
@@ -94,9 +96,9 @@ class CurrencyExchangeScreen extends StatelessWidget {
                     ),
                     trailing: Radio(
                       value: index,
-                      groupValue: _controller.selectedCurrencyIndex.value,
+                      groupValue: controller.selectedCurrencyIndex.value,
                       onChanged: (int? newValue) {
-                        _controller.selectedCurrencyIndex.value = newValue!;
+                        controller.selectedCurrencyIndex.value = newValue!;
                       },
                       activeColor: const Color(0xFF2196F3),
                     ),
@@ -108,12 +110,12 @@ class CurrencyExchangeScreen extends StatelessWidget {
             SizedBox(height: screenHeight * 0.05),
 
             // Apply Button
-            Container(
+            SizedBox(
               width: double.infinity,
               height: screenHeight * 0.06,
               child: ElevatedButton(
                 onPressed: () {
-                  _controller.applyCurrencyChange();
+                  controller.applyCurrencyChange();
                   Get.snackbar(
                     'success'.tr,
                     'currency_updated'.tr,

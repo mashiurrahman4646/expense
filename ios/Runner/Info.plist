@@ -11,21 +11,28 @@
     <array>
         <string>UIInterfaceOrientationPortrait</string>
     </array>
-    <key>NSCameraUsageDescription</key>
-    <string>This app needs camera access to scan receipts</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>This app needs photo library access to upload receipt images</string>
     <key>UISupportedInterfaceOrientations~ipad</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>
     </array>
-
-    <!-- Add this key for camera permission -->
     <key>NSCameraUsageDescription</key>
-    <string>We need access to your camera for face verification.</string>
-
-    <!-- Optional: Add microphone permission if needed -->
+    <string>This app needs camera access to scan receipts</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs access to your photo library to upload receipt images or a profile picture.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>We need access to your microphone for optional voice features.</string>
+
+    <!-- Add AdMob App ID -->
+    <key>GADApplicationIdentifier</key>
+    <string>ca-app-pub-3286434692968748~1862177047</string>
+
+    <!-- Add SKAdNetworkItems for iOS 14+ ad tracking compliance -->
+    <key>SKAdNetworkItems</key>
+    <array>
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>cstr6suwn9.skadnetwork</string>
+        </dict>
+    </array>
 </dict>
 </plist>

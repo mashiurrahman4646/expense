@@ -5,6 +5,8 @@ import '../appearance/ThemeController.dart';
  // Import your ThemeController
 
 class AppUnlockScreen extends StatefulWidget {
+  const AppUnlockScreen({super.key});
+
   @override
   _AppUnlockScreenState createState() => _AppUnlockScreenState();
 }

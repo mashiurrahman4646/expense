@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import 'package:get/get_core/src/get_main.dart';
 import 'package:your_expense/RegisterScreen/reg_controller.dart';
 import '../Settings/appearance/ThemeController.dart';
 import '../Settings/language/language_controller.dart';
 import '../colors/app_colors.dart';
-import '../login/login_ui/login_screen.dart';
+
+import '../login/login_ui.dart';
 import '../text_styles.dart';
 import '../tram_and_condition/trams_and_condition_screen.dart';
+import '../routes/app_routes.dart';
 
 class RegistrationScreen extends StatelessWidget {
   final RegistrationController controller = Get.put(RegistrationController());
@@ -91,6 +91,11 @@ class RegistrationScreen extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: controller.isLoading.value ? null : () async {
+                  print('═══════════════════════════════════════');
+                  print('📋 CONTINUE BUTTON PRESSED');
+                  print('═══════════════════════════════════════');
+
+                  // Check terms acceptance
                   if (!controller.isTermsAccepted.value) {
                     Get.snackbar(
                       'terms_required'.tr,
@@ -100,14 +105,63 @@ class RegistrationScreen extends StatelessWidget {
                       colorText: themeController.isDarkMode.value ? Colors.white : Colors.red[900],
                       margin: const EdgeInsets.all(12),
                     );
+                    print('❌ Terms not accepted - aborting');
+                    print('═══════════════════════════════════════');
                     return;
                   }
 
+                  print('✅ Terms accepted');
+                  print('🚀 Calling registerUser()...');
+
+                  // Call registration
                   final success = await controller.registerUser();
+
+                  print('═══════════════════════════════════════');
+                  print('📊 REGISTRATION RESULT: $success');
+                  print('═══════════════════════════════════════');
+
                   if (success) {
-                    // Pass the email to the verification screen
-                    Get.toNamed('/emailVerification', arguments: {'email': controller.emailController.text.trim()});
+                    final email = controller.emailController.text.trim();
+                    print('✅ Registration successful!');
+                    print('📧 User email: $email');
+                    print('🚀 Attempting navigation to /emailVerification');
+                    print('📦 Navigation arguments: {email: $email}');
+
+                    try {
+                      // Use offNamed to replace current route
+                      final result = await Get.offNamed(
+                          AppRoutes.emailVerification,
+                          arguments: {'email': email}
+                      );
+                      
+                      print('✅ Navigation command executed');
+                      print('📋 Navigation result: $result');
+
+                      // Alternative navigation if route doesn't work
+                      if (result == null) {
+                        print('⚠️ Route might not be registered, trying direct navigation');
+                        // Uncomment this line if you have direct import
+                        // Get.off(() => EmailVerificationScreen(), arguments: {'email': email});
+                      }
+                    } catch (navError) {
+                      print('❌ Navigation error: $navError');
+                      print('❌ Stack trace: ${StackTrace.current}');
+
+                      Get.snackbar(
+                        'Navigation Error',
+                        'Could not navigate to verification screen. Please try again.',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.orange[100],
+                        colorText: Colors.orange[900],
+                        margin: const EdgeInsets.all(12),
+                      );
+                    }
+                  } else {
+                    print('❌ Registration failed');
+                    print('❌ User will see error message from controller');
                   }
+
+                  print('═══════════════════════════════════════');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: controller.isLoading.value

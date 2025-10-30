@@ -5,6 +5,8 @@ import '../../Settings/appearance/ThemeController.dart';
 import '../../routes/app_routes.dart';
 
 class NonProSavingsPage extends StatelessWidget {
+  const NonProSavingsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
@@ -400,7 +402,7 @@ class NonProSavingsPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 // Y-axis labels
-                Container(
+                SizedBox(
                   width: 30,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -466,7 +468,7 @@ class NonProSavingsPage extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Container(
+        SizedBox(
           height: 120,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

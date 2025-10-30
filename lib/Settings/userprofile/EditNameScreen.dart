@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:your_expense/Settings/userprofile/profile_services.dart';
+import '../../services/config_service.dart';
 import '../appearance/ThemeController.dart';
 
+
 class EditNameScreen extends StatefulWidget {
+  const EditNameScreen({super.key});
+
   @override
   _EditNameScreenState createState() => _EditNameScreenState();
 }
@@ -12,13 +17,37 @@ class _EditNameScreenState extends State<EditNameScreen> {
   final TextEditingController _lastNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final ThemeController themeController = Get.find<ThemeController>();
+  final ProfileService profileService = Get.find<ProfileService>();
+  final ConfigService configService = Get.find<ConfigService>();
+  String? profileImageUrl;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Initialize with current user data (would normally come from state management)
-    _firstNameController.text = 'John';
-    _lastNameController.text = 'Doe';
+    _fetchUserProfile();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    try {
+      setState(() => isLoading = true);
+      await profileService.fetchUserProfile(); // Fetch profile to ensure latest data
+      final fullName = profileService.userName.value;
+      final nameParts = fullName.trim().split(' ');
+      _firstNameController.text = nameParts.isNotEmpty ? nameParts[0] : '';
+      _lastNameController.text = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+      profileImageUrl = profileService.getFullImageUrl();
+    } catch (e) {
+      Get.snackbar(
+        'error'.tr,
+        'failed_to_load_profile'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 
   @override
@@ -47,7 +76,7 @@ class _EditNameScreenState extends State<EditNameScreen> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'edit_name'.tr,
+          'edit_profile'.tr,
           style: TextStyle(
             color: themeController.isDarkModeActive ? Colors.white : Colors.black,
             fontSize: screenWidth * 0.045,
@@ -56,7 +85,9 @@ class _EditNameScreenState extends State<EditNameScreen> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         padding: EdgeInsets.symmetric(
           horizontal: screenWidth * 0.05,
           vertical: screenHeight * 0.02,
@@ -67,8 +98,7 @@ class _EditNameScreenState extends State<EditNameScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: screenHeight * 0.03),
-
-              // Profile Icon
+              // Profile Picture (Display Only)
               Center(
                 child: Container(
                   width: screenWidth * 0.25,
@@ -76,17 +106,26 @@ class _EditNameScreenState extends State<EditNameScreen> {
                   decoration: BoxDecoration(
                     color: themeController.isDarkModeActive ? Color(0xFF2D2D2D) : Color(0xFFE3F2FD),
                     shape: BoxShape.circle,
+                    image: profileImageUrl != null && profileImageUrl!.isNotEmpty
+                        ? DecorationImage(
+                      image: NetworkImage(profileImageUrl!),
+                      fit: BoxFit.cover,
+                      onError: (exception, stackTrace) {
+                        print('❌ Error loading image: $exception');
+                      },
+                    )
+                        : null,
                   ),
-                  child: Icon(
+                  child: profileImageUrl == null || profileImageUrl!.isEmpty
+                      ? Icon(
                     Icons.person,
                     size: screenWidth * 0.15,
                     color: const Color(0xFF2196F3),
-                  ),
+                  )
+                      : null,
                 ),
               ),
-
               SizedBox(height: screenHeight * 0.04),
-
               // Instruction Text
               Center(
                 child: Text(
@@ -98,9 +137,7 @@ class _EditNameScreenState extends State<EditNameScreen> {
                   ),
                 ),
               ),
-
               SizedBox(height: screenHeight * 0.05),
-
               // First Name Field
               Text(
                 'first_name'.tr,
@@ -139,9 +176,7 @@ class _EditNameScreenState extends State<EditNameScreen> {
                   ),
                 ),
               ),
-
               SizedBox(height: screenHeight * 0.03),
-
               // Last Name Field
               Text(
                 'last_name'.tr,
@@ -180,9 +215,7 @@ class _EditNameScreenState extends State<EditNameScreen> {
                   ),
                 ),
               ),
-
               SizedBox(height: screenHeight * 0.05),
-
               // Save Button
               SizedBox(
                 width: double.infinity,
@@ -213,19 +246,41 @@ class _EditNameScreenState extends State<EditNameScreen> {
     );
   }
 
-  void _saveChanges() {
+  Future<void> _saveChanges() async {
     if (_formKey.currentState!.validate()) {
-      // Save the changes (would normally update state management)
-      String newFullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
-
-      Get.back();
-      Get.snackbar(
-        'success'.tr,
-        '${'name_updated_to'.tr} $newFullName',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      try {
+        setState(() => isLoading = true);
+        final newFullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}'.trim();
+        final success = await profileService.updateProfile(name: newFullName);
+        if (success) {
+          Get.back();
+          Get.snackbar(
+            'success'.tr,
+            '${'name_updated_to'.tr} $newFullName',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+          );
+        } else {
+          Get.snackbar(
+            'error'.tr,
+            'failed_to_update_profile'.tr,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
+      } catch (e) {
+        Get.snackbar(
+          'error'.tr,
+          'failed_to_update_profile'.tr,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      } finally {
+        setState(() => isLoading = false);
+      }
     }
   }
 }

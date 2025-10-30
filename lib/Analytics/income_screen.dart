@@ -4,6 +4,7 @@ import 'package:your_expense/Settings/appearance/ThemeController.dart';
 import 'income_controller.dart';
 import 'income_model.dart';
 
+
 class IncomeListScreen extends StatelessWidget {
   final IncomeController _incomeController = Get.find();
 
@@ -45,7 +46,7 @@ class IncomeListScreen extends StatelessWidget {
                 SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: _incomeController.refreshIncomes,
-                  child: Text('Retry'),
+                  child: Text('retry'.tr),
                 ),
               ],
             ),
@@ -95,7 +96,7 @@ class IncomeListScreen extends StatelessWidget {
         ),
       ),
       title: Text(
-        'Income List',
+        'income_list'.tr,
         style: TextStyle(
           color: textColor,
           fontSize: screenWidth * 0.045,
@@ -165,7 +166,7 @@ class IncomeListScreen extends StatelessWidget {
                 ),
                 SizedBox(height: screenHeight * 0.005),
                 Text(
-                  'Income',
+                  'income'.tr,
                   style: TextStyle(
                     fontSize: screenWidth * 0.032,
                     color: secondaryTextColor,
@@ -242,7 +243,7 @@ class IncomeListScreen extends StatelessWidget {
         child: Center(
           child: ElevatedButton(
             onPressed: incomeController.loadMoreIncomes,
-            child: Text('Load More'),
+            child: Text('load_more'.tr),
           ),
         ),
       );
@@ -268,18 +269,18 @@ class IncomeListScreen extends StatelessWidget {
 
   void _showEditIncomeDialog(Income income, IncomeController incomeController) {
     Get.defaultDialog(
-      title: 'Edit Income',
-      content: Text('Edit functionality to be implemented'),
+      title: 'edit_income'.tr,
+      content: Text('edit_functionality_to_be_implemented'.tr),
       actions: [
         TextButton(
           onPressed: () => Get.back(),
-          child: Text('Cancel'),
+          child: Text('cancel'.tr),
         ),
         TextButton(
           onPressed: () {
             Get.back();
           },
-          child: Text('Save'),
+          child: Text('save_action'.tr),
         ),
       ],
     );

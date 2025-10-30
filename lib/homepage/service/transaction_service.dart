@@ -22,14 +22,34 @@ class TransactionService extends GetxService {
         requiresAuth: true,
       );
 
-      if (response['success'] == true) {
-        final transactions = (response['data']['transactions'] as List<dynamic>)
-            .map((json) => Transaction.fromJson(json))
-            .toList();
-        return transactions;
+      List<dynamic> rawList = [];
+
+      if (response is List) {
+        rawList = response;
+      } else if (response is Map<String, dynamic>) {
+        // Typical shape { success: true, data: { transactions: [...] } }
+        final data = response['data'];
+        if (data is Map<String, dynamic> && data['transactions'] is List) {
+          rawList = data['transactions'] as List<dynamic>;
+        } else if (response['transactions'] is List) {
+          rawList = response['transactions'] as List<dynamic>;
+        } else if (data is List) {
+          rawList = data;
+        } else if (response['items'] is List) {
+          rawList = response['items'] as List<dynamic>;
+        } else {
+          throw Exception('No transactions list found in response');
+        }
       } else {
-        throw Exception('Failed to fetch transactions: ${response['message']}');
+        throw Exception('Unexpected response type: ${response.runtimeType}');
       }
+
+      final transactions = rawList
+          .whereType<Map<String, dynamic>>()
+          .map((json) => Transaction.fromJson(json))
+          .toList();
+
+      return transactions;
     } catch (e) {
       print('Error fetching transactions: $e');
       Get.snackbar('Error', 'Failed to fetch transactions: $e');

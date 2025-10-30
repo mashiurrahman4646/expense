@@ -6,6 +6,8 @@ import 'package:your_expense/Settings/premium/paymenttypetui.dart';
 import '../appearance/ThemeController.dart'; // Import your ThemeController
 
 class PremiumPlansScreen extends StatelessWidget {
+  const PremiumPlansScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();

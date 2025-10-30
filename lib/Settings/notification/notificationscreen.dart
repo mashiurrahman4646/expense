@@ -5,6 +5,8 @@ import '../appearance/ThemeController.dart';
  // Import your ThemeController
 
 class NotificationSettingsScreen extends StatefulWidget {
+  const NotificationSettingsScreen({super.key});
+
   @override
   _NotificationSettingsScreenState createState() => _NotificationSettingsScreenState();
 }

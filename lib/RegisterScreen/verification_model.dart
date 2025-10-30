@@ -1,12 +1,12 @@
 class VerifyEmailRequest {
   final String email;
-  final int oneTimeCode; // Changed from String to int
+  final int oneTimeCode;
 
   VerifyEmailRequest({required this.email, required this.oneTimeCode});
 
   Map<String, dynamic> toJson() => {
     'email': email,
-    'oneTimeCode': oneTimeCode, // Now sent as number
+    'oneTimeCode': oneTimeCode,
   };
 }
 
@@ -31,8 +31,8 @@ class VerifyEmailResponse {
       message: json['message'] ?? (json['success'] == true ? 'Success' : 'Unknown error'),
       errorMessages: json['errorMessages'] != null
           ? (json['errorMessages'] as List)
-          .map((e) => ErrorMessage.fromJson(e))
-          .toList()
+              .map((e) => ErrorMessage.fromJson(e))
+              .toList()
           : null,
       stack: json['stack'],
     );
@@ -70,8 +70,8 @@ class ResendOtpResponse {
       message: json['message'] ?? '',
       errorMessages: json['errorMessages'] != null
           ? (json['errorMessages'] as List)
-          .map((e) => ErrorMessage.fromJson(e))
-          .toList()
+              .map((e) => ErrorMessage.fromJson(e))
+              .toList()
           : null,
       stack: json['stack'],
     );
@@ -79,15 +79,15 @@ class ResendOtpResponse {
 }
 
 class ErrorMessage {
-  final String path;
   final String message;
+  final String? field;
 
-  ErrorMessage({required this.path, required this.message});
+  ErrorMessage({required this.message, this.field});
 
   factory ErrorMessage.fromJson(Map<String, dynamic> json) {
     return ErrorMessage(
-      path: json['path'] ?? '',
-      message: json['message'] ?? '',
+      message: json['message'] ?? 'Unknown error',
+      field: json['field'],
     );
   }
 }

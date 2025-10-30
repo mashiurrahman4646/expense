@@ -99,11 +99,11 @@ class UploadToDriveController extends GetxController {
   // Get selected export options as string
   String getSelectedExportOptions() {
     List<String> selected = [];
-    if (allFiles.value) selected.add('All files');
-    if (monthlyReports.value) selected.add('Monthly reports');
-    if (incomeReports.value) selected.add('Income reports');
-    if (expenseReports.value) selected.add('Expense reports');
-    if (savingsReports.value) selected.add('Savings reports');
+    if (allFiles.value) selected.add('all_files'.tr);
+    if (monthlyReports.value) selected.add('monthly_reports'.tr);
+    if (incomeReports.value) selected.add('income_reports'.tr);
+    if (expenseReports.value) selected.add('expense_reports'.tr);
+    if (savingsReports.value) selected.add('savings_reports'.tr);
     return selected.join(', ');
   }
 

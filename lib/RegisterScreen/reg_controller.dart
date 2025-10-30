@@ -1,74 +1,138 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:your_expense/RegisterScreen/registration_api_service.dart';
 import 'dart:convert';
 import 'package:your_expense/services/api_base_service.dart';
+import 'package:your_expense/services/token_service.dart';
 
 class RegistrationController extends GetxController {
   final fullNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-  SharedPreferences? _prefs;
-
+  final TokenService _tokenService = Get.find();
+  final RegistrationApiService _registrationApiService = Get.find();
 
   var isTermsAccepted = false.obs;
   var isLoading = false.obs;
-  final RegistrationApiService _registrationApiService = Get.find();
+
+  @override
+  void onInit() {
+    super.onInit();
+    print('📋 RegistrationController initialized');
+  }
 
   void toggleTermsAccepted(bool? value) {
     if (value != null) {
       isTermsAccepted.value = value;
+      print('📋 Terms accepted: $value');
     }
   }
 
   Future<bool> registerUser() async {
-    if (!validateForm()) return false;
+    print('=== Starting registerUser ===');
+    print('📋 Full name: "${fullNameController.text.trim()}"');
+    print('📋 Email: "${emailController.text.trim()}"');
+    print('📋 Password length: ${passwordController.text.length}');
+    print('📋 Terms accepted: ${isTermsAccepted.value}');
+
+    if (!validateForm()) {
+      print('❌ Validation failed');
+      return false;
+    }
+    print('✅ Validation passed');
 
     isLoading.value = true;
 
     try {
-      final response = await _registrationApiService.registerUser({
+      final userData = {
         "name": fullNameController.text.trim(),
         "email": emailController.text.trim(),
         "password": passwordController.text,
         "preferredLanguage": "English",
         "contact": "",
         "role": "USER"
-      });
+      };
+      print('📤 Sending request with body: $userData');
+
+      final response = await _registrationApiService.registerUser(userData);
+      print('📥 Full API response: $response');
+      print('📥 Response type: ${response.runtimeType}');
+      print('📥 Success field: ${response['success']}');
+      print('📥 Data field: ${response['data']}');
+      print('📥 Data type: ${response['data']?.runtimeType}');
 
       isLoading.value = false;
 
-      if (response['success'] == true) {
-        showSuccessSnackbar('Success'.tr, 'Registration successful'.tr);
-        print(response['data']);
+      // Check if registration was successful
+      if (response['success'] == true && response['data'] != null) {
+        print('✅ Registration successful!');
+        print('📦 User data received: ${response['data']}');
 
-        // in Data variable we store token as named data
-        String data= response['data'];
-        await _prefs?.setString('auth_token', data);
+        // Check if there's a token in the response
+        // The API might return token in different places
+        String? token;
 
+        if (response['token'] != null) {
+          token = response['token'].toString();
+          print('🔑 Token found in response[token]');
+        } else if (response['data'] is String && response['data'].toString().contains('.')) {
+          // Check if data itself is a JWT token (contains dots)
+          token = response['data'].toString();
+          print('🔑 Token found in response[data] as string');
+        } else if (response['data'] is Map && response['data']['token'] != null) {
+          token = response['data']['token'].toString();
+          print('🔑 Token found in response[data][token]');
+        } else {
+          print('ℹ️ No token in registration response');
+          print('ℹ️ This is normal - token will be provided after email verification');
+        }
+
+        // Save token if available
+        if (token != null && token.isNotEmpty) {
+          await _tokenService.saveToken(token);
+          print('✅ Token saved successfully');
+
+          final savedToken = _tokenService.getToken();
+          print('📋 Verified saved token exists: ${savedToken != null}');
+        }
+
+        showSuccessSnackbar('Success'.tr, 'Registration successful! Please verify your email.'.tr);
+        print('🎉 Registration complete, returning true');
+
+        // Add a small delay to ensure snackbar is visible
+        await Future.delayed(Duration(milliseconds: 500));
 
         return true;
       } else {
+        print('❌ API returned success=false or no data: $response');
         handleApiError(response);
         return false;
       }
     } on HttpException catch (e) {
+      print('❌ HttpException caught');
+      print('❌ Status code: ${e.statusCode}');
+      print('❌ Message: ${e.message}');
+
       isLoading.value = false;
+
       if (e.statusCode == 400 || e.statusCode == 409) {
         try {
           final errorData = json.decode(e.message);
+          print('📋 Parsed error data: $errorData');
           handleApiError(errorData);
         } catch (parseError) {
+          print('❌ Error parsing HttpException message: $parseError');
           showErrorSnackbar('Registration Error'.tr, 'Failed to register. Please try again.'.tr);
         }
       } else {
         showErrorSnackbar('Registration Error'.tr, 'Failed to register. Please try again.'.tr);
       }
       return false;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('❌ General error caught: $e');
+      print('❌ Stack trace: $stackTrace');
+
       isLoading.value = false;
       showErrorSnackbar('Network Error'.tr, 'Please check your internet connection'.tr);
       return false;
@@ -77,11 +141,14 @@ class RegistrationController extends GetxController {
 
   void handleApiError(Map<String, dynamic> response) {
     final errorMessage = response['message'] ?? 'Unknown error occurred';
+    print('❌ Handling API error: $errorMessage');
+    print('📋 Full error response: $response');
 
     if (errorMessage.toString().toLowerCase().contains('email already exist')) {
-      showErrorSnackbar('Registration Error'.tr, 'email_already_exists'.tr);
+      showErrorSnackbar('Registration Error'.tr, 'This email is already registered. Please login or use a different email.'.tr);
+    } else if (errorMessage.toString().toLowerCase().contains('already registered')) {
+      showErrorSnackbar('Registration Error'.tr, 'This email is already registered. Please login.'.tr);
     } else if (response['errorMessages'] != null) {
-      // Handle multiple validation errors
       final errors = response['errorMessages'] as List;
       if (errors.isNotEmpty) {
         final firstError = errors[0];
@@ -96,48 +163,32 @@ class RegistrationController extends GetxController {
   }
 
   bool validateForm() {
-    // Validate full name
+    String? errorMsg;
+
     if (fullNameController.text.trim().isEmpty) {
-      showErrorSnackbar('Validation Error'.tr, 'Please enter your full name'.tr);
-      return false;
+      errorMsg = 'Please enter your full name'.tr;
+    } else if (fullNameController.text.trim().length < 2) {
+      errorMsg = 'Name must be at least 2 characters long'.tr;
+    } else if (emailController.text.trim().isEmpty) {
+      errorMsg = 'Please enter your email address'.tr;
+    } else if (!GetUtils.isEmail(emailController.text.trim())) {
+      errorMsg = 'Please enter a valid email address'.tr;
+    } else if (passwordController.text.isEmpty) {
+      errorMsg = 'Please create a password'.tr;
+    } else if (passwordController.text.length < 6) {
+      errorMsg = 'Password must be at least 6 characters long'.tr;
+    } else if (confirmPasswordController.text.isEmpty) {
+      errorMsg = 'Please confirm your password'.tr;
+    } else if (passwordController.text != confirmPasswordController.text) {
+      errorMsg = 'Passwords do not match'.tr;
     }
 
-    // Validate email
-    if (emailController.text.trim().isEmpty) {
-      showErrorSnackbar('Validation Error'.tr, 'Please enter your email address'.tr);
+    if (errorMsg != null) {
+      print('❌ Validation error: $errorMsg');
+      showErrorSnackbar('Validation Error'.tr, errorMsg);
       return false;
     }
-
-    // Validate email format
-    if (!GetUtils.isEmail(emailController.text.trim())) {
-      showErrorSnackbar('Validation Error'.tr, 'Please enter a valid email address'.tr);
-      return false;
-    }
-
-    // Validate password
-    if (passwordController.text.isEmpty) {
-      showErrorSnackbar('Validation Error'.tr, 'Please create a password'.tr);
-      return false;
-    }
-
-    // Validate password length
-    if (passwordController.text.length < 6) {
-      showErrorSnackbar('Validation Error'.tr, 'Password must be at least 6 characters long'.tr);
-      return false;
-    }
-
-    // Validate confirm password
-    if (confirmPasswordController.text.isEmpty) {
-      showErrorSnackbar('Validation Error'.tr, 'Please confirm your password'.tr);
-      return false;
-    }
-
-    // Validate password match
-    if (passwordController.text != confirmPasswordController.text) {
-      showErrorSnackbar('Validation Error'.tr, 'Passwords do not match'.tr);
-      return false;
-    }
-
+    print('✅ Form validation passed');
     return true;
   }
 
@@ -150,7 +201,8 @@ class RegistrationController extends GetxController {
       backgroundColor: isDarkMode ? Colors.red[800] : Colors.red[100],
       colorText: isDarkMode ? Colors.white : Colors.red[900],
       margin: const EdgeInsets.all(12),
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 4),
+      icon: Icon(Icons.error_outline, color: isDarkMode ? Colors.white : Colors.red[900]),
     );
   }
 
@@ -164,6 +216,7 @@ class RegistrationController extends GetxController {
       colorText: isDarkMode ? Colors.white : Colors.green[900],
       margin: const EdgeInsets.all(12),
       duration: const Duration(seconds: 3),
+      icon: Icon(Icons.check_circle_outline, color: isDarkMode ? Colors.white : Colors.green[900]),
     );
   }
 
@@ -173,6 +226,7 @@ class RegistrationController extends GetxController {
     passwordController.clear();
     confirmPasswordController.clear();
     isTermsAccepted.value = false;
+    print('📋 Form cleared');
   }
 
   @override
@@ -181,6 +235,9 @@ class RegistrationController extends GetxController {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    print('🗑️ RegistrationController disposed');
     super.onClose();
   }
+
+  int min(int a, int b) => a < b ? a : b;
 }

@@ -5,6 +5,10 @@ import 'dart:async';
 import '../../colors/app_colors.dart';
 import 'face_login_controller.dart';
 import '../../routes/app_routes.dart';
+import '../../services/face_id_service.dart';
+import '../../services/token_service.dart';
+import '../../services/local_auth_service.dart';
+import 'package:flutter/foundation.dart';
 
 class FaceLoginScreen extends StatefulWidget {
   @override
@@ -72,14 +76,70 @@ class _FaceLoginScreenState extends State<FaceLoginScreen>
   }
 
   void _startVerification() {
+    final tokenService = Get.find<TokenService>();
+    final faceService = Get.find<FaceIdService>();
+    final localAuth = Get.find<LocalAuthService>();
+
+    if (!tokenService.isTokenValid()) {
+      Get.snackbar(
+        'Session Expired',
+        'Please login with password to continue.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (!faceService.isEnabledForCurrentUser()) {
+      Get.snackbar(
+        'Face ID Not Enabled',
+        'Enable Face ID in settings and try again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    // On mobile platforms where biometrics are supported, gate with local_auth first
+    if (!kIsWeb) {
+      localAuth.isSupported().then((supported) async {
+        if (supported) {
+          final ok = await localAuth.authenticate(
+            reason: 'Authenticate with device biometrics to continue',
+          );
+          if (!ok) {
+            Get.snackbar(
+              'Authentication Failed',
+              'Could not verify your identity with biometrics.',
+              snackPosition: SnackPosition.TOP,
+              backgroundColor: Colors.red,
+              colorText: Colors.white,
+            );
+            return;
+          }
+        }
+        // Proceed with camera-based verification after biometric gate
+        controller.startVerification();
+        _animationController.reset();
+        _animationController.forward();
+        Timer(const Duration(seconds: 5), () {
+          if (mounted) {
+            controller.completeVerification();
+          }
+        });
+      });
+      return;
+    }
+
+    // Web: proceed directly with camera-based verification
     controller.startVerification();
     _animationController.reset();
     _animationController.forward();
     Timer(const Duration(seconds: 5), () {
       if (mounted) {
         controller.completeVerification();
-        // Navigate to MainHomeScreen after successful verification
-        Get.offNamed(AppRoutes.mainHome);
       }
     });
   }

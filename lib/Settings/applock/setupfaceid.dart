@@ -5,6 +5,8 @@ import '../appearance/ThemeController.dart';
  // Import your ThemeController
 
 class SetupFaceIDScreen extends StatelessWidget {
+  const SetupFaceIDScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
@@ -64,7 +66,7 @@ class SetupFaceIDScreen extends StatelessWidget {
                 // Navigate to face authentication screen
                 Get.toNamed('/faceAuthentication');
               },
-              child: Container(
+              child: SizedBox(
                 width: screenWidth * 0.55,
                 height: screenWidth * 0.55,
                 child: Image.asset(
@@ -78,7 +80,7 @@ class SetupFaceIDScreen extends StatelessWidget {
             const Spacer(),
 
             // Use PIN Instead Button
-            Container(
+            SizedBox(
               width: double.infinity,
               child: TextButton(
                 onPressed: () => Get.toNamed('/setPin'),

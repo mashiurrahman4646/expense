@@ -1,8 +1,11 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:math' as math;
+import 'package:intl/intl.dart';
 
-import '../homepage/main_home_page_controller.dart';
+
+import '../home/home_controller.dart';
 import '../reuseablenav/reuseablenavui.dart';
 import 'analytics_controller.dart';
 import '../../Settings/appearance/ThemeController.dart';
@@ -35,7 +38,9 @@ class AnalyticsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: _buildAppBar(screenWidth, textColor, backgroundColor),
-      body: SingleChildScrollView(
+      body: Obx(() => controller.isLoading.value
+          ? _buildLoadingIndicator()
+          : SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(screenWidth * 0.05),
           child: Column(
@@ -44,20 +49,33 @@ class AnalyticsScreen extends StatelessWidget {
               SizedBox(height: screenHeight * 0.03),
               _buildMonthSelector(controller, screenWidth, screenHeight),
               SizedBox(height: screenHeight * 0.04),
-              _buildChart(controller, screenWidth, screenHeight),
+              _buildChartsSection(controller, screenWidth, screenHeight, iconBackgroundColor, textColor),
               SizedBox(height: screenHeight * 0.03),
               _buildLegend(controller, screenWidth, textColor, secondaryTextColor),
               SizedBox(height: screenHeight * 0.04),
-              _buildSummaryCards(screenWidth, screenHeight, cardColor, textColor, secondaryTextColor),
+              _buildSummaryCards(controller, screenWidth, screenHeight, cardColor, textColor, secondaryTextColor),
               SizedBox(height: screenHeight * 0.04),
               _buildActionsSection(controller, screenWidth, screenHeight, cardColor, textColor),
               SizedBox(height: screenHeight * 0.02),
             ],
           ),
         ),
-      ),
+      )),
       bottomNavigationBar: CustomBottomNavBar(
         isDarkMode: isDarkMode,
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: 16),
+          Text('loading_analytics'.tr),
+        ],
       ),
     );
   }
@@ -123,126 +141,374 @@ class AnalyticsScreen extends StatelessWidget {
   }
 
   Widget _buildMonthSelector(AnalyticsController controller, double screenWidth, double screenHeight) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.04,
-        vertical: screenHeight * 0.012,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2196F3).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(screenWidth * 0.06),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            controller.getCurrentMonthAndYear(),
-            style: TextStyle(
-              color: const Color(0xFF2196F3),
-              fontSize: screenWidth * 0.035,
-              fontWeight: FontWeight.w500,
+    return GestureDetector(
+      onTap: () => _showMonthPicker(controller, screenWidth, screenHeight),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.04,
+          vertical: screenHeight * 0.012,
+        ),
+        decoration: BoxDecoration(
+          color: const Color(0xFF2196F3).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(screenWidth * 0.06),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              controller.getCurrentMonthAndYear(),
+              style: TextStyle(
+                color: const Color(0xFF2196F3),
+                fontSize: screenWidth * 0.035,
+                fontWeight: FontWeight.w500,
+              ),
             ),
+            SizedBox(width: screenWidth * 0.02),
+            Icon(
+              Icons.keyboard_arrow_down,
+              color: const Color(0xFF2196F3),
+              size: screenWidth * 0.045,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showMonthPicker(AnalyticsController controller, double screenWidth, double screenHeight) {
+    final now = DateTime.now();
+    final currentYear = now.year;
+    final themeController = Get.find<ThemeController>();
+    final bool isDarkMode = themeController.isDarkModeActive;
+
+    showModalBottomSheet(
+      context: Get.context!,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: screenHeight * 0.4,
+        decoration: BoxDecoration(
+          color: isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
           ),
-          SizedBox(width: screenWidth * 0.02),
-          Icon(
-            Icons.keyboard_arrow_down,
-            color: const Color(0xFF2196F3),
-            size: screenWidth * 0.045,
+        ),
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isDarkMode ? Color(0xFF2A2A2A) : Colors.grey[100],
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Select Month',
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.045,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                    onPressed: () => Get.back(),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: GridView.builder(
+                padding: EdgeInsets.all(16),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 1.5,
+                ),
+                itemCount: 12,
+                itemBuilder: (context, index) {
+                  final month = index + 1;
+                  final monthYear = '${currentYear}-${month.toString().padLeft(2, '0')}';
+                  final isSelected = controller.selectedMonth.value == monthYear;
+
+                  return GestureDetector(
+                    onTap: () {
+                      controller.updateMonth(monthYear);
+                      Get.back();
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? Color(0xFF2196F3)
+                            : (isDarkMode ? Color(0xFF2A2A2A) : Colors.grey[100]),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSelected
+                              ? Color(0xFF2196F3)
+                              : (isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          DateFormat('MMM').format(DateTime(currentYear, month)),
+                          style: TextStyle(
+                            color: isSelected
+                                ? Colors.white
+                                : (isDarkMode ? Colors.white : Colors.black),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Data type dropdown
+  Widget _buildDataTypeDropdown(AnalyticsController controller, double screenWidth, Color backgroundColor, Color textColor) {
+    return Container(
+      width: screenWidth * 0.4,
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(screenWidth * 0.02),
+        border: Border.all(color: Colors.grey.withOpacity(0.3)),
+      ),
+      child: Obx(() => DropdownButtonHideUnderline(
+        child: DropdownButton<int>(
+          value: controller.selectedDataType.value,
+          icon: Icon(Icons.keyboard_arrow_down, color: textColor),
+          isExpanded: true,
+          dropdownColor: backgroundColor,
+          style: TextStyle(
+            color: textColor,
+            fontSize: screenWidth * 0.035,
+            fontWeight: FontWeight.w500,
           ),
+          items: [
+            DropdownMenuItem(
+              value: 0,
+              child: Text('income'.tr),
+            ),
+            DropdownMenuItem(
+              value: 1,
+              child: Text('expenses'.tr),
+            ),
+          ],
+          onChanged: (int? newValue) {
+            if (newValue != null) {
+              controller.selectDataType(newValue);
+            }
+          },
+        ),
+      )),
+    );
+  }
+
+  // Charts section
+  Widget _buildChartsSection(AnalyticsController controller, double screenWidth, double screenHeight, Color iconBackgroundColor, Color textColor) {
+    return Obx(() {
+      final currentData = controller.getCurrentData();
+      final hasData = currentData.isNotEmpty;
+
+      print('🎨 Building ${controller.currentDataTypeName} chart - Has data: $hasData');
+
+      if (!hasData) {
+        return _buildNoDataPlaceholder(screenWidth, screenHeight, controller.getCurrentDataTypeTitle());
+      }
+
+      return Column(
+        children: [
+          // Data Type Dropdown and Chart Title
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildChartTitle(controller.getCurrentDataTypeTitle(), screenWidth),
+              _buildDataTypeDropdown(controller, screenWidth, iconBackgroundColor, textColor),
+            ],
+          ),
+          SizedBox(height: screenHeight * 0.02),
+          _buildChart(controller, screenWidth, screenHeight),
         ],
+      );
+    });
+  }
+
+  Widget _buildChartTitle(String title, double screenWidth) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: screenWidth * 0.045,
+        fontWeight: FontWeight.w600,
+        color: Colors.grey[600],
       ),
     );
   }
 
   Widget _buildChart(AnalyticsController controller, double screenWidth, double screenHeight) {
-    return Obx(() => Container(
-      height: screenHeight * 0.35,
+    return Container(
+      height: screenHeight * 0.3,
       child: controller.selectedChartType.value == 0
           ? _buildPieChart(controller, screenWidth, screenHeight)
           : controller.selectedChartType.value == 1
           ? _buildBarChart(controller, screenWidth, screenHeight)
           : _buildLineChart(controller, screenWidth, screenHeight),
-    ));
+    );
   }
 
   Widget _buildPieChart(AnalyticsController controller, double screenWidth, double screenHeight) {
-    final pieData = controller.getCombinedChartData();
+    final pieData = controller.getCurrentPieChartData();
+    print('🥧 Building ${controller.currentDataTypeName} pie chart with ${pieData.length} items');
     return Center(
       child: CustomPaint(
-        size: Size(screenWidth * 0.6, screenWidth * 0.6),
+        size: Size(screenWidth * 0.5, screenWidth * 0.5),
         painter: PieChartPainter(pieData),
       ),
     );
   }
 
   Widget _buildBarChart(AnalyticsController controller, double screenWidth, double screenHeight) {
+    final barData = controller.getCurrentBarChartData();
+    print('📊 Building ${controller.currentDataTypeName} bar chart with ${barData.length} items');
     return Center(
       child: Container(
-        height: screenHeight * 0.3,
+        height: screenHeight * 0.25,
         width: screenWidth * 0.85,
         child: CustomPaint(
-          painter: BarChartPainter(controller.getCombinedChartData()),
+          painter: BarChartPainter(barData),
         ),
       ),
     );
   }
 
   Widget _buildLineChart(AnalyticsController controller, double screenWidth, double screenHeight) {
+    final lineData = controller.getCurrentLineChartData();
+    print('📈 Building ${controller.currentDataTypeName} line chart with ${lineData.length} items');
     return Center(
       child: Container(
-        height: screenHeight * 0.3,
+        height: screenHeight * 0.25,
         width: screenWidth * 0.85,
         child: CustomPaint(
-          painter: LineChartPainter(controller.getLineChartData()),
+          painter: LineChartPainter(lineData),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoDataPlaceholder(double screenWidth, double screenHeight, String dataType) {
+    return Container(
+      height: screenHeight * 0.35,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.bar_chart,
+              size: screenWidth * 0.15,
+              color: Colors.grey[400],
+            ),
+            SizedBox(height: screenHeight * 0.02),
+            Text(
+              'no_data_available'.trParams({'dataType': dataType}),
+              style: TextStyle(
+                fontSize: screenWidth * 0.04,
+                color: Colors.grey[400],
+              ),
+            ),
+            Text(
+              'select_different_month_or_add_transactions'.tr,
+              style: TextStyle(
+                fontSize: screenWidth * 0.03,
+                color: Colors.grey[400],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildLegend(AnalyticsController controller, double screenWidth, Color textColor, Color secondaryTextColor) {
-    return Row(
+    return Obx(() {
+      final currentData = controller.getCurrentData();
+      final currentTotal = controller.getCurrentTotal();
+      final dataType = controller.getCurrentDataTypeTitle();
+
+      print('📖 Building legend - $dataType: ${currentData.length} items');
+
+      if (currentData.isEmpty) {
+        return _buildNoDataLegend(screenWidth, textColor, dataType);
+      }
+
+      return _buildLegendSection(
+        'data_breakdown'.trParams({'dataType': dataType}),
+        currentData,
+        currentTotal,
+        screenWidth,
+        textColor,
+        secondaryTextColor,
+      );
+    });
+  }
+
+  Widget _buildLegendSection(String title, List<ChartData> data, double total,
+      double screenWidth, Color textColor, Color secondaryTextColor) {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'expenses'.tr,
-                style: TextStyle(
-                  fontSize: screenWidth * 0.04,
-                  fontWeight: FontWeight.w600,
-                  color: textColor,
-                ),
-              ),
-              SizedBox(height: screenWidth * 0.02),
-              ...controller.expenseData.map((data) {
-                return _buildLegendItem(data.label.tr, '${data.value.toStringAsFixed(0)}%', data.color, screenWidth, textColor);
-              }).toList(),
-            ],
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: screenWidth * 0.04,
+            fontWeight: FontWeight.w600,
+            color: textColor,
           ),
         ),
-        SizedBox(width: screenWidth * 0.05),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'income'.tr,
-                style: TextStyle(
-                  fontSize: screenWidth * 0.04,
-                  fontWeight: FontWeight.w600,
-                  color: textColor,
-                ),
-              ),
-              SizedBox(height: screenWidth * 0.02),
-              ...controller.incomeData.map((data) {
-                return _buildLegendItem(data.label.tr, '${data.value.toStringAsFixed(0)}%', data.color, screenWidth, textColor);
-              }).toList(),
-            ],
-          ),
-        ),
+        SizedBox(height: screenWidth * 0.02),
+        ...data.map((item) {
+          final percentage = total > 0 ? (item.value / total * 100).toStringAsFixed(1) : '0.0';
+          print('📊 Legend item: ${item.label} - ${item.value} ($percentage%)');
+          return _buildLegendItem(
+            item.label,
+            '\$${item.value.toStringAsFixed(0)} ($percentage%)',
+            item.color,
+            screenWidth,
+            textColor,
+          );
+        }).toList(),
       ],
+    );
+  }
+
+  Widget _buildNoDataLegend(double screenWidth, Color textColor, String dataType) {
+    return Container(
+      padding: EdgeInsets.all(screenWidth * 0.04),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(screenWidth * 0.03),
+      ),
+      child: Text(
+        'no_data_selected_month'.trParams({'dataType': dataType}),
+        style: TextStyle(
+          fontSize: screenWidth * 0.035,
+          color: textColor.withOpacity(0.6),
+        ),
+        textAlign: TextAlign.center,
+      ),
     );
   }
 
@@ -262,12 +528,19 @@ class AnalyticsScreen extends StatelessWidget {
           SizedBox(width: screenWidth * 0.02),
           Expanded(
             child: Text(
-              '$label: $amount',
+              label,
               style: TextStyle(
-                fontSize: screenWidth * 0.032,
+                fontSize: screenWidth * 0.035,
                 color: textColor,
+                fontWeight: FontWeight.w500,
               ),
-              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Text(
+            amount,
+            style: TextStyle(
+              fontSize: screenWidth * 0.032,
+              color: textColor,
             ),
           ),
         ],
@@ -275,13 +548,13 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCards(double screenWidth, double screenHeight, Color cardColor, Color textColor, Color secondaryTextColor) {
-    return Row(
+  Widget _buildSummaryCards(AnalyticsController controller, double screenWidth, double screenHeight, Color cardColor, Color textColor, Color secondaryTextColor) {
+    return Obx(() => Row(
       children: [
         Expanded(
           child: _buildSummaryCard(
             'total_expenses'.tr,
-            '\$2012',
+            controller.getFormattedTotalExpenses(),
             Icons.arrow_downward,
             Colors.orange,
             screenWidth,
@@ -295,7 +568,7 @@ class AnalyticsScreen extends StatelessWidget {
         Expanded(
           child: _buildSummaryCard(
             'total_income'.tr,
-            '\$3124',
+            controller.getFormattedTotalIncome(),
             Icons.arrow_upward,
             Colors.green,
             screenWidth,
@@ -306,7 +579,7 @@ class AnalyticsScreen extends StatelessWidget {
           ),
         ),
       ],
-    );
+    ));
   }
 
   Widget _buildSummaryCard(String title, String amount, IconData icon, Color iconColor,
@@ -426,13 +699,11 @@ class PieChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = math.min(size.width, size.height) / 2;
-    final innerRadius = 0.0;
 
     double total = data.fold(0.0, (sum, item) => sum + item.value);
     if (total == 0) return;
 
     double startAngle = -math.pi / 2;
-    const gapAngle = 0.0;
 
     for (int i = 0; i < data.length; i++) {
       final sweepAngle = (data[i].value / total) * 2 * math.pi;
@@ -480,24 +751,30 @@ class BarChartPainter extends CustomPainter {
       ..color = gridColor
       ..strokeWidth = 0.5;
 
-    final maxVal = 100.0;
+    final maxVal = data.isNotEmpty
+        ? data.fold(0.0, (max, item) => math.max(max, item.value)) * 1.1
+        : 100.0;
+
     final textStyle = TextStyle(
       color: textColor,
       fontSize: 11,
       fontWeight: FontWeight.w400,
     );
 
-    for (int i = 0; i <= 10; i++) {
-      final y = chartBottom - (chartHeight * i / 10);
+    // Draw horizontal grid lines
+    for (int i = 0; i <= 5; i++) {
+      final y = chartBottom - (chartHeight * i / 5);
       canvas.drawLine(Offset(chartLeft, y), Offset(chartRight, y), gridPaint);
 
-      final textPainter = TextPainter(
-        text: TextSpan(text: '${i * 10}%', style: textStyle),
-        textDirection: TextDirection.ltr,
-      );
-      textPainter.layout();
-      textPainter.paint(canvas, Offset(2, y - textPainter.height / 2));
+      final value = (maxVal * i / 5).toInt();
+      final painter = TextPainter(
+        text: TextSpan(text: '\$${value ~/ 1000}K', style: textStyle),
+        textDirection: ui.TextDirection.ltr,
+      )..layout();
+      painter.paint(canvas, Offset(2, y - painter.height / 2));
     }
+
+    if (data.isEmpty) return;
 
     final totalBars = data.length;
     final barWidth = chartWidth / (totalBars * 1.5) * 0.8;
@@ -524,67 +801,23 @@ class BarChartPainter extends CustomPainter {
       );
       canvas.drawRRect(rect, barPaint);
 
-      final textPainter = TextPainter(
-        text: TextSpan(text: data[i].label, style: categoryTextStyle),
-        textDirection: TextDirection.ltr,
-      );
-      textPainter.layout();
+      final valueText = TextPainter(
+        text: TextSpan(text: '\$${data[i].value.toInt()}', style: categoryTextStyle),
+        textDirection: ui.TextDirection.ltr,
+      )..layout();
+      valueText.paint(canvas, Offset(currentX + (barWidth - valueText.width) / 2, y - valueText.height - 2));
 
-      final labelX = currentX + (barWidth - textPainter.width) / 2;
+      final labelPainter = TextPainter(
+        text: TextSpan(text: data[i].label, style: categoryTextStyle),
+        textDirection: ui.TextDirection.ltr,
+      )..layout();
+
+      final labelX = currentX + (barWidth - labelPainter.width) / 2;
       final labelY = chartBottom + 8;
-      textPainter.paint(canvas, Offset(labelX, labelY));
+      labelPainter.paint(canvas, Offset(labelX, labelY));
 
       currentX += barWidth + barGap;
     }
-
-    final expenseLinePaint = Paint()
-      ..color = const Color(0xFFFFA000)
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
-
-    final incomeLinePaint = Paint()
-      ..color = const Color(0xFF4CAF50)
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
-
-    final lineY = chartBottom + 30;
-
-    final expenseStart = chartLeft + barGap + (barWidth + barGap) * 0;
-    final expenseEnd = chartLeft + barGap + (barWidth + barGap) * (4 - 1) + barWidth;
-
-    final incomeStart = chartLeft + barGap + (barWidth + barGap) * 4;
-    final incomeEnd = chartRight;
-
-    canvas.drawLine(Offset(expenseStart, lineY), Offset(expenseEnd, lineY), expenseLinePaint);
-    canvas.drawLine(Offset(incomeStart, lineY), Offset(incomeEnd, lineY), incomeLinePaint);
-
-    final paintCircle = Paint()..color = const Color(0xFFFFA000)..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset(expenseStart, lineY), 4, paintCircle);
-    canvas.drawCircle(Offset(expenseEnd, lineY), 4, paintCircle);
-
-    paintCircle.color = const Color(0xFF4CAF50);
-    canvas.drawCircle(Offset(incomeStart, lineY), 4, paintCircle);
-    canvas.drawCircle(Offset(incomeEnd, lineY), 4, paintCircle); 
-
-    final labelTextStyle = TextStyle(
-      color: textColor,
-      fontSize: 12,
-      fontWeight: FontWeight.w600,
-    );
-
-    final expenseLabelPainter = TextPainter(
-      text: TextSpan(text: 'expense'.tr, style: labelTextStyle),
-      textDirection: TextDirection.ltr,
-    );
-    expenseLabelPainter.layout();
-    expenseLabelPainter.paint(canvas, Offset(expenseStart + (expenseEnd - expenseStart) / 2 - expenseLabelPainter.width / 2, lineY + 10));
-
-    final incomeLabelPainter = TextPainter(
-      text: TextSpan(text: 'income'.tr, style: labelTextStyle),
-      textDirection: TextDirection.ltr,
-    );
-    incomeLabelPainter.layout();
-    incomeLabelPainter.paint(canvas, Offset(incomeStart + (incomeEnd - incomeStart) / 2 - incomeLabelPainter.width / 2, lineY + 10));
   }
 
   @override
@@ -614,86 +847,87 @@ class LineChartPainter extends CustomPainter {
       ..color = gridColor
       ..strokeWidth = 0.5;
 
-    final maxVal = 100.0;
+    final maxVal = data.isNotEmpty
+        ? data.fold(0.0, (max, item) => math.max(max, item.value)) * 1.1
+        : 100.0;
+
     final textStyle = TextStyle(
       color: textColor,
       fontSize: 11,
       fontWeight: FontWeight.w400,
     );
 
-    for (int i = 0; i <= 10; i++) {
-      final y = chartBottom - (chartHeight * i / 10);
+    // Draw horizontal grid lines
+    for (int i = 0; i <= 5; i++) {
+      final y = chartBottom - (chartHeight * i / 5);
       canvas.drawLine(Offset(chartLeft, y), Offset(chartRight, y), gridPaint);
 
-      final textPainter = TextPainter(
-        text: TextSpan(text: '${i * 10}%', style: textStyle),
-        textDirection: TextDirection.ltr,
-      );
-      textPainter.layout();
-      textPainter.paint(canvas, Offset(2, y - textPainter.height / 2));
+      final value = (maxVal * i / 5).toInt();
+      final painter = TextPainter(
+        text: TextSpan(text: '\$${value ~/ 1000}K', style: textStyle),
+        textDirection: ui.TextDirection.ltr,
+      )..layout();
+      painter.paint(canvas, Offset(2, y - painter.height / 2));
     }
 
-    final xLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+    if (data.isEmpty) return;
+
+    final xLabels = data.map((item) => item.label).toList();
     final totalPoints = xLabels.length;
 
-    final labelPaint = TextPainter(
-      textDirection: TextDirection.ltr,
-      textAlign: TextAlign.center,
-      text: TextSpan(
-        style: TextStyle(
-          color: textColor,
-          fontSize: 10,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+    final categoryTextStyle = TextStyle(
+      color: textColor,
+      fontSize: 10,
+      fontWeight: FontWeight.w500,
     );
 
+    // Draw x-axis labels
     for (int i = 0; i < totalPoints; i++) {
-      final x = chartLeft + (i / (totalPoints - 1)) * chartWidth;
-      labelPaint.text = TextSpan(text: xLabels[i]);
-      labelPaint.layout();
-      final labelX = x - labelPaint.width / 2;
+      final x = totalPoints > 1
+          ? chartLeft + (i / (totalPoints - 1)) * chartWidth
+          : chartLeft + chartWidth / 2;
+
+      final labelPainter = TextPainter(
+        text: TextSpan(text: xLabels[i], style: categoryTextStyle),
+        textDirection: ui.TextDirection.ltr,
+      )..layout();
+      final labelX = x - labelPainter.width / 2;
       final labelY = chartBottom + 8;
-      labelPaint.paint(canvas, Offset(labelX, labelY)); // Fixed: changed 'cancanvas' to 'canvas'
+      labelPainter.paint(canvas, Offset(labelX, labelY));
     }
 
-    final linePoints = [
-      [60, 50, 70, 65, 75, 70, 80],
-      [50, 60, 55, 65, 55, 60, 70],
-      [30, 45, 40, 50, 45, 40, 50],
-      [20, 25, 30, 20, 35, 30, 40],
-      [25, 30, 25, 35, 30, 35, 40],
-      [10, 20, 15, 25, 30, 20, 35],
-    ];
-    final colors = [
-      const Color(0xFFFFC107),
-      const Color(0xFF4CAF50),
-      const Color(0xFFFF5252),
-      const Color(0xFF2196F3),
-      const Color(0xFF9C27B0),
-      const Color(0xFF00BCD4),
-    ];
+    final linePaint = Paint()
+      ..color = const Color(0xFF2196F3)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
 
-    for (int i = 0; i < linePoints.length; i++) {
-      final linePaint = Paint()
-        ..color = colors[i]
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
-        ..strokeCap = StrokeCap.round;
+    final pointPaint = Paint()
+      ..color = const Color(0xFF2196F3)
+      ..style = PaintingStyle.fill;
 
+    // Draw line and points
+    if (data.length == 1) {
+      // Single point
+      final x = chartLeft + chartWidth / 2;
+      final y = chartBottom - (data[0].value / maxVal) * chartHeight;
+      canvas.drawCircle(Offset(x, y), 4, pointPaint);
+    } else {
+      // Multiple points
       final path = Path();
-      for (int j = 0; j < linePoints[i].length; j++) {
-        final x = chartLeft + (j / (linePoints[i].length - 1)) * chartWidth;
-        final y = chartBottom - (linePoints[i][j] / maxVal) * chartHeight;
+      for (int i = 0; i < data.length; i++) {
+        final x = chartLeft + (i / (data.length - 1)) * chartWidth;
+        final y = chartBottom - (data[i].value / maxVal) * chartHeight;
 
-        if (j == 0) {
+        if (i == 0) {
           path.moveTo(x, y);
         } else {
           path.lineTo(x, y);
         }
-        canvas.drawCircle(Offset(x, y), 3, linePaint..style = PaintingStyle.fill);
+
+        canvas.drawCircle(Offset(x, y), 4, pointPaint);
       }
-      canvas.drawPath(path, linePaint..style = PaintingStyle.stroke);
+      canvas.drawPath(path, linePaint);
     }
   }
 

@@ -19,6 +19,7 @@ class VerificationApiService extends ApiBaseService {
       'POST',
       _config.verifyEmailEndpoint,
       body: requestBody,
+      requiresAuth: false, // Verification should not require auth
     );
 
     return VerifyEmailResponse.fromJson(response);
@@ -34,6 +35,7 @@ class VerificationApiService extends ApiBaseService {
       'POST',
       _config.resendOtpEndpoint,
       body: requestBody,
+      requiresAuth: false, // Resend should not require auth
     );
 
     return ResendOtpResponse.fromJson(response);

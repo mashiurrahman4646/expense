@@ -6,6 +6,7 @@ import 'package:your_expense/Settings/appearance/ThemeController.dart';
 import 'expense_controller.dart';
 import 'expense_model.dart';
 
+
 class ExpenseListScreen extends StatelessWidget {
   final ExpenseController _expenseController = Get.find();
   final ThemeController _themeController = Get.find();
@@ -79,7 +80,7 @@ class ExpenseListScreen extends StatelessWidget {
         onPressed: () => Get.back(),
       ),
       title: Text(
-        'Expense List',
+        'expense_list'.tr,
         style: TextStyle(
           color: textColor,
           fontSize: screenWidth * 0.045,
@@ -148,7 +149,7 @@ class ExpenseListScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Expense', // You can map category IDs to names later
+                  expense.category.isNotEmpty ? expense.category : 'expense'.tr,
                   style: TextStyle(
                     fontSize: screenWidth * 0.04,
                     fontWeight: FontWeight.w600,
@@ -157,7 +158,7 @@ class ExpenseListScreen extends StatelessWidget {
                 ),
                 SizedBox(height: screenHeight * 0.005),
                 Text(
-                  expense.note.isNotEmpty ? expense.note : 'No description',
+                  expense.note.isNotEmpty ? expense.note : (expense.category.isNotEmpty ? expense.category : 'no_description'.tr),
                   style: TextStyle(
                     fontSize: screenWidth * 0.032,
                     color: secondaryTextColor,
@@ -188,26 +189,38 @@ class ExpenseListScreen extends StatelessWidget {
           ),
 
           // Amount and edit button
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                expense.formattedAmount,
-                style: TextStyle(
-                  fontSize: screenWidth * 0.04,
-                  fontWeight: FontWeight.w600,
-                  color: textColor,
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: screenWidth * 0.28,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    expense.formattedAmount,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.04,
+                      fontWeight: FontWeight.w600,
+                      color: textColor,
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(height: screenHeight * 0.01),
-              IconButton(
-                icon: Icon(Icons.edit, size: screenWidth * 0.05, color: iconColor),
-                onPressed: () {
-                  // Handle edit action
-                  print('Edit expense: ${expense.id}');
-                },
-              ),
-            ],
+                SizedBox(height: screenHeight * 0.01),
+                IconButton(
+                  icon: Icon(Icons.edit, size: screenWidth * 0.05, color: iconColor),
+                  onPressed: () {
+                    // Handle edit action
+                    print('Edit expense: ${expense.id}');
+                  },
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -224,7 +237,7 @@ class ExpenseListScreen extends StatelessWidget {
             Icon(Icons.error_outline, size: 50, color: Colors.red),
             SizedBox(height: 16),
             Text(
-              'Failed to load expenses',
+              'failed_to_load_expenses'.tr,
               style: TextStyle(color: textColor, fontSize: 16),
             ),
             SizedBox(height: 8),
@@ -236,7 +249,7 @@ class ExpenseListScreen extends StatelessWidget {
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => _expenseController.loadExpenses(),
-              child: Text('Retry'),
+              child: Text('retry'.tr),
             ),
           ],
         ),
@@ -252,11 +265,11 @@ class ExpenseListScreen extends StatelessWidget {
           Icon(Icons.receipt_long, size: 50, color: iconColor),
           SizedBox(height: 16),
           Text(
-            'No expenses found',
+            'no_expenses_found'.tr,
             style: TextStyle(color: textColor, fontSize: 16),
           ),
           Text(
-            'Start adding expenses to see them here',
+            'start_adding_expenses_to_see_them'.tr,
             style: TextStyle(color: secondaryTextColor, fontSize: 12),
           ),
         ],

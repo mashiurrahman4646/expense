@@ -4,7 +4,7 @@ import 'package:your_expense/homepage/view%20all/view_controller.dart';
 import '../../Settings/appearance/ThemeController.dart';
 
 class AllTransactionsScreen extends StatelessWidget {
-  const AllTransactionsScreen({Key? key}) : super(key: key);
+  const AllTransactionsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

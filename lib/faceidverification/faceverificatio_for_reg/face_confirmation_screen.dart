@@ -7,6 +7,8 @@ import '../../routes/app_routes.dart';
 class FaceConfirmationScreen extends StatelessWidget {
   final ThemeController themeController = Get.find<ThemeController>();
 
+  const FaceConfirmationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(

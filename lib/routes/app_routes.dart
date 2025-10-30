@@ -13,7 +13,8 @@ import '../Comparison/NonProSavingsPage/nonproservicepageui.dart';
 import '../Comparison/prosavingpage/proserviceui.dart';
 import '../Facelogin/face_login.dart';
 import '../RegisterScreen/reg_screen.dart';
-import '../RegisterScreen/verification.dart';
+import '../RegisterScreen/verification.dart' as reg_verification;
+import '../Settings/userprofile/EmailVerificationScreen.dart' as profile_verification;
 // Updated import
 import '../Settings/appearance/appearance.dart';
 // 🔥 New import for Language Settings
@@ -34,9 +35,11 @@ import '../Settings/userprofile/EditNameScreen.dart';
 import '../Settings/userprofile/changeemail.dart';
 
 import '../add_exp/category/add_category_ui.dart';
+import '../add_exp/category/category_demo_screen.dart';
 import '../add_exp/normaluser/normal_income_and_exp_screen.dart';
 import '../add_exp/pro_user/expenseincomepro/proexpincome.dart';
 import '../add_exp/pro_user/expenseincomepro/proexpincome_controller.dart';
+import 'package:your_expense/Analytics/income_controller.dart';
 import '../faceidverification/face_verification_screen.dart';
 import '../faceidverification/faceverificatio_for_reg/SignupfaceVerificationScreen.dart';
 import '../faceidverification/faceverificatio_for_reg/face_confirmation_screen.dart';
@@ -44,25 +47,30 @@ import '../forget_password/forget_password_code/forget_password_screen.dart';
 import '../forget_password/forget_password_email/forget_password_otp_screen.dart';
 import '../forget_password/set_new_password/set_new_password_screen.dart';
 import '../forget_password/set_new_password/set_new_password_screen_controller.dart';
+import '../home/home_ui.dart';
 import '../homepage/edit/MonthlyBudgetNonPro/MonthlyBudgetNonPro.dart';
 import '../homepage/edit/edit_ui.dart';
-import '../homepage/main_home_page.dart';
+
 import '../homepage/notification/notification_ui.dart';
 import '../homepage/share_exp/share_exp_screen.dart';
 import '../homepage/view all/view_ui.dart';
-import '../login/login_ui/login_screen.dart';
+
+import '../login/login_ui.dart';
 import '../make it pro/AdvertisementPage/Totalsaving_add.dart';
 import '../make it pro/AdvertisementPage/add_ui.dart';
 import '../onbaording/onboarding_ui/onboarding_screen.dart';
 import '../tram_and_condition/trams_and_condition_screen.dart';
+// Added: MonthlyBudgetController for binding when navigating via route
+import '../homepage/model_and _controller_of_monthlybudgetpage/monthly_budget_controller.dart';
+// Added: MarketplaceService to ensure registration in comparison route
+import '../Comparison/MarketplaceService.dart';
 
 class AppRoutes {
-  // Route constants
-  static const String initial = '/onboarding';
+  static const String initial = '/initial';
   static const String login = '/login';
   static const String faceLogin = '/faceLogin';
   static const String register = '/register';
-  static const String verification = '/verification';
+  static const String emailVerification = '/emailVerification';
   static const String signupVerification = '/signupVerification';
   static const String faceVerification = '/faceVerification';
   static const String faceConfirmation = '/faceConfirmation';
@@ -70,7 +78,6 @@ class AppRoutes {
   static const String forgetPassword = '/forgetPassword';
   static const String otpVerification = '/otpVerification';
   static const String setNewPassword = '/setNewPassword';
-  static const String emailVerification = '/emailVerification';
 
   // Main App Routes
   static const String mainHome = '/mainHome';
@@ -94,6 +101,7 @@ class AppRoutes {
   static const String addTransaction = '/addTransaction';
   static const String proExpensesIncome = '/proExpensesIncome';
   static const String addCategory = '/addCategory';
+  static const String categoryDemo = '/categoryDemo';
   static const String advertisement = '/advertisement';
   static const String totalSavingAdvertisement = '/totalSavingAdvertisement';
 
@@ -126,7 +134,7 @@ class AppRoutes {
     GetPage(name: login, page: () => LoginScreen()),
     GetPage(name: faceLogin, page: () => FaceLoginScreen()),
     GetPage(name: register, page: () => RegistrationScreen()),
-    GetPage(name: emailVerification, page: () => EmailVerificationScreen()),
+    GetPage(name: emailVerification, page: () => reg_verification.EmailVerificationScreen()),
     GetPage(name: signupVerification, page: () => SignupVerificationScreen()),
     GetPage(name: faceVerification, page: () => FaceVerificationScreen()),
     GetPage(name: faceConfirmation, page: () => FaceConfirmationScreen()),
@@ -136,13 +144,13 @@ class AppRoutes {
     GetPage(name: setNewPassword, page: () => SetNewPasswordScreen()),
 
     // Main App Routes
-    GetPage(name: mainHome, page: () => MainHomeScreen()),
-    GetPage(name: analytics, page: () => AnalyticsScreen()),
-    GetPage(name: settings, page: () => SettingsScreen()),
+    GetPage(name: mainHome, page: () => MainHomeScreen(), transition: Transition.noTransition),
+    GetPage(name: analytics, page: () => AnalyticsScreen(), transition: Transition.noTransition),
+    GetPage(name: settings, page: () => SettingsScreen(), transition: Transition.noTransition),
     GetPage(name: personalInformation, page: () => PersonalInformationScreen()),
     GetPage(name: editName, page: () => EditNameScreen()),
     GetPage(name: changeEmail, page: () => ChangeEmailScreen()),
-    GetPage(name: emailChangeVerification, page: () => EmailVerificationScreen()),
+    GetPage(name: emailChangeVerification, page: () => profile_verification.EmailVerificationScreen()),
     GetPage(name: premiumPlans, page: () => PremiumPlansScreen()),
     GetPage(name: notificationSettings, page: () => NotificationSettingsScreen()),
     GetPage(name: appUnlock, page: () => AppUnlockScreen()),
@@ -169,6 +177,7 @@ class AppRoutes {
         return AddCategoryScreen(isExpense: isExpense);
       },
     ),
+    GetPage(name: categoryDemo, page: () => CategoryDemoScreen()),
     GetPage(
       name: advertisement,
       page: () {
@@ -184,20 +193,36 @@ class AppRoutes {
 
     // Homepage Routes
     GetPage(name: notification, page: () => NotificationScreen()),
-    GetPage(name: monthlyBudget, page: () => MonthlyBudgetScreen()),
+    GetPage(
+      name: monthlyBudget,
+      page: () => MonthlyBudgetScreen(),
+      binding: BindingsBuilder(() {
+        // Ensure MonthlyBudgetController is available when navigating via this route
+        if (!Get.isRegistered<MonthlyBudgetController>()) {
+          Get.lazyPut<MonthlyBudgetController>(() => MonthlyBudgetController());
+        }
+      }),
+    ),
     GetPage(name: monthlyBudgetNonPro, page: () => const MonthlyBudgetNonPro()),
     GetPage(name: shareExperience, page: () =>  RateAndImproveScreen()),
     GetPage(name: allTransactions, page: () => const AllTransactionsScreen()),
 
     // Analytics Routes
     GetPage(name: expensesScreen, page: () => ExpenseListScreen()),
-    GetPage(name: incomeScreen, page: () => IncomeListScreen()),
+    GetPage(name: incomeScreen, page: () => IncomeListScreen(), binding: BindingsBuilder(() { Get.lazyPut<IncomeController>(() => IncomeController()); })),
     GetPage(name: uploadToDrive, page: () => UploadToDriveScreen()),
 
     // Comparison Routes
     GetPage(
       name: comparison,
       page: () => const ComparisonPageScreen(isFromExpense: true),
+      transition: Transition.noTransition,
+      binding: BindingsBuilder(() {
+        // Ensure MarketplaceService is available for ComparisonPageController
+        if (!Get.isRegistered<MarketplaceService>()) {
+          Get.lazyPut<MarketplaceService>(() => MarketplaceService());
+        }
+      }),
     ),
     GetPage(
       name: comparisonGraph,

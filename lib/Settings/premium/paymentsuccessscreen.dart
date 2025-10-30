@@ -6,6 +6,8 @@ import '../../routes/app_routes.dart';
 import '../appearance/ThemeController.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
+  const PaymentSuccessScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();

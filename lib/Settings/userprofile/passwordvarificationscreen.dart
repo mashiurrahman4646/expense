@@ -7,6 +7,8 @@ class PasswordVerificationScreen extends StatelessWidget {
   final List<TextEditingController> otpControllers =
   List.generate(6, (index) => TextEditingController());
 
+  PasswordVerificationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final ThemeController themeController = Get.find<ThemeController>();
@@ -203,7 +205,7 @@ class PasswordVerificationScreen extends StatelessWidget {
               SizedBox(height: screenHeight * 0.08),
 
               // Submit Button
-              Container(
+              SizedBox(
                 width: double.infinity,
                 height: screenHeight * 0.06,
                 child: ElevatedButton(

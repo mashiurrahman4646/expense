@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../home/home_controller.dart';
 import '../../services/api_base_service.dart';
 import '../../services/config_service.dart';
+
 
 class MonthlyBudgetController extends GetxService {
   final ApiBaseService _apiBaseService = Get.find();
@@ -37,7 +39,7 @@ class MonthlyBudgetController extends GetxService {
       isLoading.value = true;
       errorMessage.value = '';
 
-      final queryParams = {'month': getCurrentMonth()}; // Use lowercase 'month'
+      final queryParams = {'Month': getCurrentMonth()}; // Use capital 'M' for Month
 
       print('🔍 Fetching budget with params: $queryParams');
 
@@ -50,28 +52,61 @@ class MonthlyBudgetController extends GetxService {
 
       print('📥 Fetch Response: $response');
 
+      double budget = 0.0;
+      String monthStr = getCurrentMonth();
+
       if (response['success'] == true) {
-        // Fix: Access the correct data structure
         if (response['data'] != null) {
-          currentBudget.value = {
-            'totalBudget': (response['data']['totalBudget'] as num).toDouble(), // Use 'totalBudget' not 'amount'
-            'month': response['data']['month'],
-          };
-          print('✅ Budget fetched successfully: ${currentBudget.value}');
-        } else {
-          // If no budget exists for this month, set default
-          currentBudget.value = {
-            'totalBudget': 0.0,
-            'month': getCurrentMonth(),
-          };
+          if (response['data']['amount'] != null) {
+            budget = (response['data']['amount'] as num).toDouble();
+          }
+          if (response['data']['month'] != null) {
+            monthStr = response['data']['month'];
+          }
         }
+        print('✅ Budget fetched successfully: totalBudget=$budget, month=$monthStr');
       } else {
-        errorMessage.value = response['message'] ?? 'Failed to fetch monthly budget';
-        print('❌ Fetch failed: ${errorMessage.value}');
+        final msg = response['message'] ?? 'Failed to fetch monthly budget';
+        // Only set error if it's not a "no budget" or "not found" type message
+        if (!msg.toLowerCase().contains('no budget') &&
+            !msg.toLowerCase().contains('not found') &&
+            !msg.toLowerCase().contains('month parameter')) {
+          errorMessage.value = msg;
+        }
+        print('⚠️ No budget found for this month, defaulting to 0');
+      }
+
+      currentBudget.value = {
+        'totalBudget': budget,
+        'month': monthStr,
+      };
+    } on HttpException catch (e) {
+      print('❌ Fetch budget HTTP error: ${e.statusCode} - ${e.message}');
+      if (e.statusCode == 404) {
+        // No budget set for this month; treat as normal default
+        errorMessage.value = '';
+        currentBudget.value = {
+          'totalBudget': 0.0,
+          'month': getCurrentMonth(),
+        };
+      } else {
+        errorMessage.value = 'Error fetching budget: ${e.message}';
+        currentBudget.value = {
+          'totalBudget': 0.0,
+          'month': getCurrentMonth(),
+        };
       }
     } catch (e) {
       errorMessage.value = 'Error fetching budget: ${e.toString()}';
       print('❌ Fetch budget error: $e');
+      // On error, default to 0 without showing fetch-specific error if it's param-related
+      if (errorMessage.value.toLowerCase().contains('month parameter')) {
+        errorMessage.value = '';
+      }
+      currentBudget.value = {
+        'totalBudget': 0.0,
+        'month': getCurrentMonth(),
+      };
     } finally {
       isLoading.value = false;
     }
@@ -86,7 +121,7 @@ class MonthlyBudgetController extends GetxService {
       // Debug the request
       final month = getCurrentMonth();
       final requestBody = {
-        'totalBudget': budgetAmount, // Use 'totalBudget' not 'amount'
+        'amount': budgetAmount, // Use 'amount' as expected by API
         'month': month,
       };
 
@@ -110,6 +145,18 @@ class MonthlyBudgetController extends GetxService {
 
         // Also fetch to confirm (optional)
         await fetchMonthlyBudget();
+
+        // Propagate to HomeController so the main home page updates instantly
+        if (Get.isRegistered<HomeController>()) {
+          try {
+            final home = Get.find<HomeController>();
+            home.monthlyBudget.value = budgetAmount;
+            // Optionally refresh aggregates in the background
+            home.fetchBudgetData();
+          } catch (e) {
+            print('ℹ️ HomeController update failed: $e');
+          }
+        }
 
         print('✅ Budget set successfully');
         return true;

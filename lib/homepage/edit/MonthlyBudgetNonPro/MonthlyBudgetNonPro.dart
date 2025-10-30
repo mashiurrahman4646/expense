@@ -7,7 +7,7 @@ import '../../../make it pro/AdvertisementPage/MonthlyBudgetProadd.dart';
 
 
 class MonthlyBudgetNonPro extends StatelessWidget {
-  const MonthlyBudgetNonPro({Key? key}) : super(key: key);
+  const MonthlyBudgetNonPro({super.key});
 
   @override
   Widget build(BuildContext context) {

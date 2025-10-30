@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'dart:async';
 import '../../colors/app_colors.dart';
 import 'SignupfaceVerificationScreen_controller.dart';
+import '../../services/face_id_service.dart';
 
 class SignupVerificationScreen extends StatefulWidget {
   @override
@@ -77,6 +78,9 @@ class _SignupVerificationScreenState extends State<SignupVerificationScreen>
     Timer(const Duration(seconds: 5), () {
       if (mounted) {
         controller.completeVerification();
+        try {
+          Get.find<FaceIdService>().enableForCurrentUser();
+        } catch (_) {}
         Timer(const Duration(seconds: 2), () {
           if (mounted) {
             Get.toNamed('/faceConfirmation');

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
- // Import your ThemeController
+// Import your ThemeController
 
 import '../../../Settings/appearance/ThemeController.dart';
 import '../../../make it pro/AdvertisementPage/add_ui.dart';
 import 'proexpincome_controller.dart';
 
 class ProExpensesIncomeScreen extends StatelessWidget {
-  const ProExpensesIncomeScreen({Key? key}) : super(key: key);
+  const ProExpensesIncomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -179,9 +179,9 @@ class ProExpensesIncomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildReceiptSection(true, isDarkMode),
+          _buildReceiptSection(controller, true, isDarkMode),
           const SizedBox(height: 20),
-          _buildCategorySection(controller.expenseCategories, true, controller, isDarkMode),
+          _buildCategorySection(controller.expenseCategories, controller.currentTab.value == 0, controller, isDarkMode),
           const SizedBox(height: 20),
           _buildAddCustomCategory(controller, isDarkMode),
           const SizedBox(height: 20),
@@ -205,7 +205,7 @@ class ProExpensesIncomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildReceiptSection(false, isDarkMode),
+          _buildReceiptSection(controller, false, isDarkMode),
           const SizedBox(height: 20),
           _buildCategorySection(controller.incomeCategories, false, controller, isDarkMode),
           const SizedBox(height: 20),
@@ -225,7 +225,7 @@ class ProExpensesIncomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildReceiptSection(bool isExpense, bool isDarkMode) {
+  Widget _buildReceiptSection(ProExpensesIncomeController controller, bool isExpense, bool isDarkMode) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -247,18 +247,21 @@ class ProExpensesIncomeScreen extends StatelessWidget {
                 'camera'.tr,
                 isExpense ? Colors.yellow : Colors.green,
                 isDarkMode,
+                () => controller.processOCRFromCamera(isExpense),
               ),
               _buildReceiptOption(
                 'assets/icons/barcodescanneroc.png',
                 'barcode'.tr,
                 isExpense ? Colors.yellow : Colors.green,
                 isDarkMode,
+                () => controller.processOCRFromBarcode(isExpense),
               ),
               _buildReceiptOption(
                 'assets/icons/galleryoc.png',
                 'gallery'.tr,
                 isExpense ? Colors.yellow : Colors.green,
                 isDarkMode,
+                () => controller.processOCRFromGallery(isExpense),
               ),
             ],
           ),
@@ -267,47 +270,51 @@ class ProExpensesIncomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildReceiptOption(String iconPath, String label, Color backgroundColor, bool isDarkMode) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            shape: BoxShape.circle,
-            border: Border.all(color: isDarkMode ? Colors.grey[600]! : Colors.black.withOpacity(0.3), width: 1.5),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Image.asset(
-              iconPath,
-              color: Colors.black,
-              width: 30,
-              height: 30,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) {
-                IconData fallbackIcon = Icons.camera_alt;
-                if (iconPath.contains('barcode')) fallbackIcon = Icons.qr_code_scanner;
-                if (iconPath.contains('gallery')) fallbackIcon = Icons.image;
-                return Icon(fallbackIcon, color: Colors.black, size: 30);
-              },
+  Widget _buildReceiptOption(String iconPath, String label, Color backgroundColor, bool isDarkMode, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              shape: BoxShape.circle,
+              border: Border.all(color: isDarkMode ? Colors.grey[600]! : Colors.black.withOpacity(0.3), width: 1.5),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Image.asset(
+                iconPath,
+                color: Colors.black,
+                width: 30,
+                height: 30,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  IconData fallbackIcon = Icons.camera_alt;
+                  if (iconPath.contains('barcode')) fallbackIcon = Icons.qr_code_scanner;
+                  if (iconPath.contains('gallery')) fallbackIcon = Icons.image;
+                  return Icon(fallbackIcon, color: Colors.black, size: 30);
+                },
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: GoogleFonts.inter(
-            fontSize: 12,
-            color: isDarkMode ? Colors.white : Colors.black,
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
+  // ... (rest of the methods remain the same as in the original code)
   Widget _buildCategorySection(
       RxList<Map<String, dynamic>> categories,
       bool isExpense,

@@ -5,15 +5,24 @@ import 'package:your_expense/reuseablenav/reuseablenavui.dart';
 import 'package:your_expense/routes/app_routes.dart';
 import 'package:your_expense/homepage/MonthlyBudgetPage.dart';
 import 'package:your_expense/homepage/edit/MonthlyBudgetNonPro/MonthlyBudgetNonPro.dart';
-import 'package:your_expense/homepage/main_home_page_controller.dart';
+
+import 'home_controller.dart';
+
 
 class MainHomeScreen extends StatelessWidget {
+  final bool showBottomNav;
+  const MainHomeScreen({super.key, this.showBottomNav = true});
   @override
   Widget build(BuildContext context) {
     final HomeController controller = Get.find<HomeController>();
     final ThemeController themeController = Get.find<ThemeController>();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
+
+    // Ensure data is loaded after login when the screen appears
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.ensureHomeDataLoaded();
+    });
 
     // Define colors based on theme
     final backgroundColor = themeController.isDarkModeActive ? Color(0xFF121212) : Colors.white;
@@ -403,9 +412,9 @@ class MainHomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        isDarkMode: themeController.isDarkModeActive,
-      ),
+      bottomNavigationBar: showBottomNav
+          ? CustomBottomNavBar(isDarkMode: themeController.isDarkModeActive)
+          : null,
     );
   }
 

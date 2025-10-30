@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../homepage/main_home_page_controller.dart';
+import 'package:your_expense/homepage/main_home_page_controller.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final bool isDarkMode;
 
   const CustomBottomNavBar({
-    Key? key,
+    super.key,
     required this.isDarkMode,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class CustomBottomNavBar extends StatelessWidget {
           Expanded(
             child: _buildNavItem(1, 'assets/icons/analysis.png', 'analytics'.tr, screenWidth, homeController, activeColor, inactiveColor),
           ),
-          Container(
+          SizedBox(
             width: screenWidth * 0.18,
             child: GestureDetector(
               onTap: () => homeController.navigateToAddTransaction(isExpense: true),
@@ -86,7 +86,29 @@ class CustomBottomNavBar extends StatelessWidget {
     bool isActive = homeController.selectedNavIndex.value == index;
 
     return GestureDetector(
-      onTap: () => homeController.changeNavIndex(index),
+      onTap: () async {
+        try {
+          await homeController.changeNavIndex(index);
+        } catch (e) {
+          print('Navbar tap error for index $index: $e'); // Log for debugging
+          // Force direct navigation on tap error
+          homeController.setNavIndex(index); // Update index manually
+          switch (index) {
+            case 0:
+              if (Get.currentRoute != '/mainHome') Get.offAllNamed('/mainHome');
+              break;
+            case 1:
+              Get.toNamed('/analytics');
+              break;
+            case 2:
+              Get.toNamed('/comparison');
+              break;
+            case 3:
+              Get.toNamed('/settings');
+              break;
+          }
+        }
+      },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

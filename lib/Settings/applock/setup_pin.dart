@@ -6,6 +6,8 @@ import '../appearance/ThemeController.dart';
 // Import your ThemeController
 
 class SetPinScreen extends StatefulWidget {
+  const SetPinScreen({super.key});
+
   @override
   _SetPinScreenState createState() => _SetPinScreenState();
 }

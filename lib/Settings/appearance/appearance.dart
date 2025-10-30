@@ -5,7 +5,7 @@ import 'ThemeController.dart';
 
 
 class AppearanceScreen extends StatelessWidget {
-  const AppearanceScreen({Key? key}) : super(key: key);
+  const AppearanceScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

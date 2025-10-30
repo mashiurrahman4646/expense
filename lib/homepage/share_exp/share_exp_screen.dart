@@ -4,7 +4,7 @@ import 'package:your_expense/Settings/appearance/ThemeController.dart';
 import 'package:your_expense/homepage/share_exp/share_exp_controller.dart';
 
 class RateAndImproveScreen extends StatelessWidget {
-  RateAndImproveScreen({Key? key}) : super(key: key);
+  RateAndImproveScreen({super.key});
   final TextEditingController _commentController = TextEditingController();
 
   @override

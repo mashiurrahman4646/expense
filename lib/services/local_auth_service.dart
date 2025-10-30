@@ -1,0 +1,1 @@
+export 'local_auth_service_stub.dart' if (dart.library.io) 'local_auth_service_impl.dart';

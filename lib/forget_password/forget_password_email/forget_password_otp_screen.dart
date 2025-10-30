@@ -6,6 +6,8 @@ import '../../Settings/appearance/ThemeController.dart';
 import '../../Settings/language/language_controller.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
+  const OtpVerificationScreen({super.key});
+
   @override
   _OtpVerificationScreenState createState() => _OtpVerificationScreenState();
 }

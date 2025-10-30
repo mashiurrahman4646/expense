@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:your_expense/Settings/userprofile/profile_services.dart';
+import '../home/home_controller.dart';
 import '../reuseablenav/reuseablenavui.dart';
 import '../routes/app_routes.dart';
-import '../homepage/main_home_page_controller.dart';
+
 import '../Settings/appearance/ThemeController.dart';
+import '../services/config_service.dart';
+
 
 class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
@@ -14,23 +20,32 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   late final HomeController homeController;
   late final ThemeController themeController;
-  bool _hasSetNavIndex = false;
+  late final ProfileService profileService;
   SharedPreferences? _prefs;
-
+  bool _hasSetNavIndex = false;
 
   @override
   void initState() {
     super.initState();
     homeController = Get.find<HomeController>();
     themeController = Get.find<ThemeController>();
+    profileService = Get.find<ProfileService>();
+    _initializePrefs();
 
-    // Set navigation index only once when the screen is first created
+    // Refresh profile data when screen is loaded
+    profileService.refreshProfile();
+
+    // Set navigation index only once
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_hasSetNavIndex && homeController.selectedNavIndex.value != 3) {
         homeController.selectedNavIndex.value = 3;
         _hasSetNavIndex = true;
       }
     });
+  }
+
+  Future<void> _initializePrefs() async {
+    _prefs = await SharedPreferences.getInstance();
   }
 
   @override
@@ -62,7 +77,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        physics: ClampingScrollPhysics(), // Prevents excessive bouncing
+        physics: ClampingScrollPhysics(),
         child: ConstrainedBox(
           constraints: BoxConstraints(
             minHeight: MediaQuery.of(context).size.height -
@@ -76,42 +91,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 SizedBox(height: screenHeight * 0.03),
                 // Profile Section
-                Column(
-                  children: [
-                    Container(
-                      width: screenWidth * 0.22,
-                      height: screenWidth * 0.22,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            spreadRadius: 2,
-                            blurRadius: 8,
-                            offset: Offset(0, 2),
+                Obx(() {
+                  print('📸 UI Update - Name: ${profileService.userName.value}, Image: ${profileService.profileImage.value}');
+                  final version = profileService.imageVersion.value;
+                  return Column(
+                    children: [
+                      Container(
+                        width: screenWidth * 0.22,
+                        height: screenWidth * 0.22,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: themeController.isDarkModeActive ? Color(0xFF1E1E1E) : Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              spreadRadius: 2,
+                              blurRadius: 8,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(screenWidth * 0.11),
+                          child: profileService.profileImage.value.isNotEmpty
+                              ? Image.network(
+                            profileService.getFullImageUrl(),
+                            key: Key('settings_profile_image_$version'),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              print('❌ Image load error: $error');
+                              return Image.asset(
+                                'assets/images/Ellipse 5.png',
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          )
+                              : Image.asset(
+                            'assets/images/Ellipse 5.png',
+                            fit: BoxFit.cover,
                           ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(screenWidth * 0.11),
-                        child: Image.asset(
-                          'assets/images/Ellipse 5.png',
-                          fit: BoxFit.cover,
                         ),
                       ),
-                    ),
-                    SizedBox(height: screenHeight * 0.02),
-                    Text(
-                      'John Doe',
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.05,
-                        fontWeight: FontWeight.w600,
-                        color: themeController.isDarkModeActive ? Colors.white : Colors.black,
+                      SizedBox(height: screenHeight * 0.02),
+                      Text(
+                        profileService.userName.value,
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.05,
+                          fontWeight: FontWeight.w600,
+                          color: themeController.isDarkModeActive ? Colors.white : Colors.black,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  );
+                }),
                 SizedBox(height: screenHeight * 0.04),
 
                 // Settings Options
@@ -216,10 +248,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           actions: [
                             TextButton(
-                              onPressed: () {
-
-                                Get.back();
-                                   } ,
+                              onPressed: () => Get.back(),
                               child: Text(
                                 'cancel'.tr,
                                 style: TextStyle(color: Colors.grey.shade600),
@@ -227,7 +256,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                             TextButton(
                               onPressed: () async {
-                                await _prefs?.remove('auth_token');
                                 Get.back();
                                 homeController.logout();
                               },
@@ -291,7 +319,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             child: Row(
               children: [
-                // Icon Container
                 Container(
                   width: screenWidth * 0.12,
                   height: screenWidth * 0.12,
@@ -309,8 +336,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 SizedBox(width: screenWidth * 0.04),
-
-                // Text Content
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,8 +360,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                 ),
-
-                // Arrow Icon
                 Icon(
                   Icons.arrow_forward_ios,
                   size: screenWidth * 0.04,

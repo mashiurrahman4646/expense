@@ -10,6 +10,8 @@ import '../onboarding_data.dart';
 class OnboardingScreen extends StatelessWidget {
   final OnboardingController controller = Get.put(OnboardingController());
 
+  OnboardingScreen({super.key});
+
   Color hexToColor(String hex) {
     final buffer = StringBuffer();
     if (hex.length == 6 || hex.length == 7) buffer.write('ff');

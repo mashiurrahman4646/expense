@@ -1,10 +1,10 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:your_expense/Settings/appearance/ThemeController.dart';
+import 'package:your_expense/routes/app_routes.dart';
 
-import '../../Settings/appearance/ThemeController.dart';
-import '../../routes/app_routes.dart'; // Import your routes file
+import '../../ad_helper.dart';
 
 class MonthlyBudgetPro extends StatefulWidget {
   const MonthlyBudgetPro({super.key});
@@ -14,64 +14,62 @@ class MonthlyBudgetPro extends StatefulWidget {
 }
 
 class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
-  int _remainingSeconds = 30;
-  late Timer _timer;
-  bool _isVideoPlaying = false;
-  bool _isVideoComplete = false;
   final ThemeController themeController = Get.find<ThemeController>();
+  bool _isAdLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // No preload needed with simplified AdHelper
+  }
 
   @override
   void dispose() {
-    _timer.cancel();
+    // No dispose needed with simplified AdHelper
     super.dispose();
   }
 
-  void _startTimer() {
-    if (!mounted) return;
+  Future<void> _showAdAndNavigate() async {
+    if (_isAdLoading) return;
     setState(() {
-      _isVideoPlaying = true;
-      _remainingSeconds = 30;
+      _isAdLoading = true;
     });
 
-    const oneSec = Duration(seconds: 1);
-    _timer = Timer.periodic(oneSec, (Timer timer) {
-      if (!mounted) {
-        timer.cancel();
-        return;
-      }
-      if (_remainingSeconds == 0) {
-        setState(() {
-          _isVideoComplete = true;
-          _isVideoPlaying = false;
-        });
-        timer.cancel();
-        _showUnlockMessage();
-        // Navigate to Monthly Budget Screen after 1 second delay
+    await AdHelper.showInterstitialAd(
+      onAdDismissed: () {
+        Get.snackbar(
+          'unlocked'.tr,
+          'unlocked_message'.tr,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: themeController.isDarkModeActive
+              ? Colors.grey[800]
+              : Colors.green,
+          colorText: Colors.white,
+        );
         Future.delayed(const Duration(seconds: 1), () {
           if (mounted) {
             Get.offAllNamed('/monthlyBudget');
           }
         });
-      } else {
-        setState(() {
-          _remainingSeconds--;
-        });
-      }
-    });
-  }
-
-  void _showUnlockMessage() {
-    Get.snackbar(
-      'unlocked'.tr,
-      'unlocked_message'.tr,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: themeController.isDarkModeActive ? Colors.grey[800] : Colors.green,
-      colorText: Colors.white,
+        if (mounted) {
+          setState(() {
+            _isAdLoading = false;
+          });
+        }
+      },
+      onAdFailed: () {
+        Get.offAllNamed('/monthlyBudget'); // Navigate even if ad fails
+        if (mounted) {
+          setState(() {
+            _isAdLoading = false;
+          });
+        }
+      },
     );
   }
 
   void _navigateToPremiumPlans() {
-    Get.toNamed(AppRoutes.premiumPlans); // Navigate to premium plans page
+    Get.toNamed(AppRoutes.premiumPlans);
   }
 
   @override
@@ -111,9 +109,9 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Video Container
                   GestureDetector(
-                    onTap: _isVideoPlaying ? null : _startTimer,
+                    
+                    onTap: _isAdLoading ? null : _showAdAndNavigate,
                     child: Container(
                       width: double.infinity,
                       height: 220,
@@ -127,70 +125,43 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
-                          color: _isVideoPlaying
+                          color: _isAdLoading
                               ? Colors.black.withOpacity(0.7)
                               : Colors.black.withOpacity(0.3),
                         ),
-                        child: _isVideoPlaying
-                            ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              '${'watch_video_unlock'.tr} (${_remainingSeconds}s)',
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            // Timer progress indicator
-                            Container(
-                              width: 200,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                              child: FractionallySizedBox(
-                                alignment: Alignment.centerLeft,
-                                widthFactor: (30 - _remainingSeconds) / 30,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(2),
-                                  ),
+                        child: Center(
+                          child: _isAdLoading
+                              ? CircularProgressIndicator(
+                            valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.white),
+                          )
+                              : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: containerColor,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.play_arrow,
+                                  size: 30,
+                                  color: textColor,
                                 ),
                               ),
-                            ),
-                          ],
-                        )
-                            : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: containerColor,
-                                shape: BoxShape.circle,
+                              const SizedBox(height: 16),
+                              Text(
+                                'watch_video_unlock'.tr,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
                               ),
-                              child: Icon(
-                                Icons.play_arrow,
-                                size: 30,
-                                color: textColor,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              '${'watch_video_unlock'.tr} (30s)',
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -209,7 +180,6 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
               ),
             ),
           ),
-          // Bottom button
           Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
@@ -232,7 +202,7 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
                     color: Colors.transparent,
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
-                      onTap: _navigateToPremiumPlans, // Updated to call the new method
+                      onTap: _navigateToPremiumPlans,
                       child: Container(
                         alignment: Alignment.center,
                         child: Row(
@@ -259,7 +229,6 @@ class _MonthlyBudgetProState extends State<MonthlyBudgetPro> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                // Small text at bottom
                 Text(
                   'no_ads_info'.tr,
                   style: GoogleFonts.poppins(

@@ -7,7 +7,7 @@ import '../../Settings/appearance/ThemeController.dart'; // Import your ThemeCon
 class AddCategoryScreen extends StatefulWidget {
   final bool isExpense;
 
-  const AddCategoryScreen({Key? key, required this.isExpense}) : super(key: key);
+  const AddCategoryScreen({super.key, required this.isExpense});
 
   @override
   State<AddCategoryScreen> createState() => _AddCategoryScreenState();
@@ -134,7 +134,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
             const SizedBox(height: 32),
 
             // Add Button
-            Container(
+            SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {

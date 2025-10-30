@@ -7,6 +7,8 @@ import 'package:your_expense/text_styles.dart';
 import '../../Settings/appearance/ThemeController.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
+  const ForgotPasswordScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();

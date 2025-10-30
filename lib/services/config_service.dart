@@ -1,13 +1,9 @@
-
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_disposable.dart';
 import 'package:intl/intl.dart';
 
 class ConfigService extends GetxService {
   static ConfigService get to => Get.find();
 
-  // Base URL configuration - can be made configurable via environment or parameter
   final String baseUrl;
 
   ConfigService({this.baseUrl = 'http://10.10.7.106:5000/api/v1'});
@@ -22,43 +18,66 @@ class ConfigService extends GetxService {
 
   // Expense endpoints
   String get expenseEndpoint => '$baseUrl/expense';
+  String get expenseOcrRawEndpoint => '$baseUrl/expense/ocr-raw';
+  // Backward-compatible alias used by older code paths
+  String get ocrRawEndpoint => expenseOcrRawEndpoint;
 
   // Income endpoints
   String get incomeEndpoint => '$baseUrl/income';
+  // If backend supports income OCR later, wire here; currently expense only
+  // String get incomeOcrRawEndpoint => '$baseUrl/income/ocr-raw';
+  String get incomeSummaryEndpoint => '$baseUrl/income/summary';
 
   // Review endpoints
   String get reviewEndpoint => '$baseUrl/review';
 
   // Transaction and Budget endpoints
   String get recentTransactionsEndpoint => '$baseUrl/recent-transactions';
+
   String get budgetEndpoint {
     final now = DateTime.now();
     final monthYear = DateFormat('yyyy-MM').format(now);
     return '$baseUrl/budget/$monthYear';
   }
-  String get monthlyBudgetEndpoint => '$baseUrl/budget/simple-monthly-budget';
-  // Base endpoint without query params
 
-  // Terms and Conditions endpoint
+  String get monthlyBudgetEndpoint => '$baseUrl/budget/simple-monthly-budget';
+  String get monthlyBudgetTotalEndpoint => '$baseUrl/budget/monthly';
+  String get createBudgetEndpoint => '$baseUrl/budget';
+  String get savingsEndpoint => '$baseUrl/savings';
+
+  String get budgetCategoryEndpoint {
+    final now = DateTime.now();
+    final monthYear = DateFormat('yyyy-MM').format(now);
+    return '$baseUrl/budget/$monthYear/category';
+  }
+
+  String get monthlyBudgetSimpleEndpoint => '$baseUrl/budget/simple-monthly-budget';
   String get termsAndConditionsEndpoint => '$baseUrl/terms-conditions';
+  String get userProfileEndpoint => '$baseUrl/user/profile';
+  String get marketplaceSearchEndpoint => '$baseUrl/marketplace/search';
+  String get categoryEndpoint => '$baseUrl/category';
+
+  String getBudgetEndpoint(String monthYear) => '$baseUrl/budget/$monthYear';
+  String getMonthlyBudgetSimpleEndpoint(String month) => '$baseUrl/budget/simple-monthly-budget?Month=$month';
+  String getMonthlyBudgetTotalEndpoint(String month) => '$baseUrl/budget/monthly?Month=$month';
+  String get notificationsEndpoint => '$baseUrl/notifications';
+
+  String getCurrentMonth() {
+    final now = DateTime.now();
+    return DateFormat('yyyy-MM').format(now);
+  }
 
   Future<ConfigService> init() async {
     try {
       print('=== API Configuration ===');
-      print('API Base URL: $baseUrl');
-      print('Login Endpoint: $loginEndpoint');
-      print('Registration Endpoint: $registerEndpoint');
-      print('Verify Email Endpoint: $verifyEmailEndpoint');
-      print('Resend OTP Endpoint: $resendOtpEndpoint');
-      print('Forgot Password Endpoint: $forgotPasswordEndpoint');
-      print('Reset Password Endpoint: $resetPasswordEndpoint');
-      print('Expense Endpoint: $expenseEndpoint');
-      print('Income Endpoint: $incomeEndpoint');
-      print('Review Endpoint: $reviewEndpoint');
-      print('Recent Transactions Endpoint: $recentTransactionsEndpoint');
-      print('Budget Endpoint: $budgetEndpoint');
-      print('Monthly Budget Endpoint: $monthlyBudgetEndpoint');
-      print('Terms & Conditions Endpoint: $termsAndConditionsEndpoint');
+      print('📍 Base URL: $baseUrl');
+      print('📍 Login Endpoint: $loginEndpoint');
+      print('📍 Register Endpoint: $registerEndpoint');
+      print('📍 Verify Email Endpoint: $verifyEmailEndpoint');
+      print('📍 OCR Raw Endpoint (Expense): $expenseOcrRawEndpoint');
+      // Income OCR endpoint currently not supported
+      print('📍 Income Summary Endpoint: $incomeSummaryEndpoint');
+      print('📍 Current Month: ${getCurrentMonth()}');
       print('=========================');
       return this;
     } catch (e) {
